@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Neural Face & Braid Scanner v2.2</title>
+    <style>
+        :root {
+            --gold: #d4af37;
+            --cyber-blue: #00d4ff;
+            --bg: #050505;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            transition: background 2s ease;
+        }
+
+        #scanner-box {
+            position: relative;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 30px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+            width: 85%;
+            max-width: 400px;
+            z-index: 10;
+        }
+
+        .scan-container {
+            height: 180px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scan-line {
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, transparent, var(--gold), transparent);
+            position: absolute;
+            top: 0;
+            animation: scanMove 2.8s infinite ease-in-out;
+            box-shadow: 0 0 25px var(--gold);
+        }
+
+        .face-placeholder {
+            width: 100px;
+            height: 130px;
+            border: 3px solid rgba(255,255,255,0.2);
+            border-radius: 50% 50% 40% 40%;
+            position: relative;
+            background: rgba(255,255,255,0.08);
+        }
+
+        @keyframes scanMove {
+            0%, 100% { top: 0%; }
+            50% { top: 95%; }
+        }
+
+        button {
+            background: linear-gradient(45deg, var(--gold), #f9e295);
+            color: #000;
+            border: none;
+            padding: 15px 35px;
+            font-weight: bold;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .hidden { display: none; }
+
+        .rainbow-bg {
+            background: linear-gradient(-45deg, #050505, #1a0033, #001a33, #050505);
+            background-size: 400% 400%;
+            animation: gradientMove 8s ease infinite;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        #stats-log {
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: var(--cyber-blue);
+            margin-top: 15px;
+            line-height: 1.6;
+        }
+
+        .glow-text {
+            color: var(--gold);
+            text-shadow: 0 0 12px var(--gold);
+            font-size: 1.4rem;
+        }
+
+        .heart-icon { font-size: 60px; margin-bottom: 10px; animation: pulse 1.3s infinite alternate; }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.15); } }
+    </style>
+</head>
+<body id="main-body">
+
+    <audio id="bgMusic" preload="auto">
+        <source src="YOUR_FILENAME.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="scanner-box">
+        <div id="screen-1">
+            <h2 style="letter-spacing: 2px; font-size: 18px;">NEURAL SCANNER v2.2</h2>
+            <p style="font-size: 10px; color: #888;">FACIAL + BRAID INTEGRITY MODULE</p>
+            
+            <div class="scan-container">
+                <div class="scan-line"></div>
+                <div class="face-placeholder"></div>
+            </div>
+
+            <button id="start-btn" onclick="startAnalysis()">INITIATE SCAN</button>
+        </div>
+
+        <div id="screen-2" class="hidden">
+            <h3 style="color: var(--gold); font-size: 16px;">ANALYZING...</h3>
+            <div id="stats-log"></div>
+        </div>
+
+        <div id="screen-3" class="hidden">
+            <div class="heart-icon">💖</div>
+            <h2 class="glow-text">SCAN COMPLETE</h2>
+            <p style="font-size: 1rem; line-height: 1.6; color: #fff; margin: 20px 0;">
+                Facial symmetry: <span style="color: var(--cyber-blue);">flawless</span><br>
+                Braid precision: <span style="color: var(--cyber-blue);">100% — zero errors</span><br><br>
+                The new braids perfectly frame your face like expertly styled CSS. 
+                Everything compiled into a masterpiece. You look breathtaking. 😍
+            </p>
+            <p style="font-size: 11px; color: rgba(255,255,255,0.5);">
+                Verified by: Your secret IT admirer ❤️
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const music = document.getElementById('bgMusic');
+
+        function startAnalysis() {
+            // Unlocks audio for mobile browsers immediately on tap
+            music.play().then(() => {
+                music.pause();
+                music.currentTime = 0;
+            }).catch(e => console.log("Audio waiting for final screen..."));
+
+            document.getElementById('screen-1').classList.add('hidden');
+            document.getElementById('screen-2').classList.remove('hidden');
+
+            const log = document.getElementById('stats-log');
+            const lines = [
+                "> Booting recognition engine...",
+                "> Scanning facial landmarks...",
+                "> Analyzing braid weave pattern...",
+                "> Checking for merge conflicts... 0 found",
+                "> Cuteness levels exceeding buffer...",
+                "> Generating final report..."
+            ];
+
+            let i = 0;
+            const interval = setInterval(() => {
+                const p = document.createElement('div');
+                p.innerText = lines[i];
+                log.appendChild(p);
+                i++;
+                if (i >= lines.length) {
+                    clearInterval(interval);
+                    setTimeout(showFinal, 1000);
+                }
+            }, 700);
+        }
+
+        function showFinal() {
+            document.getElementById('screen-2').classList.add('hidden');
+            document.getElementById('screen-3').classList.remove('hidden');
+            document.getElementById('main-body').classList.add('rainbow-bg');
+            
+            // Final play trigger
+            music.play().catch(err => {
+                console.log("Audio play failed: Check filename or mobile silent mode.");
+            });
+        }
+    </script>
+</body>
+</html>
