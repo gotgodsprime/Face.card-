@@ -1,10 +1,3 @@
-Here is the fully updated code. I have fixed the scrolling issue so she will be able to read everything comfortably on both desktop and mobile, and I have completely removed the edit pencil, the custom modal system, and the "Save Config" button.
-It is now a clean, permanent, "one-and-done" presentation.
-### How to use this:
- 1. Copy the code below.
- 2. Paste it over your existing HTML file.
- 3. Look at **lines 125 to 135**—I put placeholder text there. Just type or paste your chosen paragraphs right into the HTML text before saving and sending it to her!
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -243,28 +236,28 @@ It is now a clean, permanent, "one-and-done" presentation.
 
     <!-- GLOBAL APPARATUS FOOTER -->
     <footer class="relative z-10 w-full text-center py-6 border-t border-purple-950/20 backdrop-blur-xs bg-black/10 text-[9px] text-slate-600 tracking-[0.25em] font-light">
-        <p>© 2026 Echoes of Midnight. Tap empty sky coordinates to spawn cascading shooting stars.</p>
+        <p> 2026 Echoes of Midnight. Tap empty sky coordinates to spawn cascading shooting stars.</p>
     </footer>
 
     <!-- INTERACTIVE ENGINE LOGIC -->
     <script>
-        // 1. SCENARIO PROFILE CONFIGURATION
+               // 1. SCENARIO PROFILE CONFIGURATION
         const storySegments = [
             {
-                text: "Time moves continuously forward, reshaping landscapes and rewriting histories.",
-                subtitle: "Quietly, consistently..."
+                text: "The universe keeps turning, rewriting the stars and shifting our paths.",
+                subtitle: "Quietly, beautifully..."
             },
             {
-                text: "But despite any changes in direction or chapters closed, true respect and pure wishes remain forever unchanged.",
-                subtitle: "Like constants in a beautiful dark universe..."
+                text: "But certain chapters leave a lasting print of gratitude that time doesn't fade.",
+                subtitle: "A quiet constant..."
             },
             {
-                text: "Today marks the anniversary of your magnificent light entering this world, Princess.",
-                subtitle: "A cause for deep appreciation..."
+                text: "Today, the world celebrates the day your bright spirit entered it.",
+                subtitle: "A beautiful reason to smile..."
             },
             {
-                text: "May your coming year be bright with warm laughter, peace, and beautiful surprises.",
-                subtitle: "Wishing you only the absolute best, always."
+                text: "May your horizon always be clear, and may this new year bring you infinite happiness.",
+                subtitle: "Always wishing you the best, Princess."
             }
         ];
         let currentStoryIndex = 0;
@@ -573,7 +566,7 @@ It is now a clean, permanent, "one-and-done" presentation.
             }
         }
 
-        function buildInteractiveDashboard() {
+                function buildInteractiveDashboard() {
             const storySection = document.getElementById('act-story');
             const interactiveSection = document.getElementById('act-interactive');
 
@@ -592,10 +585,16 @@ It is now a clean, permanent, "one-and-done" presentation.
                         setTimeout(() => playChime(523.25, 'sine', 3, 0.06), 150);
                         setTimeout(() => playChime(659.25, 'sine', 3.5, 0.04), 300);
                         
-                        showNotification("A portrait of Princess has faded in 🕯️");
+                        // UPDATED NOTIFICATION TEXT BELOW
+                        showNotification("Her portrait has faded in 🕯️");
                     }, 600);
                 }, 80);
             }, 1000);
+
+            for (let i = 0; i < 4; i++) {
+                setTimeout(() => { shootingStars.push(new ShootingStar()); }, i * 250);
+            }
+        }
 
             for (let i = 0; i < 4; i++) {
                 setTimeout(() => { shootingStars.push(new ShootingStar()); }, i * 250);
