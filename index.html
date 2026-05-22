@@ -9,7 +9,7 @@
     <!-- Google Fonts for Cinematic Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@200;300;400;500&family=Pinyon+Script&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght=200;300;400;500&family=Pinyon+Script&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
@@ -196,7 +196,7 @@
                 <div class="bg-black/50 border border-yellow-500/10 backdrop-blur-md p-6 md:p-8 rounded-2xl shadow-2xl relative overflow-hidden transition-all hover:border-yellow-500/20">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-yellow-500/5 to-transparent rounded-bl-full pointer-events-none"></div>
                     
-                    <!-- Recipient Header (Pencil Icon Removed Completely) -->
+                    <!-- Recipient Header -->
                     <div class="border-b border-purple-950 pb-4 mb-6 flex justify-between items-end">
                         <div>
                             <span class="text-[9px] uppercase tracking-[0.3em] text-yellow-500/60 font-medium">To Someone Special</span>
@@ -204,20 +204,20 @@
                         </div>
                     </div>
 
-                    <!-- Letter Body Typography (Hardcode your chosen paragraphs here) -->
+                    <!-- Letter Body Typography -->
                     <div class="space-y-4 text-xs md:text-sm text-slate-300 leading-relaxed font-light tracking-wide">
                         <p id="letter-paragraph-1">
-                            Today is a milestone, a celebration of the day you entered the world. Even though chapters shift and paths look different now, my absolute admiration and respect for you, Princess, has never wavered.
+                            Today is a beautiful milestone, celebrating the day you entered the world. While our chapters have shifted and our paths look different now, my genuine admiration for the person you are has never wavered.
                         </p>
                         <p id="letter-paragraph-2">
-                            I hope your day is filled with the kind of joy that leaves you glowing. You deserve laughter that rings true, friends who elevate your soul, and peace that wraps comfortably around you.
+                            I hope today brings you the kind of joy that stays with you all year. You deserve a day filled with true laughter, a life surrounded by people who elevate your soul, and a deep sense of peace in everything you do.
                         </p>
                         <p id="letter-paragraph-3">
-                            Thank you for all the laughter, lessons, and beautiful moments we've shared. May this new year of your life be the most vibrant and beautiful chapter yet.
+                            Thank you for the beautiful memories and the lessons we shared along the way. May this new year of your life be your most vibrant, successful, and fulfilling chapter yet.
                         </p>
                     </div>
 
-                    <!-- Letter Footer (Save Config Button Removed Completely) -->
+                    <!-- Letter Footer -->
                     <div class="mt-8 pt-4 border-t border-purple-950 flex justify-between items-center">
                         <div>
                             <span class="text-[9px] uppercase tracking-widest text-slate-500 block font-medium">Sent with respect</span>
@@ -236,12 +236,12 @@
 
     <!-- GLOBAL APPARATUS FOOTER -->
     <footer class="relative z-10 w-full text-center py-6 border-t border-purple-950/20 backdrop-blur-xs bg-black/10 text-[9px] text-slate-600 tracking-[0.25em] font-light">
-        <p> 2026 Echoes of Midnight. Tap empty sky coordinates to spawn cascading shooting stars.</p>
+        <p>2026 Echoes of Midnight. Tap empty sky coordinates to spawn cascading shooting stars.</p>
     </footer>
 
     <!-- INTERACTIVE ENGINE LOGIC -->
     <script>
-               // 1. SCENARIO PROFILE CONFIGURATION
+        // 1. SCENARIO PROFILE CONFIGURATION (UPDATED TO CHOSEN POETIC SCRIPT)
         const storySegments = [
             {
                 text: "The universe keeps turning, rewriting the stars and shifting our paths.",
@@ -566,7 +566,7 @@
             }
         }
 
-                function buildInteractiveDashboard() {
+        function buildInteractiveDashboard() {
             const storySection = document.getElementById('act-story');
             const interactiveSection = document.getElementById('act-interactive');
 
@@ -585,16 +585,11 @@
                         setTimeout(() => playChime(523.25, 'sine', 3, 0.06), 150);
                         setTimeout(() => playChime(659.25, 'sine', 3.5, 0.04), 300);
                         
-                        // UPDATED NOTIFICATION TEXT BELOW
+                        // FIXED: Adjusted to customized notification string
                         showNotification("Her portrait has faded in 🕯️");
                     }, 600);
                 }, 80);
             }, 1000);
-
-            for (let i = 0; i < 4; i++) {
-                setTimeout(() => { shootingStars.push(new ShootingStar()); }, i * 250);
-            }
-        }
 
             for (let i = 0; i < 4; i++) {
                 setTimeout(() => { shootingStars.push(new ShootingStar()); }, i * 250);
@@ -665,5 +660,3 @@
     </script>
 </body>
 </html>
-
-```
