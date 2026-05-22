@@ -2,661 +2,886 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Echoes of Midnight - Happy Birthday Princess</title>
-    <!-- Tailwind CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
+    <title>Premium Glassmorphic 3D Pool</title>
+    
+    <!-- Tailwired Utility Engine -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts for Cinematic Typography -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght=200;300;400;500&family=Pinyon+Script&display=swap" rel="stylesheet">
+    
+    <!-- Core 3D Graphics Core & Camera Rigging -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    
+    <!-- Realtime Connection Gateway -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Premium Vector Icon Assets -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
         body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: #030008;
-            /* FIXED: Allowed scrolling so the user can scroll up and down freely */
-            overflow-y: auto;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+            background-color: #05070f;
+            overflow: hidden;
+            font-family: system-ui, -apple-system, sans-serif;
         }
-        .font-cinzel {
-            font-family: 'Cinzel', serif;
-        }
-        .font-script {
-            font-family: 'Pinyon Script', cursive;
-        }
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #030008;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #2e0854;
-            border-radius: 10px;
-        }
-        /* Soft pulsing neon glows */
-        .glow-gold {
-            text-shadow: 0 0 12px rgba(254, 240, 138, 0.3), 0 0 24px rgba(254, 240, 138, 0.15);
-        }
-        .glow-purple {
-            box-shadow: 0 0 40px rgba(147, 51, 234, 0.08);
-        }
-        .glow-rose-gold {
-            box-shadow: 0 0 40px rgba(244, 180, 180, 0.15);
-            border-color: rgba(244, 180, 180, 0.2);
-        }
-        /* Animations */
-        @keyframes slow-pan {
-            0% { transform: scale(1) translate(0px, 0px); }
-            50% { transform: scale(1.03) translate(5px, -10px); }
-            100% { transform: scale(1) translate(0px, 0px); }
-        }
-        .bg-pan {
-            animation: slow-pan 25s infinite ease-in-out;
-        }
-        /* Cinematic fading transitions */
-        .fade-in-out {
-            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
-        }
-        .hidden-cinematic {
-            opacity: 0;
-            transform: translateY(20px);
-            pointer-events: none;
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
         }
         
-        /* Shimmer effect for portrait reveal */
-        .shimmer-bg {
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
-            background-size: 200% 100%;
-            animation: shimmer 4s infinite linear;
+        /* Premium Antigravity Glassmorphism UI Panels */
+        .glassmorphic {
+            background: rgba(10, 15, 30, 0.65);
+            backdrop-filter: blur(20px) saturate(140%);
+            -webkit-backdrop-filter: blur(20px) saturate(140%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.12);
         }
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
+
+        /* Active Turn Fluid Indicators */
+        .active-turn-p1 {
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.25);
+            border-color: rgba(16, 185, 129, 0.5);
+            background: rgba(16, 185, 129, 0.12);
+        }
+        .active-turn-p2 {
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.25);
+            border-color: rgba(6, 182, 212, 0.5);
+            background: rgba(6, 182, 212, 0.12);
+        }
+
+        /* Micro-interactions & Spring Curves */
+        .interactive-element {
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .interactive-element:hover:not(:disabled) {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+        .interactive-element:active:not(:disabled) {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        /* Modernized Custom Linear Slider Rails */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
+            cursor: pointer;
+            transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.35);
         }
     </style>
 </head>
-<body class="text-slate-100 min-h-screen flex flex-col justify-between relative select-none">
+<body class="relative w-screen h-screen">
 
-    <!-- Ambient Sky Background Canvas -->
-    <canvas id="ambientCanvas" class="absolute inset-0 w-full h-full z-0 block"></canvas>
-
-    <!-- Subtle Color Gradients Overlay -->
-    <div class="absolute inset-0 bg-gradient-to-b from-purple-950/10 via-transparent to-black/90 z-1 pointer-events-none"></div>
-
-    <!-- MAIN INTERACTIVE APP CONTAINER -->
-    <main class="relative z-10 flex-grow flex flex-col justify-center items-center px-4 md:px-8 py-8">
-
-        <!-- ACT I: THE IMMERSIVE LANDING SCREEN -->
-        <section id="act-landing" class="max-w-xl text-center flex flex-col items-center justify-center space-y-8 py-12 transition-all duration-1000">
-            <div class="space-y-4">
-                <p class="text-xs tracking-[0.4em] uppercase text-purple-400 font-semibold opacity-90">An Interactive Cinematic Experience</p>
-                <h1 class="text-4xl md:text-6xl font-cinzel font-bold text-yellow-100/90 tracking-wider glow-gold">Echoes of Midnight</h1>
-                <p class="text-sm md:text-base text-slate-400 font-light max-w-md mx-auto leading-relaxed px-4">
-                    A celestial journey crafted in honor of <span class="text-yellow-200/90 font-medium">Amakyewaa</span> on her special day. Please turn up your audio and find a quiet space.
-                </p>
+    <!-- HUD Realtime Overlay Canvas Layer -->
+    <div id="hud" class="absolute inset-0 pointer-events-none z-10 flex flex-col justify-between p-4 md:p-6 select-none">
+        
+        <!-- TOP VIEWPORT: Scoreboards & Active Match State -->
+        <div class="w-full flex flex-col md:flex-row justify-between items-center gap-4 pointer-events-auto">
+            <div class="flex items-center gap-2 glassmorphic px-5 py-2.5 rounded-full shadow-3xl">
+                <!-- Player 1 Status Plate -->
+                <div id="p1-card" class="flex items-center gap-3 px-4 py-1.5 rounded-full transition-all duration-500 active-turn-p1">
+                    <div class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" id="p1-indicator"></div>
+                    <span class="font-bold text-sm tracking-wide text-white" id="p1-name">PLAYER 1</span>
+                    <div id="p1-group" class="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-slate-950/60 border border-white/10 text-emerald-300">HOST</div>
+                </div>
+                
+                <div class="text-slate-500 font-black text-xs px-2 tracking-widest">VS</div>
+                
+                <!-- Player 2 Status Plate -->
+                <div id="p2-card" class="flex items-center gap-3 px-4 py-1.5 rounded-full transition-all duration-500 opacity-40">
+                    <div class="w-2.5 h-2.5 rounded-full bg-slate-500" id="p2-indicator"></div>
+                    <span class="font-bold text-sm tracking-wide text-slate-300" id="p2-name">PLAYER 2</span>
+                    <div id="p2-group" class="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-slate-950/60 border border-white/10 text-slate-400">GUEST</div>
+                </div>
             </div>
 
-            <!-- Cinematic Audio Play Button -->
-            <button onclick="beginJourney()" class="group relative px-8 py-4 bg-purple-950/20 border border-yellow-500/20 rounded-full overflow-hidden transition-all duration-500 hover:border-yellow-400/60 hover:bg-purple-900/30 hover:shadow-[0_0_30px_rgba(234,179,8,0.15)] active:scale-98">
-                <span class="absolute inset-0 bg-gradient-to-r from-yellow-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
-                <span class="relative font-cinzel text-xs md:text-sm text-yellow-100/80 group-hover:text-yellow-100 tracking-[0.25em] flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-yellow-400 animate-pulse fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                    BEGIN THE JOURNEY
-                </span>
-            </button>
-        </section>
-
-        <!-- ACT II: THE STORY SEQUENCE -->
-        <section id="act-story" class="hidden opacity-0 transform translate-y-6 max-w-2xl text-center flex flex-col items-center justify-center space-y-6 min-h-[280px] transition-all duration-1000">
-            <!-- Story blocks fade in and out dynamically -->
-            <div id="story-display" class="fade-in-out text-xl md:text-2xl font-cinzel text-yellow-100/90 leading-relaxed font-light px-6"></div>
-            <div id="story-subtitle" class="fade-in-out text-slate-400 italic font-script text-2xl tracking-wide opacity-70 h-8"></div>
-            
-            <!-- Quick progression control -->
-            <button id="story-next-btn" onclick="nextStorySegment()" class="opacity-0 transition-opacity duration-1000 mt-10 group flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-purple-400 hover:text-yellow-300 transition-colors">
-                <span>Continue</span>
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-            </button>
-        </section>
-
-        <!-- ACT III: THE CELESTIAL DASHBOARD -->
-        <section id="act-interactive" class="hidden opacity-0 transform translate-y-6 w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center justify-center transition-all duration-1000 py-4">
-            
-            <!-- LEFT PANEL: Interactive Sky Controls & Wishes -->
-            <div class="lg:col-span-4 flex flex-col space-y-6 self-start">
-                <div class="bg-black/50 border border-purple-950/60 backdrop-blur-md p-6 rounded-2xl glow-purple flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <h2 class="text-sm font-cinzel font-semibold text-yellow-100/90 tracking-wider flex items-center gap-2">
-                                <span class="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-ping"></span>
-                                Release a Wishing Lantern
-                            </h2>
-                            <span class="text-[9px] uppercase text-purple-400 tracking-widest bg-purple-950/40 px-2 py-0.5 rounded border border-purple-900/30">Interactive</span>
-                        </div>
-                        <p class="text-xs text-slate-400 mb-6 leading-relaxed font-light">
-                            Type a warm blessing, memory, or wish , and watch it rise into the midnight sky ecosystem.
-                        </p>
+            <!-- Monitoring Info & Pocketed Tray -->
+            <div class="flex flex-col items-center md:items-end">
+                <div class="glassmorphic px-5 py-3 rounded-2xl flex flex-col gap-1.5 shadow-2xl">
+                    <div class="flex items-center gap-2 text-xs font-medium text-slate-300">
+                        <span class="w-2 h-2 rounded-full bg-cyan-400" id="status-glow"></span>
+                        <span id="game-status-text" class="tracking-wide font-medium">Initializing Engine Components...</span>
                     </div>
-
-                    <!-- Preset micro-wishes -->
-                    <div class="flex flex-wrap gap-1.5 mb-5">
-                        <button onclick="setPresetWish('May your year be filled with beautiful moments, Princess! ✨')" class="text-[10px] bg-purple-950/20 hover:bg-purple-900/40 border border-purple-900/40 hover:border-yellow-500/30 text-slate-400 hover:text-yellow-100 px-2.5 py-1 rounded-full transition-all duration-300">✨ Princess's Joy</button>
-                        <button onclick="setPresetWish('Wishing you infinite peace and happiness, Princess. 🌿')" class="text-[10px] bg-purple-950/20 hover:bg-purple-900/40 border border-purple-900/40 hover:border-yellow-500/30 text-slate-400 hover:text-yellow-100 px-2.5 py-1 rounded-full transition-all duration-300">🌿 Pure Peace</button>
+                    <div id="pocketed-tray" class="flex gap-2 mt-1 items-center h-6 min-w-[140px]">
+                        <span class="text-[10px] font-mono uppercase tracking-wider text-slate-500 mr-1">Potted:</span>
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Input form -->
-                    <div class="flex gap-2">
-                        <input type="text" id="wish-input" maxlength="100" placeholder="Type a blessing..." class="flex-grow bg-black/60 border border-purple-950 rounded-xl px-4 py-3 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-yellow-500/30 transition-all duration-300">
-                        <button onclick="releaseLanternFromInput()" class="bg-yellow-500/5 hover:bg-yellow-500/10 border border-yellow-500/30 hover:border-yellow-400/60 text-yellow-200/80 hover:text-yellow-100 px-4 rounded-xl text-[11px] font-medium tracking-widest uppercase transition-all duration-300">
-                            Send
+        <!-- NOTIFICATION BANNER POPUP MODULE -->
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none flex flex-col items-center w-full max-w-sm px-4">
+            <div id="notification-banner" class="w-full glassmorphic px-6 py-4 rounded-2xl shadow-3xl border-yellow-500/10 scale-90 opacity-0 transition-all duration-500 flex items-center gap-4 text-left">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-500/20 to-orange-500/20 flex items-center justify-center text-yellow-400 shrink-0 border border-yellow-500/20">
+                    <i data-lucide="shield-alert" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h4 id="notif-title" class="font-black text-yellow-400 text-xs tracking-widest uppercase">SYSTEM MSG</h4>
+                    <p id="notif-desc" class="text-xs text-slate-300 mt-0.5 leading-relaxed">Connecting channels...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTOM CONTROLLER TRAY -->
+        <div class="w-full flex flex-col items-center gap-4 mt-auto">
+            <div class="w-full max-w-5xl flex flex-col md:flex-row items-stretch justify-between gap-4 pointer-events-auto">
+                
+                <!-- View / Control Utility Rack -->
+                <div class="glassmorphic p-3 rounded-2xl flex flex-row md:flex-col justify-around gap-2 shadow-2xl shrink-0">
+                    <button id="btn-camera-top" class="interactive-element flex items-center justify-center gap-2 bg-white/5 border border-white/5 py-2.5 px-4 rounded-xl text-xs font-semibold tracking-wide text-slate-200">
+                        <i data-lucide="layout-grid" class="w-4 h-4 text-slate-400"></i>
+                        <span>Overhead</span>
+                    </button>
+                    <button id="btn-camera-reset" class="interactive-element flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-600 to-cyan-500 py-2.5 px-4 rounded-xl text-xs font-bold tracking-wide text-white shadow-lg shadow-cyan-950/40">
+                        <i data-lucide="compass" class="w-4 h-4"></i>
+                        <span>Reset Orbit</span>
+                    </button>
+                    <button id="btn-share" class="interactive-element flex items-center justify-center gap-2 bg-white/5 border border-white/5 py-2.5 px-4 rounded-xl text-xs font-semibold tracking-wide text-slate-200">
+                        <i data-lucide="copy" class="w-4 h-4 text-slate-400"></i>
+                        <span>Copy Room Link</span>
+                    </button>
+                </div>
+
+                <!-- Precision Target Tuning Board -->
+                <div class="flex-1 glassmorphic p-4 rounded-2xl flex flex-col gap-3 justify-center shadow-2xl">
+                    <div class="flex items-center justify-between text-xs font-bold tracking-wider text-slate-400">
+                        <span class="flex items-center gap-1.5"><i data-lucide="target" class="w-4 h-4 text-cyan-400"></i> AIM ANGLE VECTOR</span>
+                        <span id="angle-display" class="font-mono bg-slate-950/50 px-2 py-0.5 rounded text-white border border-white/5">180°</span>
+                    </div>
+                    
+                    <div class="flex items-center gap-4">
+                        <button id="aim-left-fine" class="interactive-element w-12 h-11 bg-white/5 border border-white/5 rounded-xl flex items-center justify-center text-white">
+                            <i data-lucide="chevron-left" class="w-5 h-5 text-slate-300"></i>
+                        </button>
+                        
+                        <input type="range" id="aim-slider" min="0" max="360" value="180" class="flex-1 h-1.5 rounded-lg appearance-none cursor-pointer">
+                        
+                        <button id="aim-right-fine" class="interactive-element w-12 h-11 bg-white/5 border border-white/5 rounded-xl flex items-center justify-center text-white">
+                            <i data-lucide="chevron-right" class="w-5 h-5 text-slate-300"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- Live Sound Synthesizer Node -->
-                <div class="bg-black/40 border border-purple-950/50 backdrop-blur-md p-4 rounded-xl flex items-center justify-between gap-4">
-                    <div class="flex items-center gap-3">
-                        <button onclick="toggleAudio()" class="w-9 h-9 rounded-lg bg-purple-950/30 flex items-center justify-center border border-purple-900/30 text-yellow-500/80 hover:text-yellow-400 transition-colors">
-                            <svg id="mute-icon-on" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M12 18.75V5.25L7.75 9H4.5v6h3.25L12 18.75z" /></svg>
-                            <svg id="mute-icon-off" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" /></svg>
-                        </button>
-                        <div>
-                            <p class="text-xs font-medium text-slate-300">Ambient Music Engine</p>
-                            <p class="text-[10px] text-slate-500 font-light">Live-synthesizing celestial chimes</p>
-                        </div>
+                <!-- Force Impulsion Meter & Strike Trigger -->
+                <div class="glassmorphic p-4 rounded-2xl flex flex-col gap-3 min-w-[250px] shadow-2xl shrink-0">
+                    <div class="flex justify-between items-center text-xs font-bold tracking-wider text-slate-400">
+                        <span class="flex items-center gap-1.5"><i data-lucide="zap" class="w-4 h-4 text-yellow-400"></i> IMPULSE FORCE</span>
+                        <span id="power-percentage" class="font-mono text-yellow-400 bg-yellow-400/10 px-2 py-0.5 rounded border border-yellow-400/20">40%</span>
                     </div>
-                    <div class="flex items-center gap-1">
-                        <button onclick="playChime(329.63)" class="w-7 h-7 rounded bg-purple-950/20 border border-purple-900/40 hover:bg-purple-900/40 text-[10px] text-yellow-100/70 flex items-center justify-center transition-colors">E</button>
-                        <button onclick="playChime(392.00)" class="w-7 h-7 rounded bg-purple-950/20 border border-purple-900/40 hover:bg-purple-900/40 text-[10px] text-yellow-100/70 flex items-center justify-center transition-colors">G</button>
-                        <button onclick="playChime(440.00)" class="w-7 h-7 rounded bg-purple-950/20 border border-purple-900/40 hover:bg-purple-900/40 text-[10px] text-yellow-100/70 flex items-center justify-center transition-colors">A</button>
+
+                    <div class="relative flex items-center h-4 my-1">
+                        <div class="absolute inset-0 bg-gradient-to-r from-cyan-500 via-yellow-500 to-rose-500 rounded-full opacity-20 pointer-events-none"></div>
+                        <input type="range" id="power-slider" min="5" max="100" value="40" class="relative z-10 w-full h-1 bg-transparent appearance-none cursor-pointer">
                     </div>
+
+                    <button id="btn-strike" class="w-full bg-gradient-to-r from-rose-600 to-orange-500 hover:from-rose-500 hover:to-orange-400 text-white font-black text-xs uppercase py-3.5 rounded-xl tracking-widest shadow-xl shadow-rose-950/30 transition-all duration-300 flex items-center justify-center gap-2">
+                        <i data-lucide="flame" class="w-4 h-4 fill-white"></i>
+                        <span>Execute Strike</span>
+                    </button>
                 </div>
             </div>
-
-            <!-- MIDDLE PANEL: The Portrait of Princess -->
-            <div class="lg:col-span-4 flex flex-col items-center justify-center relative">
-                <div id="portrait-card" class="opacity-0 translate-y-4 duration-1000 ease-out transition-all bg-gradient-to-b from-purple-950/20 to-black/90 border glow-rose-gold p-3 rounded-2xl backdrop-blur-lg w-full max-w-[320px] relative overflow-hidden group">
-                    <div class="absolute inset-0 shimmer-bg opacity-20 pointer-events-none rounded-2xl"></div>
-                    
-                    <!-- Portrait Frame -->
-                    <div class="relative rounded-xl overflow-hidden aspect-[4/5] border border-white/5 shadow-inner bg-purple-950/10">
-                        <!-- UPDATED: Now points permanently to image.jpg -->
-                        <img id="princess-image" src="image.jpg" alt="Princess" class="w-full h-full object-cover transform transition-transform duration-1000 group-hover:scale-103" onerror="handleImageError()">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent pointer-events-none"></div>
-                        <div class="absolute bottom-4 left-4 right-4 text-center">
-                            <span class="text-[11px] font-cinzel text-yellow-100/80 tracking-[0.25em] uppercase glow-gold">Happy Birthday Princess</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- RIGHT PANEL: Elegant Customized Birthday Letter -->
-            <div class="lg:col-span-4 self-start">
-                <div class="bg-black/50 border border-yellow-500/10 backdrop-blur-md p-6 md:p-8 rounded-2xl shadow-2xl relative overflow-hidden transition-all hover:border-yellow-500/20">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-yellow-500/5 to-transparent rounded-bl-full pointer-events-none"></div>
-                    
-                    <!-- Recipient Header -->
-                    <div class="border-b border-purple-950 pb-4 mb-6 flex justify-between items-end">
-                        <div>
-                            <span class="text-[9px] uppercase tracking-[0.3em] text-yellow-500/60 font-medium">To Someone Special</span>
-                            <h3 id="letter-to" class="text-2xl font-cinzel text-yellow-100/90 tracking-wider glow-gold font-semibold">Princess</h3>
-                        </div>
-                    </div>
-
-                    <!-- Letter Body Typography -->
-                    <div class="space-y-4 text-xs md:text-sm text-slate-300 leading-relaxed font-light tracking-wide">
-                        <p id="letter-paragraph-1">
-                            Today is a beautiful milestone, celebrating the day you entered the world. While our chapters have shifted and our paths look different now, my genuine admiration for the person you are has never wavered.
-                        </p>
-                        <p id="letter-paragraph-2">
-                            I hope today brings you the kind of joy that stays with you all year. You deserve a day filled with true laughter, a life surrounded by people who elevate your soul, and a deep sense of peace in everything you do.
-                        </p>
-                        <p id="letter-paragraph-3">
-                            Thank you for the beautiful memories and the lessons we shared along the way. May this new year of your life be your most vibrant, successful, and fulfilling chapter yet.
-                        </p>
-                    </div>
-
-                    <!-- Letter Footer -->
-                    <div class="mt-8 pt-4 border-t border-purple-950 flex justify-between items-center">
-                        <div>
-                            <span class="text-[9px] uppercase tracking-widest text-slate-500 block font-medium">Sent with respect</span>
-                            <span id="letter-from" class="font-script text-3xl text-yellow-200/80 tracking-wide">Always</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- UI Notification System -->
-    <div id="notification-banner" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-purple-950/80 border border-purple-800/40 backdrop-blur-md text-yellow-100/90 px-6 py-3 rounded-full text-[11px] font-medium uppercase tracking-widest shadow-2xl opacity-0 scale-95 pointer-events-none transition-all duration-500 z-50 flex items-center gap-2">
-        <span id="notification-text">Wish rising into the digital sky!</span>
+        </div>
     </div>
 
-    <!-- GLOBAL APPARATUS FOOTER -->
-    <footer class="relative z-10 w-full text-center py-6 border-t border-purple-950/20 backdrop-blur-xs bg-black/10 text-[9px] text-slate-600 tracking-[0.25em] font-light">
-        <p>2026 Echoes of Midnight. Tap empty sky coordinates to spawn cascading shooting stars.</p>
-    </footer>
-
-    <!-- INTERACTIVE ENGINE LOGIC -->
+    <!-- 3D Core Simulation Engine Scripts -->
     <script>
-        // 1. SCENARIO PROFILE CONFIGURATION (UPDATED TO CHOSEN POETIC SCRIPT)
-        const storySegments = [
-            {
-                text: "The universe keeps turning, rewriting the stars and shifting our paths.",
-                subtitle: "Quietly, beautifully..."
-            },
-            {
-                text: "But certain chapters leave a lasting print of gratitude that time doesn't fade.",
-                subtitle: "A quiet constant..."
-            },
-            {
-                text: "Today, the world celebrates the day your bright spirit entered it.",
-                subtitle: "A beautiful reason to smile..."
-            },
-            {
-                text: "May your horizon always be clear, and may this new year bring you infinite happiness.",
-                subtitle: "Always wishing you the best, Princess."
-            }
+        // --- PRODUCTION NETWORK KEY CONFIGURATION MAP ---
+        const SUPABASE_URL = "https://wjvvczhjixidfhjsfypu.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndqdnZjemhqaXhpZGZoanNmeXB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NTM2NDcsImV4cCI6MjA5NTAyOTY0N30.DPt1V5dTtLRCUAkKudHG1vJbIWl_SmnuvkMDM3ZeH-8";
+        
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // --- GLOBAL STATE STORAGE OBJECT ---
+        const GameState = {
+            // Room Mapping Attributes
+            roomId: null,
+            localPlayerId: null,
+            isHost: false,
+            playerSlot: null,
+            supabaseChannel: null,
+
+            // Mechanics Configurations
+            isTableRolling: false,
+            aimAngle: Math.PI, // 180 degrees initial pointing
+            strikePower: 40,
+            cueBall: null,
+            balls: [],
+            p1: { isTurn: true },
+            p2: { isTurn: false }
+        };
+
+        const PHYSICS_CONFIG = {
+            ballRadius: 0.12,
+            cushionRestitution: 0.75,
+            ballRestitution: 0.95,
+            tableFriction: 0.988,
+            minimumVelocity: 0.005,
+            bounds: { minX: -2.35, maxX: 2.35, minZ: -4.70, maxZ: 4.70 }
+        };
+
+        const POCKET_LAYOUT = [
+            { x: -2.35, z: -4.70 }, { x: 0, z: -4.75 }, { x: 2.35, z: -4.70 },
+            { x: -2.35, z:  4.70 }, { x: 0, z:  4.75 }, { x: 2.35, z:  4.70 }
         ];
-        let currentStoryIndex = 0;
+        const POCKET_CAPTURE_RADIUS = 0.28;
 
-        // 2. WEB AUDIO CONTEXT CAPABILITY
-        let audioCtx = null;
-        let isAudioMuted = false;
-        let ambientSequenceTimer = null;
+        // Three.js Graphics Context Framework
+        let scene, camera, renderer, controls;
+        let aimLine;
 
-        function initAudio() {
-            if (audioCtx) return;
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            startAmbientSequencer();
-        }
+        // --- PHYSICS VECTOR SYSTEM RESOLUTION ---
+        function resolveCushionCollisions(ball) {
+            if (!ball.isActive) return;
 
-        function playChime(frequency, type = 'sine', duration = 2.5, gainVal = 0.12) {
-            if (!audioCtx || isAudioMuted) return;
-            try {
-                if (audioCtx.state === 'suspended') {
-                    audioCtx.resume();
-                }
-                const osc = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-                const filter = audioCtx.createBiquadFilter();
+            if (ball.position.x - PHYSICS_CONFIG.ballRadius < PHYSICS_CONFIG.bounds.minX) {
+                ball.position.x = PHYSICS_CONFIG.bounds.minX + PHYSICS_CONFIG.ballRadius;
+                ball.velocity.x = -ball.velocity.x * PHYSICS_CONFIG.cushionRestitution;
+            } else if (ball.position.x + PHYSICS_CONFIG.ballRadius > PHYSICS_CONFIG.bounds.maxX) {
+                ball.position.x = PHYSICS_CONFIG.bounds.maxX - PHYSICS_CONFIG.ballRadius;
+                ball.velocity.x = -ball.velocity.x * PHYSICS_CONFIG.cushionRestitution;
+            }
 
-                osc.connect(filter);
-                filter.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-
-                osc.type = type;
-                osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
-
-                filter.type = 'lowpass';
-                filter.frequency.setValueAtTime(1800, audioCtx.currentTime);
-
-                gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-                gainNode.gain.linearRampToValueAtTime(gainVal, audioCtx.currentTime + 0.04);
-                gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-
-                osc.start(audioCtx.currentTime);
-                osc.stop(audioCtx.currentTime + duration);
-            } catch (error) {
-                console.error("Audio Synthesis Interruption: ", error);
+            if (ball.position.z - PHYSICS_CONFIG.ballRadius < PHYSICS_CONFIG.bounds.minZ) {
+                ball.position.z = PHYSICS_CONFIG.bounds.minZ + PHYSICS_CONFIG.ballRadius;
+                ball.velocity.z = -ball.velocity.z * PHYSICS_CONFIG.cushionRestitution;
+            } else if (ball.position.z + PHYSICS_CONFIG.ballRadius > PHYSICS_CONFIG.bounds.maxZ) {
+                ball.position.z = PHYSICS_CONFIG.bounds.maxZ - PHYSICS_CONFIG.ballRadius;
+                ball.velocity.z = -ball.velocity.z * PHYSICS_CONFIG.cushionRestitution;
             }
         }
 
-        function startAmbientSequencer() {
-            const chordNotes = [
-                [130.81, 196.00, 246.94, 329.63], 
-                [146.83, 220.00, 293.66, 349.23], 
-                [110.07, 220.00, 277.18, 440.00], 
-                [130.81, 196.00, 261.63, 392.00]
-            ];
-            let chordIndex = 0;
+        function resolveBallCollisions(ballA, ballB) {
+            if (!ballA.isActive || !ballB.isActive) return;
 
-            function playChordSequence() {
-                if (isAudioMuted || !audioCtx) {
-                    ambientSequenceTimer = setTimeout(playChordSequence, 6000);
-                    return;
-                }
-                const currentChord = chordNotes[chordIndex];
-                currentChord.forEach((freq, index) => {
-                    setTimeout(() => {
-                        playChime(freq, 'triangle', 4, 0.03);
-                        if (Math.random() > 0.6) {
-                            setTimeout(() => {
-                                playChime(freq * 2, 'sine', 3, 0.015);
-                            }, 400);
+            let dx = ballB.position.x - ballA.position.x;
+            let dz = ballB.position.z - ballA.position.z;
+            let distance = Math.sqrt(dx * dx + dz * dz);
+            let minDistance = PHYSICS_CONFIG.ballRadius * 2;
+
+            if (distance >= minDistance) return;
+
+            // Step 1: Position correction to resolve overlap binding
+            let overlap = minDistance - distance;
+            let offsetX = (dx / distance) * (overlap / 2);
+            let offsetZ = (dz / distance) * (overlap / 2);
+
+            ballA.position.x -= offsetX;
+            ballA.position.z -= offsetZ;
+            ballB.position.x += offsetX;
+            ballB.position.z += offsetZ;
+
+            // Step 2: Elastic momentum matrix transformation
+            let nx = dx / distance;
+            let nz = dz / distance;
+
+            let kx = ballA.velocity.x - ballB.velocity.x;
+            let kz = ballA.velocity.z - ballB.velocity.z;
+            let relativeVelocityNormal = kx * nx + kz * nz;
+
+            if (relativeVelocityNormal > 0) {
+                let impulseMagnitude = (1 + PHYSICS_CONFIG.ballRestitution) * relativeVelocityNormal / 2;
+                ballA.velocity.x -= impulseMagnitude * nx;
+                ballA.velocity.z -= impulseMagnitude * nz;
+                ballB.velocity.x += impulseMagnitude * nx;
+                ballB.velocity.z += impulseMagnitude * nz;
+            }
+        }
+
+        function checkPocketDropDynamics() {
+            const pocketTray = document.getElementById('pocketed-tray');
+
+            GameState.balls.forEach(ball => {
+                if (!ball.isActive) return;
+
+                POCKET_LAYOUT.forEach(pocket => {
+                    let dx = ball.position.x - pocket.x;
+                    let dz = ball.position.z - pocket.z;
+                    let distance = Math.sqrt(dx * dx + dz * dz);
+
+                    if (distance < POCKET_CAPTURE_RADIUS) {
+                        ball.isActive = false;
+                        ball.velocity.set(0, 0, 0);
+                        scene.remove(ball.mesh);
+
+                        if (ball.isCueBall) {
+                            triggerFoulNotification("SCRATCH FOUL", "Cue ball run into pocket. Penalty applied.");
+                            setTimeout(respawnCueBall, 1500);
+                        } else {
+                            const indicatorNode = document.createElement('div');
+                            indicatorNode.className = `w-4 h-4 rounded-full border border-white/20 shadow-inner`;
+                            indicatorNode.style.backgroundColor = ball.colorHEX;
+                            pocketTray.appendChild(indicatorNode);
+                            triggerFoulNotification("OBJECT POTTED", `Object ball #${ball.id} secured smoothly.`);
                         }
-                    }, index * 350);
+                    }
                 });
-                chordIndex = (chordIndex + 1) % chordNotes.length;
-                ambientSequenceTimer = setTimeout(playChordSequence, 8000);
-            }
-            playChordSequence();
+            });
         }
 
-        function toggleAudio() {
-            isAudioMuted = !isAudioMuted;
-            document.getElementById('mute-icon-on').classList.toggle('hidden', isAudioMuted);
-            document.getElementById('mute-icon-off').classList.toggle('hidden', !isAudioMuted);
-            if (!isAudioMuted && audioCtx && audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-            showNotification(isAudioMuted ? "Acoustic streams muted" : "Atmospheric space sounds online");
-        }
+        function checkTableRestingState() {
+            if (!GameState.isTableRolling) return;
 
-        // 3. CANVAS GRAPHICS MATHEMATICS (Dynamic Render Environment)
-        const canvas = document.getElementById('ambientCanvas');
-        const ctx = canvas.getContext('2d');
-        let stars = [], lanterns = [], shootingStars = [];
+            let componentsAreMoving = GameState.balls.some(ball => 
+                ball.isActive && (ball.velocity.x !== 0 || ball.velocity.z !== 0)
+            );
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            initStars();
-        }
-
-        class Star {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 1.2;
-                this.alpha = Math.random();
-                this.speed = 0.008 + Math.random() * 0.015;
-            }
-            update() {
-                this.alpha += this.speed;
-                if (this.alpha > 1 || this.alpha < 0) this.speed = -this.speed;
-            }
-            draw() {
-                ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        class Lantern {
-            constructor(text = "") {
-                this.text = text;
-                this.x = Math.random() * (canvas.width - 120) + 60;
-                this.y = canvas.height + 60;
-                this.size = Math.random() * 5 + 8;
-                this.speed = 0.35 + Math.random() * 0.45;
-                this.alpha = 1;
-                this.angle = Math.random() * Math.PI * 2;
-                this.swaySpeed = 0.008 + Math.random() * 0.012;
-                this.pulse = 0;
-            }
-            update() {
-                this.y -= this.speed;
-                this.angle += this.swaySpeed;
-                this.x += Math.sin(this.angle) * 0.2;
-                this.pulse += 0.025;
-                if (this.y < canvas.height * 0.35) {
-                    this.alpha -= 0.002;
-                }
-            }
-            draw() {
-                ctx.save();
-                ctx.globalAlpha = this.alpha;
-                const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 2.2);
-                const pulseIntensity = 0.12 * Math.sin(this.pulse);
+            if (!componentsAreMoving) {
+                GameState.isTableRolling = false;
                 
-                grad.addColorStop(0, `rgba(254, 240, 138, ${0.85 + pulseIntensity})`);
-                grad.addColorStop(0.3, `rgba(249, 115, 22, ${0.65 + pulseIntensity})`);
-                grad.addColorStop(0.7, 'rgba(234, 88, 12, 0.2)');
-                grad.addColorStop(1, 'rgba(234, 88, 12, 0)');
+                const strikeBtn = document.getElementById('btn-strike');
+                strikeBtn.disabled = false;
+                strikeBtn.style.opacity = '1';
 
-                ctx.fillStyle = grad;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size * 3, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.fillStyle = 'rgba(251, 146, 60, 0.85)';
-                ctx.beginPath();
-                ctx.ellipse(this.x, this.y, this.size * 0.55, this.size * 0.75, 0, 0, Math.PI * 2);
-                ctx.fill();
-
-                if (this.text && this.alpha > 0.25) {
-                    ctx.font = '10px Montserrat';
-                    ctx.fillStyle = `rgba(254, 240, 138, ${this.alpha * 0.8})`;
-                    ctx.fillText(this.text, this.x + this.size + 6, this.y + 3);
+                if (GameState.isHost) {
+                    switchTurns();
+                    broadcastPhysicsSnapshot();
                 }
-                ctx.restore();
             }
         }
 
-        class ShootingStar {
-            constructor(x, y) {
-                this.x = x || Math.random() * canvas.width * 0.6;
-                this.y = y || Math.random() * canvas.height * 0.3;
-                this.length = Math.random() * 70 + 40;
-                this.speed = Math.random() * 3 + 6;
-                this.alpha = 1;
-                this.angle = Math.PI / 6 + Math.random() * (Math.PI / 12);
-            }
-            update() {
-                this.x += Math.cos(this.angle) * this.speed;
-                this.y += Math.sin(this.angle) * this.speed;
-                this.alpha -= 0.025;
-            }
-            draw() {
-                ctx.save();
-                ctx.globalAlpha = this.alpha;
-                const grad = ctx.createLinearGradient(
-                    this.x, this.y, 
-                    this.x - Math.cos(this.angle) * this.length, 
-                    this.y - Math.sin(this.angle) * this.length
-                );
-                grad.addColorStop(0, 'rgba(254, 243, 199, 0.9)');
-                grad.addColorStop(0.2, 'rgba(245, 158, 11, 0.35)');
-                grad.addColorStop(1, 'rgba(147, 51, 234, 0)');
-
-                ctx.strokeStyle = grad;
-                ctx.lineWidth = 1.2;
-                ctx.beginPath();
-                ctx.moveTo(this.x, this.y);
-                ctx.lineTo(this.x - Math.cos(this.angle) * this.length, this.y - Math.sin(this.angle) * this.length);
-                ctx.stroke();
-                ctx.restore();
-            }
+        function respawnCueBall() {
+            GameState.cueBall.position.set(0, 0, 2.35);
+            GameState.cueBall.velocity.set(0, 0, 0);
+            GameState.cueBall.isActive = true;
+            scene.add(GameState.cueBall.mesh);
+            updateHUDStatus("Cue ball returned to table.");
+            if (GameState.isHost) broadcastPhysicsSnapshot();
         }
 
-        function initStars() {
-            stars = [];
-            const count = Math.floor((canvas.width * canvas.height) / 9500);
-            for (let i = 0; i < count; i++) stars.push(new Star());
-        }
+        function switchTurns() {
+            GameState.p1.isTurn = !GameState.p1.isTurn;
+            GameState.p2.isTurn = !GameState.p2.isTurn;
 
-        window.addEventListener('mousedown', (e) => {
-            if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.closest('section')) return;
-            handleVectorSpawn(e.clientX, e.clientY);
-        });
+            const p1Card = document.getElementById('p1-card');
+            const p2Card = document.getElementById('p2-card');
+            const p1Ind = document.getElementById('p1-indicator');
+            const p2Ind = document.getElementById('p2-indicator');
 
-        window.addEventListener('touchstart', (e) => {
-            if (e.touches.length > 0) {
-                const t = e.touches[0];
-                if (t.target.tagName === 'BUTTON' || t.target.tagName === 'INPUT' || t.target.closest('section')) return;
-                handleVectorSpawn(t.clientX, t.clientY);
-            }
-        });
-
-        function handleVectorSpawn(clientX, clientY) {
-            shootingStars.push(new ShootingStar(clientX, clientY));
-            const noteFreq = 380 + (1 - (clientY / window.innerHeight)) * 550;
-            playChime(noteFreq, 'sine', 1.8, 0.06);
-
-            if (lanterns.length < 14) {
-                const signs = ["👑", "✨", "💫", "🤍", "🌸"];
-                const sym = signs[Math.floor(Math.random() * signs.length)];
-                const interactiveLantern = new Lantern(sym);
-                interactiveLantern.x = clientX;
-                interactiveLantern.y = clientY + 30;
-                lanterns.push(interactiveLantern);
-            }
-        }
-
-        function animate() {
-            ctx.fillStyle = 'rgba(3, 0, 8, 0.25)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            stars.forEach(s => { s.update(); s.draw(); });
-            lanterns = lanterns.filter(l => l.alpha > 0);
-            lanterns.forEach(l => { l.update(); l.draw(); });
-            shootingStars = shootingStars.filter(s => s.alpha > 0);
-            shootingStars.forEach(s => { s.update(); s.draw(); });
-
-            if (Math.random() < 0.0025) shootingStars.push(new ShootingStar());
-            if (Math.random() < 0.005 && lanterns.length < 16) lanterns.push(new Lantern(""));
-
-            requestAnimationFrame(animate);
-        }
-
-        // 4. SEQUENCER CONTROLLERS (Dynamic Transition Engineering)
-        function beginJourney() {
-            initAudio();
-            playChime(261.63, 'triangle', 3.5, 0.12);
-
-            const landingSection = document.getElementById('act-landing');
-            const storySection = document.getElementById('act-story');
-
-            landingSection.classList.add('hidden-cinematic');
-            setTimeout(() => {
-                landingSection.style.display = 'none';
-                storySection.style.display = 'flex';
-                setTimeout(() => {
-                    storySection.classList.remove('hidden', 'opacity-0', 'translate-y-6');
-                    renderStorySegment();
-                }, 80);
-            }, 1000);
-        }
-
-        function renderStorySegment() {
-            const displayDiv = document.getElementById('story-display');
-            const subtitleDiv = document.getElementById('story-subtitle');
-            const nextBtn = document.getElementById('story-next-btn');
-
-            displayDiv.style.opacity = '0';
-            subtitleDiv.style.opacity = '0';
-            nextBtn.style.opacity = '0';
-
-            setTimeout(() => {
-                const data = storySegments[currentStoryIndex];
-                displayDiv.innerText = data.text;
-                subtitleDiv.innerText = data.subtitle;
-
-                const frequencies = [261.63, 329.63, 392.00, 523.25];
-                playChime(frequencies[currentStoryIndex], 'sine', 3.5, 0.1);
-
-                displayDiv.style.opacity = '1';
-                setTimeout(() => {
-                    subtitleDiv.style.opacity = '1';
-                    setTimeout(() => { nextBtn.style.opacity = '1'; }, 1200);
-                }, 1000);
-            }, 1000);
-        }
-
-        function nextStorySegment() {
-            currentStoryIndex++;
-            if (currentStoryIndex < storySegments.length) {
-                renderStorySegment();
+            if (GameState.p1.isTurn) {
+                p1Card.className = "flex items-center gap-3 px-4 py-1.5 rounded-full transition-all duration-500 active-turn-p1 opacity-100";
+                p2Card.className = "flex items-center gap-3 px-4 py-1.5 rounded-full transition-all duration-500 opacity-40";
+                p1Ind.className = "w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping";
+                p2Ind.className = "w-2.5 h-2.5 rounded-full bg-slate-500";
+                updateHUDStatus("Player 1's turn.");
             } else {
-                buildInteractiveDashboard();
+                p2Card.className = "flex items-center gap-3 px-4 py-1.5 rounded-full transition-all duration-500 active-turn-p2 opacity-100";
+                p1Card.className = "flex items-center gap-3 px-4 py-1.5 rounded-full transition-all duration-500 opacity-40";
+                p2Ind.className = "w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping";
+                p1Ind.className = "w-2.5 h-2.5 rounded-full bg-slate-500";
+                updateHUDStatus("Player 2's turn.");
             }
         }
 
-        function buildInteractiveDashboard() {
-            const storySection = document.getElementById('act-story');
-            const interactiveSection = document.getElementById('act-interactive');
+        // --- THREE.JS GRAPHICS ENVIRONMENT CONSTRUCTION ---
+        function initSceneEngine() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color('#03050a');
 
-            storySection.classList.add('hidden-cinematic');
-            setTimeout(() => {
-                storySection.style.display = 'none';
-                interactiveSection.style.display = 'grid';
-                setTimeout(() => {
-                    interactiveSection.classList.remove('hidden', 'opacity-0', 'translate-y-6');
-                    
-                    setTimeout(() => {
-                        const card = document.getElementById('portrait-card');
-                        card.classList.remove('opacity-0', 'translate-y-4');
-                        
-                        playChime(392.00, 'sine', 2.5, 0.08);
-                        setTimeout(() => playChime(523.25, 'sine', 3, 0.06), 150);
-                        setTimeout(() => playChime(659.25, 'sine', 3.5, 0.04), 300);
-                        
-                        // FIXED: Adjusted to customized notification string
-                        showNotification("");
-                    }, 600);
-                }, 80);
-            }, 1000);
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+            camera.position.set(0, 6, 8);
 
-            for (let i = 0; i < 4; i++) {
-                setTimeout(() => { shootingStars.push(new ShootingStar()); }, i * 250);
-            }
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            document.body.appendChild(renderer.domElement);
+
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.maxPolarAngle = Math.PI / 2 - 0.05; // Prevent camera under-table clipping
+
+            // Lighting Setup
+            const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambient);
+
+            const tableLight = new THREE.DirectionalLight(0xffffff, 0.85);
+            tableLight.position.set(0, 8, 0);
+            tableLight.castShadow = true;
+            scene.add(tableLight);
+
+            buildTableGeometry();
+            generateMatchBalls();
+            createAimVectorGraphic();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
         }
 
-        // 5. INTERACTIVE FUNCTION MATRIX
-        function setPresetWish(text) {
-            document.getElementById('wish-input').value = text;
-            playChime(440.00, 'sine', 1.2, 0.08);
-        }
+        function buildTableGeometry() {
+            // Felt Bed Layer
+            const bedGeom = new THREE.BoxGeometry(4.7, 0.1, 9.4);
+            const bedMat = new THREE.MeshStandardMaterial({ color: '#0f172a', roughness: 0.72 });
+            const bed = new THREE.Mesh(bedGeom, bedMat);
+            bed.position.y = -0.05;
+            bed.receiveShadow = true;
+            scene.add(bed);
 
-        function releaseLanternFromInput() {
-            const input = document.getElementById('wish-input');
-            const val = input.value.trim();
+            // Rails
+            const railMat = new THREE.MeshStandardMaterial({ color: '#1e293b', roughness: 0.2 });
             
-            if (!val) {
-                showNotification("Please write something to release a wishing lantern.");
+            const longRailGeom = new THREE.BoxGeometry(0.2, 0.3, 9.4);
+            const leftRail = new THREE.Mesh(longRailGeom, railMat);
+            leftRail.position.set(-2.45, 0.1, 0);
+            scene.add(leftRail);
+
+            const rightRail = leftRail.clone();
+            rightRail.position.x = 2.45;
+            scene.add(rightRail);
+
+            const shortRailGeom = new THREE.BoxGeometry(5.1, 0.3, 0.2);
+            const topRail = new THREE.Mesh(shortRailGeom, railMat);
+            topRail.position.set(0, 0.1, -4.8);
+            scene.add(topRail);
+
+            const bottomRail = topRail.clone();
+            bottomRail.position.z = 4.8;
+            scene.add(bottomRail);
+
+            // Visual Hole Indicators
+            POCKET_LAYOUT.forEach(p => {
+                const holeGeom = new THREE.CylinderGeometry(POCKET_CAPTURE_RADIUS, POCKET_CAPTURE_RADIUS, 0.02, 24);
+                const holeMat = new THREE.MeshBasicMaterial({ color: '#020408' });
+                const hole = new THREE.Mesh(holeGeom, holeMat);
+                hole.position.set(p.x, 0.002, p.z);
+                scene.add(hole);
+            });
+        }
+
+        function generateMatchBalls() {
+            const ballGeom = new THREE.SphereGeometry(PHYSICS_CONFIG.ballRadius, 32, 32);
+
+            // Cue Ball Setup
+            const cueMat = new THREE.MeshStandardMaterial({ color: '#f8fafc', roughness: 0.12, metalness: 0.05 });
+            const cueMesh = new THREE.Mesh(ballGeom, cueMat);
+            cueMesh.castShadow = true;
+
+            GameState.cueBall = {
+                id: 0,
+                isCueBall: true,
+                isActive: true,
+                mesh: cueMesh,
+                position: new THREE.Vector3(0, PHYSICS_CONFIG.ballRadius, 2.35),
+                velocity: new THREE.Vector3(0, 0, 0),
+                colorHEX: '#f8fafc'
+            };
+            scene.add(cueMesh);
+            GameState.balls.push(GameState.cueBall);
+
+            // Object Rack Placement Matrix
+            const hexColors = ['#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6', '#f97316', '#10b981', '#b91c1c', '#111827', '#eab308'];
+            let idx = 0;
+
+            const rackCenterZ = -2.35;
+            const rowCount = 4;
+
+            for (let r = 0; r < rowCount; r++) {
+                for (let c = 0; c <= r; c++) {
+                    idx++;
+                    const objMat = new THREE.MeshStandardMaterial({ color: hexColors[idx % hexColors.length], roughness: 0.12 });
+                    const objMesh = new THREE.Mesh(ballGeom, objMat);
+                    objMesh.castShadow = true;
+
+                    // Triangular offsets
+                    const xOffset = (c - r * 0.5) * (PHYSICS_CONFIG.ballRadius * 2.1);
+                    const zOffset = rackCenterZ - r * (PHYSICS_CONFIG.ballRadius * 1.8);
+
+                    const targetBall = {
+                        id: idx,
+                        isCueBall: false,
+                        isActive: true,
+                        mesh: objMesh,
+                        position: new THREE.Vector3(xOffset, PHYSICS_CONFIG.ballRadius, zOffset),
+                        velocity: new THREE.Vector3(0, 0, 0),
+                        colorHEX: hexColors[idx % hexColors.length]
+                    };
+                    scene.add(objMesh);
+                    GameState.balls.push(targetBall);
+                }
+            }
+        }
+
+        function createAimVectorGraphic() {
+            const points = [new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -2)];
+            const aimGeom = new THREE.BufferGeometry().setFromPoints(points);
+            const aimMat = new THREE.LineDashedMaterial({ color: '#22d3ee', dashSize: 0.15, gapSize: 0.1 });
+            
+            aimLine = new THREE.Line(aimGeom, aimMat);
+            aimLine.computeLineDistances();
+            scene.add(aimLine);
+        }
+
+        function updateAimIndicatorLine() {
+            if (!GameState.cueBall || !GameState.cueBall.isActive || GameState.isTableRolling) {
+                aimLine.visible = false;
                 return;
             }
 
-            const lantern = new Lantern(val);
-            lantern.x = canvas.width / 2 + (Math.random() * 160 - 80);
-            lantern.y = canvas.height + 40;
-            lanterns.push(lantern);
+            const checkMyTurn = (GameState.p1.isTurn && GameState.playerSlot === 'p1') || 
+                               (GameState.p2.isTurn && GameState.playerSlot === 'p2');
+            
+            aimLine.visible = checkMyTurn;
 
-            playChime(329.63, 'triangle', 2, 0.08);
-            setTimeout(() => playChime(440.00, 'sine', 2.5, 0.06), 150);
-
-            input.value = '';
-            showNotification("Your wish rises into Princess's sky!");
+            aimLine.position.copy(GameState.cueBall.position);
+            aimLine.position.y = 0.02; // Float slightly above felt floor
+            aimLine.rotation.y = -GameState.aimAngle;
         }
 
-        function showNotification(text) {
-            const banner = document.getElementById('notification-banner');
-            document.getElementById('notification-text').innerText = text;
-            banner.style.opacity = '1';
-            banner.style.transform = 'translate(-50%, 0) scale(1)';
+        // --- INTERACTION HOOK HANDLERS ---
+        function initControlSystems() {
+            const aimSlider = document.getElementById('aim-slider');
+            const angleDisplay = document.getElementById('angle-display');
+            const powerSlider = document.getElementById('power-slider');
+            const powerPercentage = document.getElementById('power-percentage');
+            const btnStrike = document.getElementById('btn-strike');
 
+            aimSlider.addEventListener('input', (e) => {
+                const checkMyTurn = (GameState.p1.isTurn && GameState.playerSlot === 'p1') || 
+                                   (GameState.p2.isTurn && GameState.playerSlot === 'p2');
+                if (!checkMyTurn || GameState.isTableRolling) {
+                    aimSlider.value = Math.round(GameState.aimAngle * (180 / Math.PI));
+                    return;
+                }
+
+                GameState.aimAngle = parseFloat(e.target.value) * (Math.PI / 180);
+                angleDisplay.textContent = `${e.target.value}°`;
+                updateAimIndicatorLine();
+
+                GameState.supabaseChannel.send({
+                    type: 'broadcast',
+                    event: 'aim-sync',
+                    payload: { angle: e.target.value }
+                });
+            });
+
+            document.getElementById('aim-left-fine').addEventListener('click', () => {
+                let currentDeg = Math.round(GameState.aimAngle * (180 / Math.PI));
+                currentDeg = (currentDeg - 1 + 360) % 360;
+                aimSlider.value = currentDeg;
+                aimSlider.dispatchEvent(new Event('input'));
+            });
+
+            document.getElementById('aim-right-fine').addEventListener('click', () => {
+                let currentDeg = Math.round(GameState.aimAngle * (180 / Math.PI));
+                currentDeg = (currentDeg + 1) % 360;
+                aimSlider.value = currentDeg;
+                aimSlider.dispatchEvent(new Event('input'));
+            });
+
+            powerSlider.addEventListener('input', (e) => {
+                GameState.strikePower = parseFloat(e.target.value);
+                powerPercentage.textContent = `${e.target.value}%`;
+            });
+
+            btnStrike.addEventListener('click', () => {
+                const checkMyTurn = (GameState.p1.isTurn && GameState.playerSlot === 'p1') || 
+                                   (GameState.p2.isTurn && GameState.playerSlot === 'p2');
+
+                if (!checkMyTurn || GameState.isTableRolling || !GameState.cueBall.isActive) return;
+
+                executeCueStrike();
+
+                GameState.supabaseChannel.send({
+                    type: 'broadcast',
+                    event: 'strike-ignite',
+                    payload: { power: GameState.strikePower, angle: GameState.aimAngle }
+                });
+            });
+
+            // Camera Presets Buttons
+            document.getElementById('btn-camera-top').addEventListener('click', () => {
+                camera.position.set(0, 9, 0.01);
+                controls.target.set(0, 0, 0);
+            });
+
+            document.getElementById('btn-camera-reset').addEventListener('click', () => {
+                camera.position.set(0, 6, 8);
+                controls.target.set(0, 0, 0);
+            });
+
+            document.getElementById('btn-share').addEventListener('click', () => {
+                navigator.clipboard.writeText(window.location.href);
+                triggerFoulNotification("LINK COPIED", "Invite URL pinned to your clipboard buffer.");
+            });
+        }
+
+        function executeCueStrike() {
+            GameState.isTableRolling = true;
+            
+            const strikeBtn = document.getElementById('btn-strike');
+            strikeBtn.disabled = true;
+            strikeBtn.style.opacity = '0.3';
+
+            const forceVectorX = Math.sin(GameState.aimAngle);
+            const forceVectorZ = Math.cos(GameState.aimAngle);
+
+            const scaleFactor = 0.18;
+            const velocityMagnitude = GameState.strikePower * scaleFactor;
+
+            GameState.cueBall.velocity.x = forceVectorX * velocityMagnitude;
+            GameState.cueBall.velocity.z = forceVectorZ * velocityMagnitude;
+
+            updateAimIndicatorLine();
+            updateHUDStatus("Balls scattered across table...");
+        }
+
+        // --- MULTIPLAYER SUPABASE REALTIME ROUTER ---
+        function runMultiplayerSessionRouter() {
+            const urlParams = new URLSearchParams(window.location.search);
+            let activeRoomCode = urlParams.get('room');
+
+            if (!activeRoomCode) {
+                activeRoomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+                urlParams.set('room', activeRoomCode);
+                window.history.pushState(null, '', window.location.pathname + '?' + urlParams.toString());
+                
+                GameState.isHost = true;
+                GameState.playerSlot = 'p1';
+            } else {
+                GameState.isHost = false;
+                GameState.playerSlot = 'p2';
+            }
+
+            GameState.roomId = activeRoomCode;
+            GameState.localPlayerId = crypto.randomUUID();
+
+            updateHUDStatus(`Connecting socket server [Room: ${activeRoomCode}]...`);
+
+            GameState.supabaseChannel = supabaseClient.channel(`pool_match:${activeRoomCode}`, {
+                config: { broadcast: { self: false, ack: true } }
+            });
+
+            GameState.supabaseChannel
+                .on('broadcast', { event: 'player-joined' }, (payload) => handleRemotePlayerConnect(payload))
+                .on('broadcast', { event: 'aim-sync' }, (payload) => handleRemoteAimSync(payload))
+                .on('broadcast', { event: 'strike-ignite' }, (payload) => handleRemoteStrike(payload))
+                .on('broadcast', { event: 'physics-state' }, (payload) => handleRemotePhysicsSync(payload))
+                .subscribe(async (status) => {
+                    if (status === 'SUBSCRIBED') {
+                        await GameState.supabaseChannel.send({
+                            type: 'broadcast',
+                            event: 'player-joined',
+                            payload: { id: GameState.localPlayerId, assignedSlot: GameState.playerSlot }
+                        });
+                        refreshInterfacePanels(activeRoomCode);
+                    }
+                });
+        }
+
+        function handleRemotePlayerConnect(payload) {
+            if (GameState.isHost && GameState.playerSlot === 'p1') {
+                document.getElementById('p2-name').textContent = "OPPONENT (P2)";
+                broadcastPhysicsSnapshot();
+            } else if (!GameState.isHost && GameState.playerSlot === 'p2') {
+                document.getElementById('p1-name').textContent = "OPPONENT (P1)";
+            }
+            triggerFoulNotification("PLAYER CONNECTED", "Network lobby pairing complete.");
+        }
+
+        function handleRemoteAimSync(payload) {
+            if (GameState.isTableRolling) return;
+            const incomingAngle = payload.payload.angle;
+            
+            GameState.aimAngle = parseFloat(incomingAngle) * (Math.PI / 180);
+            document.getElementById('aim-slider').value = incomingAngle;
+            document.getElementById('angle-display').textContent = `${incomingAngle}°`;
+            updateAimIndicatorLine();
+        }
+
+        function handleRemoteStrike(payload) {
+            GameState.strikePower = payload.payload.power;
+            GameState.aimAngle = payload.payload.angle;
+            executeCueStrike();
+        }
+
+        let upstreamTickCounter = 0;
+
+        function broadcastPhysicsSnapshot() {
+            if (!GameState.supabaseChannel) return;
+
+            const packet = GameState.balls.map(b => ({
+                id: b.id,
+                x: b.position.x,
+                z: b.position.z,
+                vx: b.velocity.x,
+                vz: b.velocity.z,
+                active: b.isActive
+            }));
+
+            GameState.supabaseChannel.send({
+                type: 'broadcast',
+                event: 'physics-state',
+                payload: { balls: packet, p1Turn: GameState.p1.isTurn }
+            });
+        }
+
+        function handleRemotePhysicsSync(payload) {
+            const cloudStates = payload.payload.balls;
+            
+            // Sync active Turn definitions to match Host status matrix
+            if (GameState.p1.isTurn !== payload.payload.p1Turn) {
+                GameState.p1.isTurn = payload.payload.p1Turn;
+                GameState.p2.isTurn = !payload.payload.p1Turn;
+                syncVisualTurnCardDisplays();
+            }
+
+            cloudStates.forEach(remoteState => {
+                const localBall = GameState.balls.find(b => b.id === remoteState.id);
+                if (!localBall) return;
+
+                localBall.position.x = remoteState.x;
+                localBall.position.z = remoteState.z;
+                localBall.velocity.x = remoteState.vx;
+                localBall.velocity.z = remoteState.vz;
+
+                if (localBall.isActive !== remoteState.active) {
+                    localBall.isActive = remoteState.active;
+                    if (!remoteState.active) scene.remove(localBall.mesh);
+                }
+            });
+        }
+
+        function syncVisualTurnCardDisplays() {
+            const p1Card = document.getElementById('p1-card');
+            const p2Card = document.getElementById('p2-card');
+            const p1Ind = document.getElementById('p1-indicator');
+            const p2Ind = document.getElementById('p2-indicator');
+
+            if (GameState.p1.isTurn) {
+                p1Card.className = "flex items-center gap-3 px-4 py-1.5 rounded-full transition-all duration-500 active-turn-p1 opacity-100";
+                p2Card.className = "flex items-center gap-3 px-4 py-1.5 rounded-full transition-all duration-500 opacity-40";
+                p1Ind.className = "w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping";
+                p2Ind.className = "w-2.5 h-2.5 rounded-full bg-slate-500";
+                updateHUDStatus(GameState.playerSlot === 'p1' ? "Your turn." : "Opponent thinking...");
+            } else {
+                p2Card.className = "flex items-center gap-3 px-4 py-1.5 rounded-full transition-all duration-500 active-turn-p2 opacity-100";
+                p1Card.className = "flex items-center gap-3 px-4 py-1.5 rounded-full transition-all duration-500 opacity-40";
+                p2Ind.className = "w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping";
+                p1Ind.className = "w-2.5 h-2.5 rounded-full bg-slate-500";
+                updateHUDStatus(GameState.playerSlot === 'p2' ? "Your turn." : "Opponent thinking...");
+            }
+        }
+
+        // --- TICK ITERATOR ENGINE LOOPS ---
+        const physicsDeltaTime = 0.016; // Stable 60Hz physics clock segment
+
+        function masterAnimationLoop() {
+            requestAnimationFrame(masterAnimationLoop);
+
+            if (GameState.isHost) {
+                // Host machine performs mathematical evaluations
+                GameState.balls.forEach(ball => {
+                    if (!ball.isActive) return;
+
+                    ball.position.x += ball.velocity.x * physicsDeltaTime;
+                    ball.position.z += ball.velocity.z * physicsDeltaTime;
+
+                    ball.velocity.x *= PHYSICS_CONFIG.tableFriction;
+                    ball.velocity.z *= PHYSICS_CONFIG.tableFriction;
+
+                    if (Math.abs(ball.velocity.x) < PHYSICS_CONFIG.minimumVelocity) ball.velocity.x = 0;
+                    if (Math.abs(ball.velocity.z) < PHYSICS_CONFIG.minimumVelocity) ball.velocity.z = 0;
+
+                    resolveCushionCollisions(ball);
+                });
+
+                for (let i = 0; i < GameState.balls.length; i++) {
+                    for (let j = i + 1; j < GameState.balls.length; j++) {
+                        resolveBallCollisions(GameState.balls[i], GameState.balls[j]);
+                    }
+                }
+
+                checkPocketDropDynamics();
+                checkTableRestingState();
+
+                if (GameState.isTableRolling) {
+                    upstreamTickCounter++;
+                    if (upstreamTickCounter % 2 === 0) broadcastPhysicsSnapshot(); // Throttle pipeline to 30Hz
+                }
+            } else {
+                // Secondary Guest interpolates positions directly from stream values
+                GameState.balls.forEach(ball => {
+                    if (!ball.isActive) return;
+                    ball.position.x += ball.velocity.x * physicsDeltaTime;
+                    ball.position.z += ball.velocity.z * physicsDeltaTime;
+                });
+                checkTableRestingState();
+            }
+
+            // Sync visual meshes to calculated positions
+            GameState.balls.forEach(b => {
+                if (b.isActive) b.mesh.position.copy(b.position);
+            });
+
+            updateAimIndicatorLine();
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // --- HELPER LAYOUT OPERATORS ---
+        function refreshInterfacePanels(roomCode) {
+            const p1Name = document.getElementById('p1-name');
+            const p2Name = document.getElementById('p2-name');
+
+            if (GameState.playerSlot === 'p1') {
+                p1Name.textContent = "YOU (P1)";
+                p2Name.textContent = "WAITING...";
+                updateHUDStatus(`Room ${roomCode} active. Share link to begin.`);
+            } else {
+                p2Name.textContent = "YOU (P2)";
+                p1Name.textContent = "OPPONENT (P1)";
+                updateHUDStatus(`Connected to Room ${roomCode}. Match live.`);
+            }
+            syncVisualTurnCardDisplays();
+        }
+
+        function updateHUDStatus(text) {
+            document.getElementById('game-status-text').textContent = text;
+        }
+
+        function triggerFoulNotification(title, description) {
+            const banner = document.getElementById('notification-banner');
+            document.getElementById('notif-title').textContent = title;
+            document.getElementById('notif-desc').textContent = description;
+
+            banner.className = "w-full glassmorphic px-6 py-4 rounded-2xl shadow-3xl border-yellow-500/20 scale-100 opacity-100 transition-all duration-500 flex items-center gap-4 text-left";
             setTimeout(() => {
-                banner.style.opacity = '0';
-                banner.style.transform = 'translate(-50%, 10px) scale(0.95)';
+                banner.className = "w-full glassmorphic px-6 py-4 rounded-2xl shadow-3xl border-yellow-500/10 scale-90 opacity-0 transition-all duration-500 flex items-center gap-4 text-left";
             }, 3000);
         }
 
-        function handleImageError() {
-            const img = document.getElementById('princess-image');
-            img.style.display = 'none';
-            const frame = img.parentElement;
-            const container = document.createElement('div');
-            container.className = "w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-purple-950/40 to-[#030008] p-6 text-center space-y-3";
-            container.innerHTML = `
-                <div class="w-14 h-14 rounded-full bg-yellow-500/10 border border-yellow-500/30 flex items-center justify-center animate-pulse">
-                    <span class="text-2xl text-yellow-300">👑</span>
-                </div>
-                <p class="font-cinzel text-yellow-100/90 text-xs tracking-widest font-semibold">Princess</p>
-                <p class="text-[10px] text-slate-500 font-light leading-relaxed">Celestial Birthday Portrait Frame</p>
-            `;
-            frame.appendChild(container);
-        }
-
-        // 7. INITIALIZATION HANDLERS
-        window.onload = function() {
-            resizeCanvas();
-            animate();
-        };
-        window.addEventListener('resize', resizeCanvas);
+        // BOOTSTRAP INITIALIZATION ON LOAD
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            initSceneEngine();
+            initControlSystems();
+            runMultiplayerSessionRouter();
+            masterAnimationLoop();
+        });
     </script>
 </body>
 </html>
