@@ -19,18 +19,31 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-        body {
+        /* CRITICAL VIEWPORT LOCKDOWN: Prevents scrolling up, down, or sideways entirely */
+        html, body {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
             user-select: none;
             -webkit-user-select: none;
             touch-action: none;
             background-color: #05070f;
-            overflow: hidden;
             font-family: system-ui, -apple-system, sans-serif;
         }
+        
         canvas {
             display: block;
-            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%2;
             height: 100%;
+            z-index: 1;
         }
         
         /* Premium Antigravity Glassmorphism UI Panels */
@@ -74,6 +87,7 @@
             appearance: none;
             background: rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.05);
+            touch-action: none; /* Isolates layout scrolling bindings */
         }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
@@ -91,10 +105,10 @@
         }
     </style>
 </head>
-<body class="relative w-screen h-screen">
+<body>
 
     <!-- HUD Realtime Overlay Canvas Layer -->
-    <div id="hud" class="absolute inset-0 pointer-events-none z-10 flex flex-col justify-between p-4 md:p-6 select-none">
+    <div id="hud" class="absolute inset-0 pointer-events-none z-10 flex flex-col justify-between p-4 md:p-6 select-none w-full h-full">
         
         <!-- TOP VIEWPORT: Scoreboards & Active Match State -->
         <div class="w-full flex flex-col md:flex-row justify-between items-center gap-4 pointer-events-auto">
@@ -214,16 +228,14 @@
 
         // --- GLOBAL STATE STORAGE OBJECT ---
         const GameState = {
-            // Room Mapping Attributes
             roomId: null,
             localPlayerId: null,
             isHost: false,
             playerSlot: null,
             supabaseChannel: null,
 
-            // Mechanics Configurations
             isTableRolling: false,
-            aimAngle: Math.PI, // 180 degrees initial pointing
+            aimAngle: Math.PI, 
             strikePower: 40,
             cueBall: null,
             balls: [],
@@ -246,7 +258,6 @@
         ];
         const POCKET_CAPTURE_RADIUS = 0.28;
 
-        // Three.js Graphics Context Framework
         let scene, camera, renderer, controls;
         let aimLine, cueStickMesh;
 
@@ -281,7 +292,6 @@
 
             if (distance >= minDistance) return;
 
-            // Step 1: Position correction to resolve overlap binding
             let overlap = minDistance - distance;
             let offsetX = (dx / distance) * (overlap / 2);
             let offsetZ = (dz / distance) * (overlap / 2);
@@ -291,7 +301,6 @@
             ballB.position.x += offsetX;
             ballB.position.z += offsetZ;
 
-            // Step 2: Elastic momentum matrix transformation
             let nx = dx / distance;
             let nz = dz / distance;
 
@@ -372,25 +381,7 @@
         function switchTurns() {
             GameState.p1.isTurn = !GameState.p1.isTurn;
             GameState.p2.isTurn = !GameState.p2.isTurn;
-
-            const p1Card = document.getElementById('p1-card');
-            const p2Card = document.getElementById('p2-card');
-            const p1Ind = document.getElementById('p1-indicator');
-            const p2Ind = document.getElementById('p2-indicator');
-
-            if (GameState.p1.isTurn) {
-                p1Card.className = "flex items-center gap-3 px-4 py-1.5 rounded-full transition-all duration-500 active-turn-p1 opacity-100";
-                p2Card.className = "flex items-center gap-3 px-4 py-1.5 rounded-full transition-all duration-500 opacity-40";
-                p1Ind.className = "w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping";
-                p2Ind.className = "w-2.5 h-2.5 rounded-full bg-slate-500";
-                updateHUDStatus("Player 1's turn.");
-            } else {
-                p2Card.className = "flex items-center gap-3 px-4 py-1.5 rounded-full transition-all duration-500 active-turn-p2 opacity-100";
-                p1Card.className = "flex items-center gap-3 px-4 py-1.5 rounded-full transition-all duration-500 opacity-40";
-                p2Ind.className = "w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping";
-                p1Ind.className = "w-2.5 h-2.5 rounded-full bg-slate-500";
-                updateHUDStatus("Player 2's turn.");
-            }
+            syncVisualTurnCardDisplays();
         }
 
         // --- THREE.JS GRAPHICS ENVIRONMENT CONSTRUCTION ---
@@ -409,9 +400,8 @@
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.05;
-            controls.maxPolarAngle = Math.PI / 2 - 0.05; // Prevent camera under-table clipping
+            controls.maxPolarAngle = Math.PI / 2 - 0.05; 
 
-            // Lighting Setup
             const ambient = new THREE.AmbientLight(0xffffff, 0.4);
             scene.add(ambient);
 
@@ -433,7 +423,6 @@
         }
 
         function buildTableGeometry() {
-            // Felt Bed Layer
             const bedGeom = new THREE.BoxGeometry(4.7, 0.1, 9.4);
             const bedMat = new THREE.MeshStandardMaterial({ color: '#0f172a', roughness: 0.72 });
             const bed = new THREE.Mesh(bedGeom, bedMat);
@@ -441,7 +430,6 @@
             bed.receiveShadow = true;
             scene.add(bed);
 
-            // Rails
             const railMat = new THREE.MeshStandardMaterial({ color: '#1e293b', roughness: 0.2 });
             
             const longRailGeom = new THREE.BoxGeometry(0.2, 0.3, 9.4);
@@ -462,7 +450,6 @@
             bottomRail.position.z = 4.8;
             scene.add(bottomRail);
 
-            // Visual Hole Indicators
             POCKET_LAYOUT.forEach(p => {
                 const holeGeom = new THREE.CylinderGeometry(POCKET_CAPTURE_RADIUS, POCKET_CAPTURE_RADIUS, 0.02, 24);
                 const holeMat = new THREE.MeshBasicMaterial({ color: '#020408' });
@@ -475,7 +462,6 @@
         function generateMatchBalls() {
             const ballGeom = new THREE.SphereGeometry(PHYSICS_CONFIG.ballRadius, 32, 32);
 
-            // Cue Ball Setup
             const cueMat = new THREE.MeshStandardMaterial({ color: '#f8fafc', roughness: 0.12, metalness: 0.05 });
             const cueMesh = new THREE.Mesh(ballGeom, cueMat);
             cueMesh.castShadow = true;
@@ -492,10 +478,8 @@
             scene.add(cueMesh);
             GameState.balls.push(GameState.cueBall);
 
-            // Object Rack Placement Matrix
             const hexColors = ['#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6', '#f97316', '#10b981', '#b91c1c', '#111827', '#eab308'];
             let idx = 0;
-
             const rackCenterZ = -2.35;
             const rowCount = 4;
 
@@ -506,7 +490,6 @@
                     const objMesh = new THREE.Mesh(ballGeom, objMat);
                     objMesh.castShadow = true;
 
-                    // Triangular offsets
                     const xOffset = (c - r * 0.5) * (PHYSICS_CONFIG.ballRadius * 2.1);
                     const zOffset = rackCenterZ - r * (PHYSICS_CONFIG.ballRadius * 1.8);
 
@@ -526,7 +509,7 @@
         }
 
         function createAimVectorGraphic() {
-            const points = [new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -2)];
+            const points = [new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -2.5)];
             const aimGeom = new THREE.BufferGeometry().setFromPoints(points);
             const aimMat = new THREE.LineDashedMaterial({ color: '#22d3ee', dashSize: 0.15, gapSize: 0.1 });
             
@@ -536,18 +519,16 @@
         }
 
         function buildCueStickGeometry() {
-            // Tapered Cylinder representing a high-premium wood pool cue stick
-            const cueLength = 3.5;
-            const cueGeom = new THREE.CylinderGeometry(0.015, 0.03, cueLength, 16);
+            const cueLength = 3.8;
+            const cueGeom = new THREE.CylinderGeometry(0.012, 0.026, cueLength, 16);
             
-            // Shifting structural pivot basis to tip point rather than geometric center
             cueGeom.translate(0, cueLength / 2, 0);
-            cueGeom.rotateX(Math.PI / 2); // Orient horizontal along Z axis
+            cueGeom.rotateX(Math.PI / 2); 
 
             const cueMat = new THREE.MeshStandardMaterial({ 
                 color: '#d97706', 
-                roughness: 0.4, 
-                metalness: 0.1 
+                roughness: 0.35, 
+                metalness: 0.15 
             });
             
             cueStickMesh = new THREE.Mesh(cueGeom, cueMat);
@@ -566,30 +547,27 @@
                                (GameState.p2.isTurn && GameState.playerSlot === 'p2');
             
             aimLine.visible = checkMyTurn;
-            cueStickMesh.visible = true; // Retain global transformation visibility matrix across instances
+            cueStickMesh.visible = true; 
 
-            // 1. Core Alignments for Aim Trace Overlay Line
+            // 1. Aim Vector Line Rotation Alignment
             aimLine.position.copy(GameState.cueBall.position);
             aimLine.position.y = 0.02; 
             aimLine.rotation.y = -GameState.aimAngle;
 
-            // 2. Structural Positioning Logic for the 3D Cue Stick Model
-            // Calculate direction vectors stemming directly from rotational properties
+            // 2. 3D Cue Stick Power Displacement Calculus
             const dirX = Math.sin(GameState.aimAngle);
             const dirZ = Math.cos(GameState.aimAngle);
 
-            // Establish physical setback distance offset proportional to active tension intensity (Shot Power metric)
             const structuralBaseGap = PHYSICS_CONFIG.ballRadius + 0.05;
-            const elasticPullbackOffset = (GameState.strikePower / 100) * 0.8;
+            const elasticPullbackOffset = (GameState.strikePower / 100) * 1.1; // Extends back physically as power grows
             const integratedRangeDistance = structuralBaseGap + elasticPullbackOffset;
 
             cueStickMesh.position.set(
                 GameState.cueBall.position.x - dirX * integratedRangeDistance,
-                GameState.cueBall.position.y + 0.04, // Elevate slightly above plane surface alignment thresholds
+                GameState.cueBall.position.y + 0.05, 
                 GameState.cueBall.position.z - dirZ * integratedRangeDistance
             );
 
-            // Sync heading parameters to align with directional trajectories smoothly
             cueStickMesh.rotation.y = -GameState.aimAngle + Math.PI;
         }
 
@@ -639,7 +617,6 @@
                 powerPercentage.textContent = `${e.target.value}%`;
                 updateAimIndicatorLine();
 
-                // Dispatch active transformation update patterns down web-sockets pipelines instantly
                 const checkMyTurn = (GameState.p1.isTurn && GameState.playerSlot === 'p1') || 
                                    (GameState.p2.isTurn && GameState.playerSlot === 'p2');
                 if (checkMyTurn && !GameState.isTableRolling) {
@@ -666,7 +643,6 @@
                 });
             });
 
-            // Camera Presets Buttons
             document.getElementById('btn-camera-top').addEventListener('click', () => {
                 camera.position.set(0, 9, 0.01);
                 controls.target.set(0, 0, 0);
@@ -681,6 +657,9 @@
                 navigator.clipboard.writeText(window.location.href);
                 triggerFoulNotification("LINK COPIED", "Invite URL pinned to your clipboard buffer.");
             });
+
+            // Prevent scrolling mechanics globally on mobile gesture events
+            document.addEventListener('gesturestart', (e) => e.preventDefault());
         }
 
         function executeCueStrike() {
@@ -723,7 +702,7 @@
             GameState.roomId = activeRoomCode;
             GameState.localPlayerId = crypto.randomUUID();
 
-            updateHUDStatus(`Connecting socket server [Room: ${activeRoomCode}]...`);
+            updateHUDStatus(`Connecting socket server...`);
 
             GameState.supabaseChannel = supabaseClient.channel(`pool_match:${activeRoomCode}`, {
                 config: { broadcast: { self: false, ack: true } }
@@ -764,6 +743,8 @@
             GameState.aimAngle = parseFloat(incomingAngle) * (Math.PI / 180);
             if(incomingPower !== undefined) {
                 GameState.strikePower = incomingPower;
+                document.getElementById('power-slider').value = incomingPower;
+                document.getElementById('power-percentage').textContent = `${incomingPower}%`;
             }
 
             document.getElementById('aim-slider').value = incomingAngle;
@@ -801,7 +782,6 @@
         function handleRemotePhysicsSync(payload) {
             const cloudStates = payload.payload.balls;
             
-            // Sync active Turn definitions to match Host status matrix
             if (GameState.p1.isTurn !== payload.payload.p1Turn) {
                 GameState.p1.isTurn = payload.payload.p1Turn;
                 GameState.p2.isTurn = !payload.payload.p1Turn;
@@ -846,13 +826,12 @@
         }
 
         // --- TICK ITERATOR ENGINE LOOPS ---
-        const physicsDeltaTime = 0.016; // Stable 60Hz physics clock segment
+        const physicsDeltaTime = 0.016; 
 
         function masterAnimationLoop() {
             requestAnimationFrame(masterAnimationLoop);
 
             if (GameState.isHost) {
-                // Host machine performs mathematical evaluations
                 GameState.balls.forEach(ball => {
                     if (!ball.isActive) return;
 
@@ -879,10 +858,9 @@
 
                 if (GameState.isTableRolling) {
                     upstreamTickCounter++;
-                    if (upstreamTickCounter % 2 === 0) broadcastPhysicsSnapshot(); // Throttle pipeline to 30Hz
+                    if (upstreamTickCounter % 2 === 0) broadcastPhysicsSnapshot(); 
                 }
             } else {
-                // Secondary Guest interpolates positions directly from stream values
                 GameState.balls.forEach(ball => {
                     if (!ball.isActive) return;
                     ball.position.x += ball.velocity.x * physicsDeltaTime;
@@ -891,7 +869,6 @@
                 checkTableRestingState();
             }
 
-            // Sync visual meshes to calculated positions
             GameState.balls.forEach(b => {
                 if (b.isActive) b.mesh.position.copy(b.position);
             });
@@ -902,7 +879,6 @@
             renderer.render(scene, camera);
         }
 
-        // --- HELPER LAYOUT OPERATORS ---
         function refreshInterfacePanels(roomCode) {
             const p1Name = document.getElementById('p1-name');
             const p2Name = document.getElementById('p2-name');
@@ -934,7 +910,6 @@
             }, 3000);
         }
 
-        // BOOTSTRAP INITIALIZATION ON LOAD
         window.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             initSceneEngine();
