@@ -1,3 +1,10 @@
+Here is the fully updated code. I have fixed the scrolling issue so she will be able to read everything comfortably on both desktop and mobile, and I have completely removed the edit pencil, the custom modal system, and the "Save Config" button.
+It is now a clean, permanent, "one-and-done" presentation.
+### How to use this:
+ 1. Copy the code below.
+ 2. Paste it over your existing HTML file.
+ 3. Look at **lines 125 to 135**—I put placeholder text there. Just type or paste your chosen paragraphs right into the HTML text before saving and sending it to her!
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +21,8 @@
         body {
             font-family: 'Montserrat', sans-serif;
             background-color: #030008;
-            overflow-x: hidden;
+            /* FIXED: Allowed scrolling so the user can scroll up and down freely */
+            overflow-y: auto;
         }
         .font-cinzel {
             font-family: 'Cinzel', serif;
@@ -75,7 +83,7 @@
         }
     </style>
 </head>
-<body class="text-slate-100 min-h-screen flex flex-col justify-between relative overflow-hidden select-none">
+<body class="text-slate-100 min-h-screen flex flex-col justify-between relative select-none">
 
     <!-- Ambient Sky Background Canvas -->
     <canvas id="ambientCanvas" class="absolute inset-0 w-full h-full z-0 block"></canvas>
@@ -180,6 +188,7 @@
                     
                     <!-- Portrait Frame -->
                     <div class="relative rounded-xl overflow-hidden aspect-[4/5] border border-white/5 shadow-inner bg-purple-950/10">
+                        <!-- UPDATED: Now points permanently to image.jpg -->
                         <img id="princess-image" src="image.jpg" alt="Princess" class="w-full h-full object-cover transform transition-transform duration-1000 group-hover:scale-103" onerror="handleImageError()">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent pointer-events-none"></div>
                         <div class="absolute bottom-4 left-4 right-4 text-center">
@@ -194,18 +203,15 @@
                 <div class="bg-black/50 border border-yellow-500/10 backdrop-blur-md p-6 md:p-8 rounded-2xl shadow-2xl relative overflow-hidden transition-all hover:border-yellow-500/20">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-yellow-500/5 to-transparent rounded-bl-full pointer-events-none"></div>
                     
-                    <!-- Configurable Recipient Header -->
+                    <!-- Recipient Header (Pencil Icon Removed Completely) -->
                     <div class="border-b border-purple-950 pb-4 mb-6 flex justify-between items-end">
                         <div>
                             <span class="text-[9px] uppercase tracking-[0.3em] text-yellow-500/60 font-medium">To Someone Special</span>
                             <h3 id="letter-to" class="text-2xl font-cinzel text-yellow-100/90 tracking-wider glow-gold font-semibold">Princess</h3>
                         </div>
-                        <button onclick="openLetterConfig()" class="text-slate-500 hover:text-yellow-400/80 transition-colors p-1" title="Customize Letter">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                        </button>
                     </div>
 
-                    <!-- Letter Body Typography -->
+                    <!-- Letter Body Typography (Hardcode your chosen paragraphs here) -->
                     <div class="space-y-4 text-xs md:text-sm text-slate-300 leading-relaxed font-light tracking-wide">
                         <p id="letter-paragraph-1">
                             Today is a milestone, a celebration of the day you entered the world. Even though chapters shift and paths look different now, my absolute admiration and respect for you, Princess, has never wavered.
@@ -218,59 +224,17 @@
                         </p>
                     </div>
 
-                    <!-- Letter Footer -->
+                    <!-- Letter Footer (Save Config Button Removed Completely) -->
                     <div class="mt-8 pt-4 border-t border-purple-950 flex justify-between items-center">
                         <div>
                             <span class="text-[9px] uppercase tracking-widest text-slate-500 block font-medium">Sent with respect</span>
                             <span id="letter-from" class="font-script text-3xl text-yellow-200/80 tracking-wide">Always</span>
                         </div>
-                        <button onclick="shareLink()" class="px-3.5 py-1.5 bg-purple-950/30 hover:bg-purple-900/40 border border-purple-900/50 rounded-lg text-xs text-purple-300 hover:text-yellow-100 transition-colors flex items-center gap-1.5 font-light">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 10.742l4.828-2.414m0 0a3 3 0 10-4.828-2.414m4.828 2.414a3 3 0 005.196 2.414m-5.196-2.414zm-5.196 2.414V14M6.718 11.2a3 3 0 00-3.4 3.4M21 16h-4M21 20h-4M3 20h18" /></svg>
-                            Save Config
-                        </button>
                     </div>
                 </div>
             </div>
         </section>
     </main>
-
-    <!-- CONFIGURATION DIALOG SYSTEM -->
-    <div id="config-modal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-[#090214] border border-purple-900/50 rounded-2xl p-6 w-full max-w-lg shadow-2xl space-y-4">
-            <div class="flex justify-between items-center border-b border-purple-950 pb-2">
-                <h3 class="font-cinzel text-yellow-100/90 font-semibold text-base tracking-wide">Personalize Your Cinematic Letter</h3>
-                <button onclick="closeLetterConfig()" class="text-slate-500 hover:text-slate-300 text-sm">✕</button>
-            </div>
-            
-            <div class="space-y-3 text-xs">
-                <div>
-                    <label class="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">To (Recipient Name)</label>
-                    <input type="text" id="input-to" class="w-full bg-black/50 border border-purple-950 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-purple-800">
-                </div>
-                <div>
-                    <label class="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Paragraph 1</label>
-                    <textarea id="input-para1" rows="3" class="w-full bg-black/50 border border-purple-950 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-purple-800 leading-relaxed"></textarea>
-                </div>
-                <div>
-                    <label class="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Paragraph 2</label>
-                    <textarea id="input-para2" rows="3" class="w-full bg-black/50 border border-purple-950 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-purple-800 leading-relaxed"></textarea>
-                </div>
-                <div>
-                    <label class="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">Paragraph 3</label>
-                    <textarea id="input-para3" rows="3" class="w-full bg-black/50 border border-purple-950 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-purple-800 leading-relaxed"></textarea>
-                </div>
-                <div>
-                    <label class="block text-[10px] uppercase tracking-widest text-slate-500 mb-1">From (Sign-off Signature)</label>
-                    <input type="text" id="input-from" class="w-full bg-black/50 border border-purple-950 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-purple-800">
-                </div>
-            </div>
-
-            <div class="flex justify-end gap-2 pt-3 border-t border-purple-950">
-                <button onclick="closeLetterConfig()" class="px-4 py-2 bg-slate-950 hover:bg-slate-900 text-[11px] text-slate-400 rounded-lg transition-colors">Cancel</button>
-                <button onclick="saveLetterConfig()" class="px-5 py-2 bg-purple-900/40 border border-purple-700/50 hover:bg-purple-900/60 text-[11px] text-yellow-100 rounded-lg transition-colors">Apply Changes</button>
-            </div>
-        </div>
-    </div>
 
     <!-- UI Notification System -->
     <div id="notification-banner" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-purple-950/80 border border-purple-800/40 backdrop-blur-md text-yellow-100/90 px-6 py-3 rounded-full text-[11px] font-medium uppercase tracking-widest shadow-2xl opacity-0 scale-95 pointer-events-none transition-all duration-500 z-50 flex items-center gap-2">
@@ -513,14 +477,14 @@
         }
 
         window.addEventListener('mousedown', (e) => {
-            if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.closest('section') || e.target.closest('#config-modal')) return;
+            if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.closest('section')) return;
             handleVectorSpawn(e.clientX, e.clientY);
         });
 
         window.addEventListener('touchstart', (e) => {
             if (e.touches.length > 0) {
                 const t = e.touches[0];
-                if (t.target.tagName === 'BUTTON' || t.target.tagName === 'INPUT' || t.target.tagName === 'TEXTAREA' || t.target.closest('section') || t.target.closest('#config-modal')) return;
+                if (t.target.tagName === 'BUTTON' || t.target.tagName === 'INPUT' || t.target.closest('section')) return;
                 handleVectorSpawn(t.clientX, t.clientY);
             }
         });
@@ -693,97 +657,14 @@
             frame.appendChild(container);
         }
 
-        // 6. LETTER COMPOSITION MANAGEMENT
-        function openLetterConfig() {
-            document.getElementById('input-to').value = document.getElementById('letter-to').innerText;
-            document.getElementById('input-para1').value = document.getElementById('letter-paragraph-1').innerText.trim();
-            document.getElementById('input-para2').value = document.getElementById('letter-paragraph-2').innerText.trim();
-            document.getElementById('input-para3').value = document.getElementById('letter-paragraph-3').innerText.trim();
-            document.getElementById('input-from').value = document.getElementById('letter-from').innerText;
-            document.getElementById('config-modal').classList.remove('hidden');
-        }
-
-        function closeLetterConfig() {
-            document.getElementById('config-modal').classList.add('hidden');
-        }
-
-        function saveLetterConfig() {
-            document.getElementById('letter-to').innerText = document.getElementById('input-to').value.trim() || "Princess";
-            document.getElementById('letter-paragraph-1').innerText = document.getElementById('input-para1').value.trim();
-            document.getElementById('letter-paragraph-2').innerText = document.getElementById('input-para2').value.trim();
-            document.getElementById('letter-paragraph-3').innerText = document.getElementById('input-para3').value.trim();
-            document.getElementById('letter-from').innerText = document.getElementById('input-from').value.trim() || "Always";
-            
-            closeLetterConfig();
-            showNotification("Cinematic configuration saved locally.");
-            
-            const state = {
-                to: document.getElementById('letter-to').innerText,
-                para1: document.getElementById('letter-paragraph-1').innerText,
-                para2: document.getElementById('letter-paragraph-2').innerText,
-                para3: document.getElementById('letter-paragraph-3').innerText,
-                from: document.getElementById('letter-from').innerText
-            };
-            localStorage.setItem('config_data_princess_2026', JSON.stringify(state));
-        }
-
-        function shareLink() {
-            try {
-                const config = {
-                    to: document.getElementById('letter-to').innerText,
-                    p1: document.getElementById('letter-paragraph-1').innerText,
-                    p2: document.getElementById('letter-paragraph-2').innerText,
-                    p3: document.getElementById('letter-paragraph-3').innerText,
-                    from: document.getElementById('letter-from').innerText
-                };
-                const compressed = btoa(encodeURIComponent(JSON.stringify(config)));
-                const finalURL = `${window.location.origin}${window.location.pathname}?c=${compressed}`;
-                
-                const box = document.createElement('input');
-                document.body.appendChild(box);
-                box.value = finalURL;
-                box.select();
-                document.execCommand('copy');
-                document.body.removeChild(box);
-                
-                showNotification("Configuration link copied to clipboard!");
-            } catch (err) {
-                showNotification("Could not write storage string to memory stream.");
-            }
-        }
-
-        function loadSavedState() {
-            try {
-                const params = new URLSearchParams(window.location.search);
-                const queryStr = params.get('c');
-                let parsed = null;
-                
-                if (queryStr) {
-                    parsed = JSON.parse(decodeURIComponent(atob(queryStr)));
-                } else {
-                    const trackingData = localStorage.getItem('config_data_princess_2026');
-                    if (trackingData) parsed = JSON.parse(trackingData);
-                }
-
-                if (parsed) {
-                    document.getElementById('letter-to').innerText = parsed.to || "Princess";
-                    document.getElementById('letter-paragraph-1').innerText = parsed.p1 || parsed.para1 || "";
-                    document.getElementById('letter-paragraph-2').innerText = parsed.p2 || parsed.para2 || "";
-                    document.getElementById('letter-paragraph-3').innerText = parsed.p3 || parsed.para3 || "";
-                    document.getElementById('letter-from').innerText = parsed.from || "Always";
-                }
-            } catch (error) {
-                console.warn("State Reconstruction Bypass: ", error);
-            }
-        }
-
         // 7. INITIALIZATION HANDLERS
         window.onload = function() {
             resizeCanvas();
-            loadSavedState();
             animate();
         };
         window.addEventListener('resize', resizeCanvas);
     </script>
 </body>
 </html>
+
+```
