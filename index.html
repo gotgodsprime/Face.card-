@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
-    <title>Premium Glassmorphic 3D Pool</title>
+    <title>Premium Glassmorphic 3D Hand Pool</title>
     
     <!-- Tailwired Utility Engine -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -153,7 +153,7 @@
                         <i data-lucide="layout-grid" class="w-4 h-4 text-slate-400"></i>
                         <span>Overhead</span>
                     </button>
-                    <button id="btn-camera-reset" class="interactive-element flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-600 to-cyan-500 py-2.5 px-4 rounded-xl text-xs font-bold tracking-wide text-white shadow-lg shadow-cyan-950/40">
+                    <button id="btn-camera-reset" class="interactive-element flex items-center justify-center gap-2 bg-gradient-to-r from-orange-600 to-amber-500 py-2.5 px-4 rounded-xl text-xs font-bold tracking-wide text-white shadow-lg shadow-orange-950/40">
                         <i data-lucide="compass" class="w-4 h-4"></i>
                         <span>Reset Orbit</span>
                     </button>
@@ -166,7 +166,7 @@
                 <!-- Precision Target Tuning Board -->
                 <div class="flex-1 glassmorphic p-4 rounded-2xl flex flex-col gap-3 justify-center shadow-2xl">
                     <div class="flex items-center justify-between text-xs font-bold tracking-wider text-slate-400">
-                        <span class="flex items-center gap-1.5"><i data-lucide="target" class="w-4 h-4 text-cyan-400"></i> AIM ANGLE VECTOR</span>
+                        <span class="flex items-center gap-1.5"><i data-lucide="hand" class="w-4 h-4 text-orange-400"></i> FLICK ANGLE</span>
                         <span id="angle-display" class="font-mono bg-slate-950/50 px-2 py-0.5 rounded text-white border border-white/5">180°</span>
                     </div>
                     
@@ -183,21 +183,21 @@
                     </div>
                 </div>
 
-                <!-- Force Impulsion Meter & Strike Trigger -->
+                <!-- Finger Compression & Flick Trigger -->
                 <div class="glassmorphic p-4 rounded-2xl flex flex-col gap-3 min-w-[250px] shadow-2xl shrink-0">
                     <div class="flex justify-between items-center text-xs font-bold tracking-wider text-slate-400">
-                        <span class="flex items-center gap-1.5"><i data-lucide="zap" class="w-4 h-4 text-yellow-400"></i> IMPULSE FORCE</span>
-                        <span id="power-percentage" class="font-mono text-yellow-400 bg-yellow-400/10 px-2 py-0.5 rounded border border-yellow-400/20">40%</span>
+                        <span class="flex items-center gap-1.5"><i data-lucide="hand" class="w-4 h-4 text-orange-400"></i> FINGER COMPRESSION</span>
+                        <span id="power-percentage" class="font-mono text-orange-400 bg-orange-400/10 px-2 py-0.5 rounded border border-orange-400/20">2.5 cm</span>
                     </div>
 
                     <div class="relative flex items-center h-4 my-1">
-                        <div class="absolute inset-0 bg-gradient-to-r from-cyan-500 via-yellow-500 to-rose-500 rounded-full opacity-20 pointer-events-none"></div>
-                        <input type="range" id="power-slider" min="5" max="100" value="40" class="relative z-10 w-full h-1 bg-transparent appearance-none cursor-pointer">
+                        <div class="absolute inset-0 bg-gradient-to-r from-orange-500 to-amber-400 rounded-full opacity-20 pointer-events-none"></div>
+                        <input type="range" id="power-slider" min="10" max="50" value="25" class="relative z-10 w-full h-1 bg-transparent appearance-none cursor-pointer">
                     </div>
 
-                    <button id="btn-strike" class="w-full bg-gradient-to-r from-rose-600 to-orange-500 hover:from-rose-500 hover:to-orange-400 text-white font-black text-xs uppercase py-3.5 rounded-xl tracking-widest shadow-xl shadow-rose-950/30 transition-all duration-300 flex items-center justify-center gap-2">
-                        <i data-lucide="flame" class="w-4 h-4 fill-white"></i>
-                        <span>Execute Strike</span>
+                    <button id="btn-strike" class="w-full bg-gradient-to-r from-orange-600 to-amber-500 hover:from-orange-500 hover:to-amber-400 text-white font-black text-xs uppercase py-3.5 rounded-xl tracking-widest shadow-xl shadow-orange-950/30 transition-all duration-300 flex items-center justify-center gap-2">
+                        <i data-lucide="zap" class="w-4 h-4 fill-white"></i>
+                        <span>RELEASE FLICK</span>
                     </button>
                 </div>
             </div>
@@ -224,7 +224,7 @@
             // Mechanics Configurations
             isTableRolling: false,
             aimAngle: Math.PI, // 180 degrees initial pointing
-            strikePower: 40,
+            strikePower: 25,   // Initial value matching the 2.5cm compression setting
             cueBall: null,
             balls: [],
             p1: { isTurn: true },
@@ -525,12 +525,13 @@
         }
 
         function createAimVectorGraphic() {
-            const points = [new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -2)];
-            const aimGeom = new THREE.BufferGeometry().setFromPoints(points);
-            const aimMat = new THREE.LineDashedMaterial({ color: '#22d3ee', dashSize: 0.15, gapSize: 0.1 });
-            
-            aimLine = new THREE.Line(aimGeom, aimMat);
-            aimLine.computeLineDistances();
+            // Short-range vector cone pointing outward directly from the ball surface area
+            const dir = new THREE.Vector3(0, 0, -1);
+            const origin = new THREE.Vector3(0, 0, 0);
+            const length = 0.8; 
+            const hex = 0xf97316; // Radiant orange trace indicator line
+
+            aimLine = new THREE.ArrowHelper(dir, origin, length, hex, 0.2, 0.15);
             scene.add(aimLine);
         }
 
@@ -547,7 +548,10 @@
 
             aimLine.position.copy(GameState.cueBall.position);
             aimLine.position.y = 0.02; // Float slightly above felt floor
-            aimLine.rotation.y = -GameState.aimAngle;
+            
+            // Set dynamic heading vector components safely based on angle matrices
+            const dir = new THREE.Vector3(Math.sin(GameState.aimAngle), 0, Math.cos(GameState.aimAngle));
+            aimLine.setDirection(dir);
         }
 
         // --- INTERACTION HOOK HANDLERS ---
@@ -592,8 +596,10 @@
             });
 
             powerSlider.addEventListener('input', (e) => {
-                GameState.strikePower = parseFloat(e.target.value);
-                powerPercentage.textContent = `${e.target.value}%`;
+                const val = parseFloat(e.target.value);
+                GameState.strikePower = val;
+                // Format decimal to display as fractional metric centimeters
+                powerPercentage.textContent = `${(val / 10).toFixed(1)} cm`;
             });
 
             btnStrike.addEventListener('click', () => {
@@ -638,14 +644,18 @@
             const forceVectorX = Math.sin(GameState.aimAngle);
             const forceVectorZ = Math.cos(GameState.aimAngle);
 
-            const scaleFactor = 0.18;
-            const velocityMagnitude = GameState.strikePower * scaleFactor;
+            // Hooke's Law energy abstraction matrix conversion (0.5 * k * x^2) -> mapped to launch vectors
+            const compressionMeters = GameState.strikePower * 0.001; 
+            const springConstantK = 145; // Average human muscle compression load scale
+            const ballMassKg = 0.17;     // Regulation billard sphere target mass
+            
+            const velocityMagnitude = Math.sqrt((springConstantK / ballMassKg)) * compressionMeters * 28.5;
 
             GameState.cueBall.velocity.x = forceVectorX * velocityMagnitude;
             GameState.cueBall.velocity.z = forceVectorZ * velocityMagnitude;
 
             updateAimIndicatorLine();
-            updateHUDStatus("Balls scattered across table...");
+            updateHUDStatus("Flick released! Energy transferred directly...");
         }
 
         // --- MULTIPLAYER SUPABASE REALTIME ROUTER ---
