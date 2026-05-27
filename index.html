@@ -1,81 +1,385 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aeterna Bible</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); }
-        .dark-glass { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(20px); }
-        .animate-shake { animation: shake 0.3s ease-in-out; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assistant Class Rep Election</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Supabase JS Client library CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+<body class="min-h-screen bg-slate-50 text-slate-800 font-sans flex flex-col antialiased">
 
-    <div class="w-[375px] h-[812px] bg-white rounded-[50px] shadow-2xl overflow-hidden relative border-[8px] border-black">
-        
-        <div id="home-screen" class="p-6 pt-16">
-            <header class="flex justify-between items-center mb-8">
-                <div id="logo-trigger" class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl shadow-lg cursor-pointer">
-                    †
-                </div>
-                <h1 class="text-2xl font-bold text-gray-900">Aeterna</h1>
-            </header>
+  <!-- Toast Notification System -->
+  <div id="notification" class="fixed top-5 right-5 z-50 hidden transition-all duration-300">
+    <div id="notification-bg" class="px-5 py-3 rounded-xl shadow-lg text-white font-medium flex items-center gap-2">
+      <span id="notification-text"></span>
+    </div>
+  </div>
 
-            <input type="text" placeholder="Search scripture..." class="w-full p-4 rounded-2xl bg-gray-100 border-none outline-none mb-8">
-
-            <div class="space-y-4">
-                <div class="p-6 bg-gray-900 text-white rounded-3xl">
-                    <p class="text-sm italic mb-2">"For God so loved the world..."</p>
-                    <span class="text-xs font-bold text-indigo-400">John 3:16</span>
-                </div>
-            </div>
+  <!-- Header Banner -->
+  <header class="bg-gradient-to-r from-indigo-700 via-indigo-800 to-slate-900 text-white py-8 px-6 shadow-md relative overflow-hidden">
+    <div class="max-w-4xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-6 relative z-10">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-600/50 text-indigo-200 text-xs font-semibold mb-3 tracking-wide uppercase border border-indigo-400/20">
+          ⚡ Supabase Secure Node (Live)
         </div>
-
-        <div id="secure-gate" class="absolute inset-0 bg-black/50 backdrop-blur-2xl hidden flex flex-col items-center justify-center p-8 text-white">
-            <h2 class="text-2xl font-semibold mb-8">Enter Clearance</h2>
-            <div id="pin-display" class="flex gap-4 mb-12">
-                <div class="w-4 h-4 rounded-full border border-white/50"></div>
-                <div class="w-4 h-4 rounded-full border border-white/50"></div>
-                <div class="w-4 h-4 rounded-full border border-white/50"></div>
-                <div class="w-4 h-4 rounded-full border border-white/50"></div>
-            </div>
-            <div class="grid grid-cols-3 gap-8">
-                <button onclick="addPin('1')" class="text-2xl">1</button>
-                <button onclick="addPin('2')" class="text-2xl">2</button>
-                <button onclick="addPin('3')" class="text-2xl">3</button>
-                <button onclick="addPin('4')" class="text-2xl">4</button>
-                <button onclick="addPin('5')" class="text-2xl">5</button>
-                <button onclick="addPin('6')" class="text-2xl">6</button>
-            </div>
+        <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Assistant Class Rep Election</h1>
+        <p class="mt-1.5 text-indigo-200 text-sm md:text-base">Cast your vote securely. Leaderboards update live on database changes.</p>
+      </div>
+      
+      <div class="flex items-center gap-4 bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10 self-start md:self-auto">
+        <div>
+          <div id="global-total-votes" class="text-2xl font-black">0</div>
+          <div class="text-xs text-indigo-200 font-medium uppercase tracking-wider">Total Ballots Logged</div>
         </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-4xl mx-auto px-4 flex justify-around md:justify-start gap-2 md:gap-6 py-3">
+      <button onclick="switchTab('vote')" id="nav-vote" class="px-4 py-2.5 rounded-xl text-sm font-semibold transition-all bg-indigo-50 text-indigo-700 shadow-sm">Vote Here</button>
+      <button onclick="switchTab('results')" id="nav-results" class="px-4 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-600 hover:bg-slate-100">Live Tally</button>
+      <button onclick="switchTab('admin')" id="nav-admin" class="px-4 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-600 hover:bg-slate-100">🛡️ Election Board</button>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-8">
+    
+    <!-- VOTE TAB -->
+    <div id="tab-vote" class="tab-content active space-y-6">
+      <div id="voted-already-card" class="hidden bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div>
+          <h3 class="text-lg font-bold text-slate-900">Thank you! Your vote is secured.</h3>
+          <p class="text-slate-600 text-sm">You have already cast a ballot from this web instance.</p>
+        </div>
+        <button onclick="switchTab('results')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-2.5 rounded-xl transition-all">View Leaderboard</button>
+      </div>
+
+      <div id="voting-closed-card" class="hidden bg-amber-50 border border-amber-200 rounded-2xl p-6 text-center">
+        <h3 class="text-lg font-bold text-amber-900">Voting is Closed</h3>
+        <p class="text-amber-700 text-sm mt-1">The election manager has locked the voting pipeline.</p>
+      </div>
+
+      <div id="voting-active-section">
+        <h2 class="text-xl font-bold text-slate-900 mb-6">Available Nominees</h2>
+        <div id="candidates-vote-grid" class="grid md:grid-cols-2 gap-6">
+          <!-- Populated from Supabase dynamically -->
+        </div>
+      </div>
     </div>
 
-    <script>
-        // Interaction Logic
-        const logo = document.getElementById('logo-trigger');
-        const gate = document.getElementById('secure-gate');
-        let pin = "";
+    <!-- RESULTS TAB -->
+    <div id="tab-results" class="tab-content space-y-8">
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold text-slate-900">Real-Time Leaderboard</h2>
+          <button onclick="fetchCurrentState()" class="text-xs font-semibold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg hover:bg-indigo-100 transition-all">🔄 Manual Sync</button>
+        </div>
+        <div id="leaderboard-container" class="space-y-6">
+          <!-- Dynamically filled live -->
+        </div>
+      </div>
+    </div>
 
-        // Long Press Logic
-        let pressTimer;
-        logo.addEventListener('mousedown', () => {
-            pressTimer = setTimeout(() => gate.classList.remove('hidden'), 1000);
-        });
-        logo.addEventListener('mouseup', () => clearTimeout(pressTimer));
+    <!-- ADMIN TAB (SECURE ACCESS GATE) -->
+    <div id="tab-admin" class="tab-content space-y-8">
+      <!-- Lock Screen Panel -->
+      <div id="admin-auth-panel" class="bg-white rounded-2xl border border-slate-200 p-6 max-w-md mx-auto text-center shadow-sm">
+        <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3 text-xl font-bold">🔒</div>
+        <h3 class="text-lg font-bold text-slate-900 mb-1">Administrative Gateway</h3>
+        <p class="text-slate-500 text-xs mb-4">Provide the board passcode to unlock configurations.</p>
+        <div class="space-y-3">
+          <input type="password" id="admin-password-input" placeholder="Enter Admin Password" class="w-full text-center px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500">
+          <button onclick="verifyAdminToken()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm transition-all">Unlock Terminal</button>
+        </div>
+      </div>
 
-        // PIN Logic
-        function addPin(num) {
-            pin += num;
-            if(pin.length === 4) {
-                if(pin === "1947") { alert("Access Granted"); gate.classList.add('hidden'); }
-                else { gate.classList.add('animate-shake'); setTimeout(() => { gate.classList.remove('animate-shake'); pin=""; }, 300); }
-            }
+      <!-- Verified Control Dashboard -->
+      <div id="admin-dashboard-panel" class="hidden space-y-8">
+        <div class="bg-slate-900 text-white rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-md">
+          <div>
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-wider mb-2">Authenticated Session</div>
+            <h3 class="text-lg font-bold">Terminal Control Panel</h3>
+            <p class="text-slate-400 text-xs mt-1">Global operations overwrite live runtime parameters directly.</p>
+          </div>
+          <div class="flex gap-3 w-full md:w-auto">
+            <button id="toggle-lock-btn" onclick="toggleVotingGate()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-all flex-1 md:flex-initial">Pause Voting</button>
+            <button onclick="resetGlobalElection()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-bold px-4 py-2.5 rounded-xl text-sm transition-all flex-1 md:flex-initial">Clear All Candidates</button>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-950 mb-4">Enroll New Candidate</h3>
+          <form id="add-candidate-form" onsubmit="addNewCandidate(event)" class="space-y-4">
+            <input type="text" id="new-cand-name" placeholder="Full Name" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 text-sm" required>
+            <textarea id="new-cand-manifesto" placeholder="Manifesto / Mission Statement" class="w-full px-4 py-3 rounded-xl border border-slate-200 h-24 text-sm" required></textarea>
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow transition-all text-sm">Enroll Candidate</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Confirmation Modal -->
+  <div id="vote-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl">
+      <h3 class="text-xl font-extrabold text-slate-900 mb-2">Confirm Selection</h3>
+      <p class="text-slate-600 text-sm mb-6">You are casting your single ballot for <span id="modal-candidate-name" class="font-bold text-slate-800"></span>. This action is definitive.</p>
+      <div class="flex gap-3 justify-end">
+        <button onclick="closeVoteModal()" class="px-4 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-slate-50 transition-all text-sm">Cancel</button>
+        <button id="modal-confirm-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-2.5 rounded-xl shadow transition-all text-sm">Confirm & Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CORE LOGIC / SUPABASE CONFIGURATION -->
+  <script>
+    // ⚠️ REPLACE WITH YOUR ACTUAL SUPABASE CREDENTIALS
+    const SUPABASE_URL = "https://YOUR_PROJECT_ID.supabase.co";
+    const SUPABASE_ANON_KEY = "YOUR_ANON_PUBLIC_KEY";
+    
+    // Set up your administrative password right here!
+    const ADMINISTRATIVE_SECRET_KEY = "ClassRep2026"; 
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let globalCandidates = {};
+    let systemVotingOpen = true;
+    let localHasVoted = localStorage.getItem('voted_global_session') === 'true';
+    let candidateToVoteFor = null;
+    let isAdminUnlocked = false;
+
+    const colors = ['from-blue-500 to-indigo-600', 'from-pink-500 to-rose-600', 'from-emerald-500 to-teal-600', 'from-amber-500 to-orange-600', 'from-purple-500 to-indigo-600'];
+
+    // Fetch baseline values on startup
+    async function fetchCurrentState() {
+      const { data, error } = await supabaseClient
+        .from('classroom_election')
+        .select('data')
+        .eq('id', 'state')
+        .single();
+
+      if (error) {
+        console.error("Supabase pipeline fetch error:", error);
+        return;
+      }
+
+      if (data && data.data) {
+        systemVotingOpen = data.data.votingOpen !== false;
+        globalCandidates = data.data.candidates || {};
+        renderUiLayout();
+      }
+    }
+
+    // Push state payload changes upstream to Supabase
+    async function uploadSystemState(updatedPayload) {
+      const { error } = await supabaseClient
+        .from('classroom_election')
+        .update({ data: updatedPayload })
+        .eq('id', 'state');
+
+      if (error) {
+        showNotification("Writing sync error to Supabase cloud storage.", "error");
+        console.error(error);
+      }
+    }
+
+    // Live Event Webhook Listener (Handles device real-time updates seamlessly)
+    supabaseClient
+      .channel('schema-db-changes')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'classroom_election' }, payload => {
+        if (payload.new && payload.new.id === 'state') {
+          systemVotingOpen = payload.new.data.votingOpen !== false;
+          globalCandidates = payload.new.data.candidates || {};
+          renderUiLayout();
         }
-    </script>
+      })
+      .subscribe();
+
+    function renderUiLayout() {
+      const totalVotes = Object.values(globalCandidates).reduce((sum, c) => sum + (c.votes || 0), 0);
+      document.getElementById('global-total-votes').innerText = totalVotes;
+
+      document.getElementById('voting-closed-card').style.display = systemVotingOpen ? 'none' : 'block';
+      document.getElementById('toggle-lock-btn').innerText = systemVotingOpen ? 'Pause Voting' : 'Resume Voting';
+      document.getElementById('toggle-lock-btn').className = systemVotingOpen ? 'bg-rose-600 hover:bg-rose-700 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-all' : 'bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-all';
+
+      if (localHasVoted) {
+        document.getElementById('voted-already-card').style.display = 'flex';
+        document.getElementById('voting-active-section').style.display = 'none';
+      } else {
+        document.getElementById('voted-already-card').style.display = 'none';
+        document.getElementById('voting-active-section').style.display = systemVotingOpen ? 'block' : 'none';
+      }
+
+      // Populate Vote Grid UI
+      const voteGrid = document.getElementById('candidates-vote-grid');
+      voteGrid.innerHTML = '';
+      Object.keys(globalCandidates).forEach(id => {
+        const c = globalCandidates[id];
+        voteGrid.innerHTML += `
+          <div class="bg-white rounded-2xl border border-slate-200 hover:shadow-lg transition-all flex flex-col justify-between overflow-hidden">
+            <div class="p-6">
+              <div class="flex items-center gap-4 mb-4">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br ${c.color} flex items-center justify-center text-white text-xl font-extrabold shadow-md flex-shrink-0">
+                  ${c.name.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <h3 class="text-lg font-bold text-slate-900">${c.name}</h3>
+                  <p class="text-xs text-indigo-600 font-semibold uppercase tracking-wide">Assistant Candidate</p>
+                </div>
+              </div>
+              <div class="bg-slate-50 rounded-xl p-4 text-slate-600 text-sm italic">"${c.manifesto}"</div>
+            </div>
+            <div class="bg-slate-50 px-6 py-4 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-xs text-slate-400">1 Ballot Weight</span>
+              <button onclick="openVoteModal('${id}', '${c.name.replace(/'/g, "\\'")}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-semibold text-sm shadow transition-all">Cast Vote</button>
+            </div>
+          </div>`;
+      });
+
+      // Populate Leaderboard 
+      const leaderboard = document.getElementById('leaderboard-container');
+      leaderboard.innerHTML = '';
+      const sorted = Object.keys(globalCandidates)
+        .map(id => ({id, ...globalCandidates[id]}))
+        .sort((a,b) => b.votes - a.votes);
+
+      if (sorted.length === 0) {
+        leaderboard.innerHTML = `<div class="text-center py-12 text-slate-500">No active nominees yet.</div>`;
+      } else {
+        sorted.forEach((cand, idx) => {
+          const pct = totalVotes > 0 ? Math.round((cand.votes / totalVotes) * 100) : 0;
+          leaderboard.innerHTML += `
+            <div class="relative">
+              <div class="flex justify-between items-center mb-2">
+                <div class="flex items-center gap-3">
+                  <span class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center font-bold text-xs text-slate-600">${idx + 1}</span>
+                  <span class="font-semibold text-slate-900">${cand.name}</span>
+                  ${idx === 0 && cand.votes > 0 ? '<span class="bg-amber-50 text-amber-700 text-[10px] font-extrabold px-2 py-0.5 rounded border border-amber-200">LEADER 👑</span>' : ''}
+                </div>
+                <div><span class="font-bold text-slate-900">${cand.votes} votes</span> <span class="text-xs text-slate-500 ml-1">(${pct}%)</span></div>
+              </div>
+              <div class="h-4 w-full bg-slate-100 rounded-full overflow-hidden flex">
+                <div style="width: ${pct}%" class="h-full rounded-full bg-gradient-to-r ${cand.color} transition-all duration-1000"></div>
+              </div>
+            </div>`;
+        });
+      }
+    }
+
+    // --- SUBMIT BALLOT EXECUTION ---
+    async function processConfirmedVote() {
+      if (!systemVotingOpen) return showNotification('Voting is closed.', 'error');
+      if (localHasVoted) return showNotification('You have already voted!', 'error');
+
+      globalCandidates[candidateToVoteFor].votes = (globalCandidates[candidateToVoteFor].votes || 0) + 1;
+      
+      const nextState = { votingOpen: systemVotingOpen, candidates: globalCandidates };
+      await uploadSystemState(nextState);
+      
+      localHasVoted = true;
+      localStorage.setItem('voted_global_session', 'true');
+      closeVoteModal();
+      showNotification('Global vote cast successfully!');
+      switchTab('results');
+    }
+
+    // --- SECURE AUTH OPERATIONS ---
+    function verifyAdminToken() {
+      const inputPass = document.getElementById('admin-password-input').value;
+      if (inputPass === ADMINISTRATIVE_SECRET_KEY) {
+        isAdminUnlocked = true;
+        document.getElementById('admin-auth-panel').classList.add('hidden');
+        document.getElementById('admin-dashboard-panel').classList.remove('hidden');
+        showNotification('Security credentials authenticated.');
+      } else {
+        showNotification('Invalid admin password token.', 'error');
+      }
+    }
+
+    async function addNewCandidate(e) {
+      e.preventDefault();
+      if (!isAdminUnlocked) return showNotification('Unauthorized system call.', 'error');
+
+      const name = document.getElementById('new-cand-name').value;
+      const manifesto = document.getElementById('new-cand-manifesto').value;
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+      const id = 'cand_' + Date.now();
+
+      globalCandidates[id] = { name, manifesto, color: randomColor, votes: 0 };
+      
+      await uploadSystemState({ votingOpen: systemVotingOpen, candidates: globalCandidates });
+      document.getElementById('add-candidate-form').reset();
+      showNotification('Nominee registered successfully!');
+    }
+
+    async function toggleVotingGate() {
+      if (!isAdminUnlocked) return showNotification('Unauthorized system call.', 'error');
+      
+      systemVotingOpen = !systemVotingOpen;
+      await uploadSystemState({ votingOpen: systemVotingOpen, candidates: globalCandidates });
+      showNotification(`Voting gate: ${systemVotingOpen ? 'OPEN' : 'PAUSED'}`);
+    }
+
+    async function resetGlobalElection() {
+      if (!isAdminUnlocked) return showNotification('Unauthorized system call.', 'error');
+      
+      if (confirm("Wipe all nominees and logs clear off the central database?")) {
+        await uploadSystemState({ votingOpen: true, candidates: {} });
+        localStorage.removeItem('voted_global_session');
+        localHasVoted = false;
+        showNotification('All live data arrays cleared.', 'info');
+      }
+    }
+
+    // Layout helper utilities
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.getElementById('tab-' + tabId).classList.add('active');
+      
+      document.querySelectorAll('nav button').forEach(el => {
+        el.className = "px-4 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-600 hover:bg-slate-100";
+      });
+      document.getElementById('nav-' + tabId).className = "px-4 py-2.5 rounded-xl text-sm font-semibold transition-all bg-indigo-50 text-indigo-700 shadow-sm";
+    }
+
+    function openVoteModal(id, name) {
+      candidateToVoteFor = id;
+      document.getElementById('modal-candidate-name').innerText = name;
+      document.getElementById('vote-modal').style.display = 'flex';
+    }
+
+    function closeVoteModal() {
+      document.getElementById('vote-modal').style.display = 'none';
+    }
+
+    function showNotification(message, type = 'success') {
+      const banner = document.getElementById('notification');
+      const bg = document.getElementById('notification-bg');
+      document.getElementById('notification-text').innerText = message;
+      
+      bg.className = `px-5 py-3 rounded-xl shadow-lg text-white font-medium flex items-center gap-2 ${
+        type === 'success' ? 'bg-emerald-600' : type === 'error' ? 'bg-rose-600' : 'bg-blue-600'
+      }`;
+      
+      banner.classList.remove('hidden');
+      setTimeout(() => banner.classList.add('hidden'), 3500);
+    }
+
+    document.getElementById('modal-confirm-btn').onclick = processConfirmedVote;
+    
+    // Initial data fetch invocation
+    fetchCurrentState();
+  </script>
 </body>
 </html>
