@@ -1,385 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Assistant Class Rep Election</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Supabase JS Client library CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-  </style>
-</head>
-<body class="min-h-screen bg-slate-50 text-slate-800 font-sans flex flex-col antialiased">
-
-  <!-- Toast Notification System -->
-  <div id="notification" class="fixed top-5 right-5 z-50 hidden transition-all duration-300">
-    <div id="notification-bg" class="px-5 py-3 rounded-xl shadow-lg text-white font-medium flex items-center gap-2">
-      <span id="notification-text"></span>
-    </div>
-  </div>
-
-  <!-- Header Banner -->
-  <header class="bg-gradient-to-r from-indigo-700 via-indigo-800 to-slate-900 text-white py-8 px-6 shadow-md relative overflow-hidden">
-    <div class="max-w-4xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-6 relative z-10">
-      <div>
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-600/50 text-indigo-200 text-xs font-semibold mb-3 tracking-wide uppercase border border-indigo-400/20">
-          ⚡ Supabase Secure Node (Live)
-        </div>
-        <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Assistant Class Rep Election</h1>
-        <p class="mt-1.5 text-indigo-200 text-sm md:text-base">Cast your vote securely. Leaderboards update live on database changes.</p>
-      </div>
-      
-      <div class="flex items-center gap-4 bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10 self-start md:self-auto">
-        <div>
-          <div id="global-total-votes" class="text-2xl font-black">0</div>
-          <div class="text-xs text-indigo-200 font-medium uppercase tracking-wider">Total Ballots Logged</div>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <!-- Navigation -->
-  <nav class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-    <div class="max-w-4xl mx-auto px-4 flex justify-around md:justify-start gap-2 md:gap-6 py-3">
-      <button onclick="switchTab('vote')" id="nav-vote" class="px-4 py-2.5 rounded-xl text-sm font-semibold transition-all bg-indigo-50 text-indigo-700 shadow-sm">Vote Here</button>
-      <button onclick="switchTab('results')" id="nav-results" class="px-4 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-600 hover:bg-slate-100">Live Tally</button>
-      <button onclick="switchTab('admin')" id="nav-admin" class="px-4 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-600 hover:bg-slate-100">🛡️ Election Board</button>
-    </div>
-  </nav>
-
-  <!-- Main Container -->
-  <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-8">
-    
-    <!-- VOTE TAB -->
-    <div id="tab-vote" class="tab-content active space-y-6">
-      <div id="voted-already-card" class="hidden bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-        <div>
-          <h3 class="text-lg font-bold text-slate-900">Thank you! Your vote is secured.</h3>
-          <p class="text-slate-600 text-sm">You have already cast a ballot from this web instance.</p>
-        </div>
-        <button onclick="switchTab('results')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-2.5 rounded-xl transition-all">View Leaderboard</button>
-      </div>
-
-      <div id="voting-closed-card" class="hidden bg-amber-50 border border-amber-200 rounded-2xl p-6 text-center">
-        <h3 class="text-lg font-bold text-amber-900">Voting is Closed</h3>
-        <p class="text-amber-700 text-sm mt-1">The election manager has locked the voting pipeline.</p>
-      </div>
-
-      <div id="voting-active-section">
-        <h2 class="text-xl font-bold text-slate-900 mb-6">Available Nominees</h2>
-        <div id="candidates-vote-grid" class="grid md:grid-cols-2 gap-6">
-          <!-- Populated from Supabase dynamically -->
-        </div>
-      </div>
-    </div>
-
-    <!-- RESULTS TAB -->
-    <div id="tab-results" class="tab-content space-y-8">
-      <div class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm">
-        <div class="flex items-center justify-between mb-6">
-          <h2 class="text-2xl font-bold text-slate-900">Real-Time Leaderboard</h2>
-          <button onclick="fetchCurrentState()" class="text-xs font-semibold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg hover:bg-indigo-100 transition-all">🔄 Manual Sync</button>
-        </div>
-        <div id="leaderboard-container" class="space-y-6">
-          <!-- Dynamically filled live -->
-        </div>
-      </div>
-    </div>
-
-    <!-- ADMIN TAB (SECURE ACCESS GATE) -->
-    <div id="tab-admin" class="tab-content space-y-8">
-      <!-- Lock Screen Panel -->
-      <div id="admin-auth-panel" class="bg-white rounded-2xl border border-slate-200 p-6 max-w-md mx-auto text-center shadow-sm">
-        <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3 text-xl font-bold">🔒</div>
-        <h3 class="text-lg font-bold text-slate-900 mb-1">Administrative Gateway</h3>
-        <p class="text-slate-500 text-xs mb-4">Provide the board passcode to unlock configurations.</p>
-        <div class="space-y-3">
-          <input type="password" id="admin-password-input" placeholder="Enter Admin Password" class="w-full text-center px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500">
-          <button onclick="verifyAdminToken()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm transition-all">Unlock Terminal</button>
-        </div>
-      </div>
-
-      <!-- Verified Control Dashboard -->
-      <div id="admin-dashboard-panel" class="hidden space-y-8">
-        <div class="bg-slate-900 text-white rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-md">
-          <div>
-            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-wider mb-2">Authenticated Session</div>
-            <h3 class="text-lg font-bold">Terminal Control Panel</h3>
-            <p class="text-slate-400 text-xs mt-1">Global operations overwrite live runtime parameters directly.</p>
-          </div>
-          <div class="flex gap-3 w-full md:w-auto">
-            <button id="toggle-lock-btn" onclick="toggleVotingGate()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-all flex-1 md:flex-initial">Pause Voting</button>
-            <button onclick="resetGlobalElection()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-bold px-4 py-2.5 rounded-xl text-sm transition-all flex-1 md:flex-initial">Clear All Candidates</button>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-          <h3 class="text-lg font-bold text-slate-950 mb-4">Enroll New Candidate</h3>
-          <form id="add-candidate-form" onsubmit="addNewCandidate(event)" class="space-y-4">
-            <input type="text" id="new-cand-name" placeholder="Full Name" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 text-sm" required>
-            <textarea id="new-cand-manifesto" placeholder="Manifesto / Mission Statement" class="w-full px-4 py-3 rounded-xl border border-slate-200 h-24 text-sm" required></textarea>
-            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow transition-all text-sm">Enroll Candidate</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <!-- Confirmation Modal -->
-  <div id="vote-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-    <div class="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl">
-      <h3 class="text-xl font-extrabold text-slate-900 mb-2">Confirm Selection</h3>
-      <p class="text-slate-600 text-sm mb-6">You are casting your single ballot for <span id="modal-candidate-name" class="font-bold text-slate-800"></span>. This action is definitive.</p>
-      <div class="flex gap-3 justify-end">
-        <button onclick="closeVoteModal()" class="px-4 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-slate-50 transition-all text-sm">Cancel</button>
-        <button id="modal-confirm-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-2.5 rounded-xl shadow transition-all text-sm">Confirm & Submit</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- CORE LOGIC / SUPABASE CONFIGURATION -->
-  <script>
-    // ⚠️ REPLACE WITH YOUR ACTUAL SUPABASE CREDENTIALS
-    const SUPABASE_URL = "https://YOUR_PROJECT_ID.supabase.co";
-    const SUPABASE_ANON_KEY = "YOUR_ANON_PUBLIC_KEY";
-    
-    // Set up your administrative password right here!
-    const ADMINISTRATIVE_SECRET_KEY = "ClassRep2026"; 
-
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    let globalCandidates = {};
-    let systemVotingOpen = true;
-    let localHasVoted = localStorage.getItem('voted_global_session') === 'true';
-    let candidateToVoteFor = null;
-    let isAdminUnlocked = false;
-
-    const colors = ['from-blue-500 to-indigo-600', 'from-pink-500 to-rose-600', 'from-emerald-500 to-teal-600', 'from-amber-500 to-orange-600', 'from-purple-500 to-indigo-600'];
-
-    // Fetch baseline values on startup
-    async function fetchCurrentState() {
-      const { data, error } = await supabaseClient
-        .from('classroom_election')
-        .select('data')
-        .eq('id', 'state')
-        .single();
-
-      if (error) {
-        console.error("Supabase pipeline fetch error:", error);
-        return;
-      }
-
-      if (data && data.data) {
-        systemVotingOpen = data.data.votingOpen !== false;
-        globalCandidates = data.data.candidates || {};
-        renderUiLayout();
-      }
-    }
-
-    // Push state payload changes upstream to Supabase
-    async function uploadSystemState(updatedPayload) {
-      const { error } = await supabaseClient
-        .from('classroom_election')
-        .update({ data: updatedPayload })
-        .eq('id', 'state');
-
-      if (error) {
-        showNotification("Writing sync error to Supabase cloud storage.", "error");
-        console.error(error);
-      }
-    }
-
-    // Live Event Webhook Listener (Handles device real-time updates seamlessly)
-    supabaseClient
-      .channel('schema-db-changes')
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'classroom_election' }, payload => {
-        if (payload.new && payload.new.id === 'state') {
-          systemVotingOpen = payload.new.data.votingOpen !== false;
-          globalCandidates = payload.new.data.candidates || {};
-          renderUiLayout();
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Group Cipher</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .glass {
+            background: rgba(30, 30, 40, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
-      })
-      .subscribe();
+    </style>
+</head>
+<body class="bg-[#0b0b0f] text-gray-100 min-h-screen flex items-center justify-center p-4 antialiased">
 
-    function renderUiLayout() {
-      const totalVotes = Object.values(globalCandidates).reduce((sum, c) => sum + (c.votes || 0), 0);
-      document.getElementById('global-total-votes').innerText = totalVotes;
+    <div class="glass w-full max-w-lg rounded-3xl p-6 shadow-2xl space-y-6">
+        
+        <div class="text-center space-y-1">
+            <h1 class="text-2xl font-bold tracking-tight bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">Secret WhatsApp Cipher</h1>
+            <p class="text-xs text-gray-400">Zero-server, local AES-GCM browser encryption</p>
+        </div>
 
-      document.getElementById('voting-closed-card').style.display = systemVotingOpen ? 'none' : 'block';
-      document.getElementById('toggle-lock-btn').innerText = systemVotingOpen ? 'Pause Voting' : 'Resume Voting';
-      document.getElementById('toggle-lock-btn').className = systemVotingOpen ? 'bg-rose-600 hover:bg-rose-700 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-all' : 'bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-all';
+        <div class="space-y-1.5">
+            <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Shared Secret Password</label>
+            <input type="password" id="password" placeholder="Enter your secret group key..." 
+                   class="w-full bg-[#161622] border border-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 transition-colors placeholder-gray-600">
+        </div>
 
-      if (localHasVoted) {
-        document.getElementById('voted-already-card').style.display = 'flex';
-        document.getElementById('voting-active-section').style.display = 'none';
-      } else {
-        document.getElementById('voted-already-card').style.display = 'none';
-        document.getElementById('voting-active-section').style.display = systemVotingOpen ? 'block' : 'none';
-      }
+        <hr class="border-gray-900">
 
-      // Populate Vote Grid UI
-      const voteGrid = document.getElementById('candidates-vote-grid');
-      voteGrid.innerHTML = '';
-      Object.keys(globalCandidates).forEach(id => {
-        const c = globalCandidates[id];
-        voteGrid.innerHTML += `
-          <div class="bg-white rounded-2xl border border-slate-200 hover:shadow-lg transition-all flex flex-col justify-between overflow-hidden">
-            <div class="p-6">
-              <div class="flex items-center gap-4 mb-4">
-                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br ${c.color} flex items-center justify-center text-white text-xl font-extrabold shadow-md flex-shrink-0">
-                  ${c.name.charAt(0).toUpperCase()}
-                </div>
-                <div>
-                  <h3 class="text-lg font-bold text-slate-900">${c.name}</h3>
-                  <p class="text-xs text-indigo-600 font-semibold uppercase tracking-wide">Assistant Candidate</p>
-                </div>
-              </div>
-              <div class="bg-slate-50 rounded-xl p-4 text-slate-600 text-sm italic">"${c.manifesto}"</div>
+        <div class="space-y-4">
+            <div class="space-y-1.5">
+                <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Plain Text (Your Message)</label>
+                <textarea id="plainText" rows="3" placeholder="Type the message you want to encrypt here..." 
+                          class="w-full bg-[#161622] border border-gray-800 rounded-xl p-3 text-sm focus:outline-none focus:border-indigo-500 transition-colors placeholder-gray-600 resize-none"></textarea>
             </div>
-            <div class="bg-slate-50 px-6 py-4 border-t border-slate-100 flex items-center justify-between">
-              <span class="text-xs text-slate-400">1 Ballot Weight</span>
-              <button onclick="openVoteModal('${id}', '${c.name.replace(/'/g, "\\'")}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-semibold text-sm shadow transition-all">Cast Vote</button>
+
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="handleEncrypt()" class="w-full bg-indigo-600 hover:bg-indigo-500 active:scale-98 text-white font-medium text-sm py-3 rounded-xl transition-all cursor-pointer shadow-lg shadow-indigo-600/10">
+                    🔒 Encrypt Message
+                </button>
+                <button onclick="handleDecrypt()" class="w-full bg-gray-800 hover:bg-gray-700 active:scale-98 text-white font-medium text-sm py-3 rounded-xl transition-all cursor-pointer border border-gray-700/50">
+                    🔓 Decrypt Cipher
+                </button>
             </div>
-          </div>`;
-      });
 
-      // Populate Leaderboard 
-      const leaderboard = document.getElementById('leaderboard-container');
-      leaderboard.innerHTML = '';
-      const sorted = Object.keys(globalCandidates)
-        .map(id => ({id, ...globalCandidates[id]}))
-        .sort((a,b) => b.votes - a.votes);
+            <div class="space-y-1.5">
+                <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Cipher Text (What you paste into WhatsApp)</label>
+                <textarea id="cipherText" rows="4" placeholder="Encrypted data will appear here, or paste scrambled text here to decrypt..." 
+                          class="w-full bg-[#12121a] border border-gray-800 rounded-xl p-3 text-sm font-mono text-emerald-400 focus:outline-none focus:border-emerald-600 transition-colors placeholder-gray-700 resize-none"></textarea>
+            </div>
+        </div>
 
-      if (sorted.length === 0) {
-        leaderboard.innerHTML = `<div class="text-center py-12 text-slate-500">No active nominees yet.</div>`;
-      } else {
-        sorted.forEach((cand, idx) => {
-          const pct = totalVotes > 0 ? Math.round((cand.votes / totalVotes) * 100) : 0;
-          leaderboard.innerHTML += `
-            <div class="relative">
-              <div class="flex justify-between items-center mb-2">
-                <div class="flex items-center gap-3">
-                  <span class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center font-bold text-xs text-slate-600">${idx + 1}</span>
-                  <span class="font-semibold text-slate-900">${cand.name}</span>
-                  ${idx === 0 && cand.votes > 0 ? '<span class="bg-amber-50 text-amber-700 text-[10px] font-extrabold px-2 py-0.5 rounded border border-amber-200">LEADER 👑</span>' : ''}
-                </div>
-                <div><span class="font-bold text-slate-900">${cand.votes} votes</span> <span class="text-xs text-slate-500 ml-1">(${pct}%)</span></div>
-              </div>
-              <div class="h-4 w-full bg-slate-100 rounded-full overflow-hidden flex">
-                <div style="width: ${pct}%" class="h-full rounded-full bg-gradient-to-r ${cand.color} transition-all duration-1000"></div>
-              </div>
-            </div>`;
-        });
-      }
-    }
+        <button onclick="copyToClipboard()" id="copyBtn" class="w-full text-center text-xs text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer hidden">
+            Copy Ciphertext to Clipboard
+        </button>
+    </div>
 
-    // --- SUBMIT BALLOT EXECUTION ---
-    async function processConfirmedVote() {
-      if (!systemVotingOpen) return showNotification('Voting is closed.', 'error');
-      if (localHasVoted) return showNotification('You have already voted!', 'error');
+    <script>
+        // Helper: Convert string to ArrayBuffer
+        const getBytes = (str) => new TextEncoder().encode(str);
 
-      globalCandidates[candidateToVoteFor].votes = (globalCandidates[candidateToVoteFor].votes || 0) + 1;
-      
-      const nextState = { votingOpen: systemVotingOpen, candidates: globalCandidates };
-      await uploadSystemState(nextState);
-      
-      localHasVoted = true;
-      localStorage.setItem('voted_global_session', 'true');
-      closeVoteModal();
-      showNotification('Global vote cast successfully!');
-      switchTab('results');
-    }
+        // Derive a secure cryptographic key from the user's text password using PBKDF2
+        async function deriveKey(password, salt) {
+            const baseKey = await crypto.subtle.importKey(
+                "raw", getBytes(password), "PBKDF2", false, ["deriveKey"]
+            );
+            return crypto.subtle.deriveKey(
+                { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
+                baseKey,
+                { name: "AES-GCM", length: 256 },
+                false,
+                ["encrypt", "decrypt"]
+            );
+        }
 
-    // --- SECURE AUTH OPERATIONS ---
-    function verifyAdminToken() {
-      const inputPass = document.getElementById('admin-password-input').value;
-      if (inputPass === ADMINISTRATIVE_SECRET_KEY) {
-        isAdminUnlocked = true;
-        document.getElementById('admin-auth-panel').classList.add('hidden');
-        document.getElementById('admin-dashboard-panel').classList.remove('hidden');
-        showNotification('Security credentials authenticated.');
-      } else {
-        showNotification('Invalid admin password token.', 'error');
-      }
-    }
+        // Main Encryption Function
+        async function handleEncrypt() {
+            const pwd = document.getElementById('password').value;
+            const plainText = document.getElementById('plainText').value;
 
-    async function addNewCandidate(e) {
-      e.preventDefault();
-      if (!isAdminUnlocked) return showNotification('Unauthorized system call.', 'error');
+            if (!pwd || !plainText) {
+                alert("Please enter both a password and a plain text message.");
+                return;
+            }
 
-      const name = document.getElementById('new-cand-name').value;
-      const manifesto = document.getElementById('new-cand-manifesto').value;
-      const randomColor = colors[Math.floor(Math.random() * colors.length)];
-      const id = 'cand_' + Date.now();
+            try {
+                const salt = crypto.getRandomValues(new Uint8Array(16));
+                const iv = crypto.getRandomValues(new Uint8Array(12)); // Initialization Vector
+                const key = await deriveKey(pwd, salt);
 
-      globalCandidates[id] = { name, manifesto, color: randomColor, votes: 0 };
-      
-      await uploadSystemState({ votingOpen: systemVotingOpen, candidates: globalCandidates });
-      document.getElementById('add-candidate-form').reset();
-      showNotification('Nominee registered successfully!');
-    }
+                const encrypted = await crypto.subtle.encrypt(
+                    { name: "AES-GCM", iv: iv },
+                    key,
+                    getBytes(plainText)
+                );
 
-    async function toggleVotingGate() {
-      if (!isAdminUnlocked) return showNotification('Unauthorized system call.', 'error');
-      
-      systemVotingOpen = !systemVotingOpen;
-      await uploadSystemState({ votingOpen: systemVotingOpen, candidates: globalCandidates });
-      showNotification(`Voting gate: ${systemVotingOpen ? 'OPEN' : 'PAUSED'}`);
-    }
+                // Package the salt, IV, and ciphertext into a single payload
+                const payload = new Uint8Array(salt.byteLength + iv.byteLength + encrypted.byteLength);
+                payload.set(salt, 0);
+                payload.set(iv, salt.byteLength);
+                payload.set(new Uint8Array(encrypted), salt.byteLength + iv.byteLength);
 
-    async function resetGlobalElection() {
-      if (!isAdminUnlocked) return showNotification('Unauthorized system call.', 'error');
-      
-      if (confirm("Wipe all nominees and logs clear off the central database?")) {
-        await uploadSystemState({ votingOpen: true, candidates: {} });
-        localStorage.removeItem('voted_global_session');
-        localHasVoted = false;
-        showNotification('All live data arrays cleared.', 'info');
-      }
-    }
+                // Convert payload to simple Base64 string for easy WhatsApp sharing
+                const b64String = btoa(String.fromCharCode(...payload));
+                
+                // Add unique tags so WhatsApp doesn't accidentally mess up spacing
+                document.getElementById('cipherText').value = `[SECURE-MSG]\n${b64String}\n[/SECURE-MSG]`;
+                document.getElementById('copyBtn').classList.remove('hidden');
+            } catch (err) {
+                alert("Encryption failed: " + err.message);
+            }
+        }
 
-    // Layout helper utilities
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.getElementById('tab-' + tabId).classList.add('active');
-      
-      document.querySelectorAll('nav button').forEach(el => {
-        el.className = "px-4 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-600 hover:bg-slate-100";
-      });
-      document.getElementById('nav-' + tabId).className = "px-4 py-2.5 rounded-xl text-sm font-semibold transition-all bg-indigo-50 text-indigo-700 shadow-sm";
-    }
+        // Main Decryption Function
+        async function handleDecrypt() {
+            const pwd = document.getElementById('password').value;
+            let rawCipher = document.getElementById('cipherText').value.trim();
 
-    function openVoteModal(id, name) {
-      candidateToVoteFor = id;
-      document.getElementById('modal-candidate-name').innerText = name;
-      document.getElementById('vote-modal').style.display = 'flex';
-    }
+            if (!pwd || !rawCipher) {
+                alert("Please enter your shared password and paste the scrambled WhatsApp message.");
+                return;
+            }
 
-    function closeVoteModal() {
-      document.getElementById('vote-modal').style.display = 'none';
-    }
+            // Clean up tags if present
+            rawCipher = rawCipher.replace("[SECURE-MSG]\n", "").replace("\n[/SECURE-MSG]", "");
 
-    function showNotification(message, type = 'success') {
-      const banner = document.getElementById('notification');
-      const bg = document.getElementById('notification-bg');
-      document.getElementById('notification-text').innerText = message;
-      
-      bg.className = `px-5 py-3 rounded-xl shadow-lg text-white font-medium flex items-center gap-2 ${
-        type === 'success' ? 'bg-emerald-600' : type === 'error' ? 'bg-rose-600' : 'bg-blue-600'
-      }`;
-      
-      banner.classList.remove('hidden');
-      setTimeout(() => banner.classList.add('hidden'), 3500);
-    }
+            try {
+                // Convert back from Base64 string to byte array
+                const binaryStr = atob(rawCipher);
+                const payload = new Uint8Array(binaryStr.length);
+                for (let i = 0; i < binaryStr.length; i++) {
+                    payload[i] = binaryStr.charCodeAt(i);
+                }
 
-    document.getElementById('modal-confirm-btn').onclick = processConfirmedVote;
-    
-    // Initial data fetch invocation
-    fetchCurrentState();
-  </script>
+                // Extract salt, IV, and the actual encrypted message bytes
+                const salt = payload.slice(0, 16);
+                const iv = payload.slice(16, 28);
+                const encryptedData = payload.slice(28);
+
+                const key = await deriveKey(pwd, salt);
+
+                const decrypted = await crypto.subtle.decrypt(
+                    { name: "AES-GCM", iv: iv },
+                    key,
+                    encryptedData
+                );
+
+                document.getElementById('plainText').value = new TextDecoder().decode(decrypted);
+            } catch (err) {
+                alert("Decryption failed! The password might be wrong, or the message was corrupted.");
+            }
+        }
+
+        function copyToClipboard() {
+            const cipherText = document.getElementById('cipherText');
+            cipherText.select();
+            document.execCommand('copy');
+            const btn = document.getElementById('copyBtn');
+            btn.innerText = "✓ Copied!";
+            setTimeout(() => { btn.innerText = "Copy Ciphertext to Clipboard"; }, 2000);
+        }
+    </script>
 </body>
 </html>
