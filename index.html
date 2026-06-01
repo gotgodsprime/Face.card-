@@ -1,6 +1,396 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>SEFA AI — Premium Voice Assistant</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              bg: '#05070c',
+              card: 'rgba(17, 24, 39, 0.7)',
+              purple: '#7c3aed',
+              pink: '#ff3366',
+              cyan: '#06b6d4',
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* Safe Area Insets for modern bezel-less smartphones */
+    body {
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      background-color: #05070c;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    /* Glassmorphism utility */
+    .glassmorphic {
+      background: rgba(13, 17, 28, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .glassmorphic-light {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+    }
+
+    /* Glowing wave effects simulating Siri / iOS ambient glow */
+    @keyframes wave-pulse {
+      0%, 100% {
+        transform: scale(1) translate(-50%, -50%);
+        opacity: 0.25;
+        filter: blur(40px);
+      }
+      50% {
+        transform: scale(1.35) translate(-40%, -45%);
+        opacity: 0.55;
+        filter: blur(60px);
+      }
+    }
+
+    @keyframes orb-rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .ambient-glow-1 {
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.7) 0%, rgba(0,0,0,0) 70%);
+      animation: wave-pulse 8s infinite ease-in-out;
+    }
+
+    .ambient-glow-2 {
+      background: radial-gradient(circle, rgba(255, 51, 102, 0.6) 0%, rgba(0,0,0,0) 70%);
+      animation: wave-pulse 11s infinite ease-in-out reverse;
+    }
+
+    .orb-orbit {
+      animation: orb-rotate 25s infinite linear;
+    }
+
+    /* Pulsing mic ring during active listening */
+    @keyframes pulse-ring {
+      0% {
+        transform: scale(0.9);
+        opacity: 0.8;
+        box-shadow: 0 0 0 0px rgba(124, 58, 237, 0.4), 0 0 0 0px rgba(255, 51, 102, 0.3);
+      }
+      100% {
+        transform: scale(1.4);
+        opacity: 0;
+        box-shadow: 0 0 0 30px rgba(124, 58, 237, 0), 0 0 0 50px rgba(255, 51, 102, 0);
+      }
+    }
+
+    .active-listening-ring {
+      animation: pulse-ring 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+    }
+
+    /* Live audio waveform simulation */
+    .bar {
+      transition: height 0.08s ease-in-out;
+    }
+
+    /* Message bounce */
+    @keyframes slide-up-bubble {
+      0% {
+        opacity: 0;
+        transform: translateY(16px) scale(0.95);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    .bubble-in {
+      animation: slide-up-bubble 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* iOS home indicator simulate */
+    .home-indicator {
+      width: 134px;
+      height: 5px;
+      background-color: rgba(255, 255, 255, 0.35);
+      border-radius: 100px;
+      margin: 8px auto 0 auto;
+    }
+  </style>
+</head>
+<body class="h-full text-white font-sans overflow-hidden bg-brand-bg flex justify-center items-center">
+
+  <audio id="snd-activation" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav" preload="auto" class="hidden"></audio>
+  <audio id="snd-success" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-84.wav" preload="auto" class="hidden"></audio>
+
+  <div class="relative w-full h-full max-w-md md:h-[844px] md:rounded-[48px] md:border-[10px] md:border-neutral-800 md:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col justify-between glassmorphic">
+    
+    <div class="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+      <div class="absolute top-[25%] left-[25%] w-[350px] h-[350px] ambient-glow-1"></div>
+      <div class="absolute bottom-[20%] right-[10%] w-[400px] h-[400px] ambient-glow-2"></div>
+      <div class="absolute inset-0 bg-black/40 backdrop-blur-3xl"></div>
+    </div>
+
+    <header class="pt-6 px-6 pb-4 flex items-center justify-between z-10">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-purple to-brand-pink p-[1px] shadow-lg shadow-brand-purple/20">
+          <div class="w-full h-full rounded-[15px] bg-brand-bg flex items-center justify-center">
+            <span class="text-xs font-black tracking-widest bg-gradient-to-r from-brand-purple to-brand-pink bg-clip-text text-transparent">SEFA</span>
+          </div>
+        </div>
+        <div>
+          <h1 class="text-base font-semibold tracking-tight text-white/95">SEFA AI</h1>
+          <div class="flex items-center space-x-1.5">
+            <span id="status-indicator" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span id="status-text" class="text-xs text-neutral-400 font-medium">System Ready</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <button onclick="toggleSettingsModal()" class="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 active:scale-95 transition flex items-center justify-center text-neutral-300" title="Settings">
+          <i data-lucide="sliders" class="w-4 h-4"></i>
+        </button>
+        <button onclick="clearConversations()" class="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 active:scale-95 transition flex items-center justify-center text-red-400/80 hover:text-red-400" title="Clear History">
+          <i data-lucide="trash-2" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </header>
+
+    <main id="chat-scroller" class="flex-1 overflow-y-auto px-6 py-4 space-y-4 flex flex-col scroll-smooth">
+      
+      <div id="welcome-prompt" class="my-auto py-8 text-center space-y-6 flex flex-col justify-center items-center">
+        <div class="relative">
+          <div class="absolute -inset-1 rounded-full bg-gradient-to-r from-brand-purple to-brand-pink opacity-70 blur animate-pulse"></div>
+          <div class="relative w-20 h-20 rounded-full bg-slate-900/90 flex items-center justify-center border border-white/10">
+            <i data-lucide="mic" class="w-8 h-8 text-white"></i>
+          </div>
+        </div>
+        
+        <div class="space-y-2">
+          <h2 class="text-2xl font-bold tracking-tight bg-gradient-to-r from-white via-neutral-100 to-neutral-400 bg-clip-text text-transparent">
+            How can I help you?
+          </h2>
+          <p class="text-sm text-neutral-400 max-w-[260px] mx-auto leading-relaxed">
+            I am SEFA. Ask me questions, trigger functions, or let's just chat.
+          </p>
+        </div>
+
+        <div class="w-full max-w-sm grid grid-cols-2 gap-2.5 pt-4">
+          <button onclick="useSuggestedPrompt('What time is it?')" class="glassmorphic-light text-left p-3 rounded-2xl hover:bg-white/10 active:scale-[0.98] transition-all group">
+            <span class="block text-xs font-semibold text-brand-pink group-hover:translate-x-0.5 transition-transform">Command</span>
+            <span class="text-xs text-neutral-300 block truncate">"What time is it?"</span>
+          </button>
+          <button onclick="useSuggestedPrompt('Open my attendance app')" class="glassmorphic-light text-left p-3 rounded-2xl hover:bg-white/10 active:scale-[0.98] transition-all group">
+            <span class="block text-xs font-semibold text-brand-purple group-hover:translate-x-0.5 transition-transform">Navigation</span>
+            <span class="text-xs text-neutral-300 block truncate">"Open attendance app"</span>
+          </button>
+          <button onclick="useSuggestedPrompt('Tell me a short fun fact')" class="glassmorphic-light text-left p-3 rounded-2xl hover:bg-white/10 active:scale-[0.98] transition-all group">
+            <span class="block text-xs font-semibold text-cyan-400 group-hover:translate-x-0.5 transition-transform">Query</span>
+            <span class="text-xs text-neutral-300 block truncate">"Tell me a fun fact"</span>
+          </button>
+          <button onclick="useSuggestedPrompt('Send a message')" class="glassmorphic-light text-left p-3 rounded-2xl hover:bg-white/10 active:scale-[0.98] transition-all group">
+            <span class="block text-xs font-semibold text-emerald-400 group-hover:translate-x-0.5 transition-transform">Task</span>
+            <span class="text-xs text-neutral-300 block truncate">"Send a message"</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="chat-messages-container" class="space-y-4 hidden"></div>
+
+      <div id="speaking-indicator" class="hidden glassmorphic-light rounded-2xl p-4 flex items-center justify-between border border-brand-purple/20 bubble-in">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 rounded-full bg-brand-purple/10 flex items-center justify-center">
+            <i data-lucide="volume-2" class="w-4 h-4 text-brand-purple animate-bounce"></i>
+          </div>
+          <div>
+            <span class="text-xs font-semibold text-brand-purple tracking-wide uppercase">SEFA Speaking</span>
+            <p id="speaking-text-preview" class="text-xs text-neutral-400 max-w-[200px] truncate">Responding via audio...</p>
+          </div>
+        </div>
+        <button id="btn-stop-audio" onclick="stopSefaSpeaking()" class="text-xs bg-white/10 hover:bg-white/20 active:scale-95 px-3 py-1.5 rounded-xl font-medium transition text-neutral-300">
+          Stop
+        </button>
+      </div>
+
+      <div id="live-transcription-container" class="hidden glassmorphic-light rounded-2xl p-4 border border-brand-pink/30 bubble-in">
+        <div class="flex items-start space-x-3">
+          <div class="w-8 h-8 rounded-full bg-brand-pink/20 flex items-center justify-center shrink-0 mt-0.5">
+            <div class="w-2.5 h-2.5 rounded-full bg-brand-pink animate-ping"></div>
+          </div>
+          <div class="space-y-1 overflow-hidden w-full">
+            <span class="text-xs font-bold text-brand-pink tracking-wider uppercase block">Listening...</span>
+            <p id="live-transcription-text" class="text-sm text-neutral-100 italic leading-snug break-words">Say something, I'm listening...</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="typing-indicator" class="hidden flex items-center space-x-2 p-3 bg-neutral-900/40 rounded-2xl max-w-[80px] bubble-in">
+        <span class="w-2 h-2 rounded-full bg-brand-purple animate-bounce" style="animation-delay: 0ms"></span>
+        <span class="w-2 h-2 rounded-full bg-brand-pink animate-bounce" style="animation-delay: 150ms"></span>
+        <span class="w-2 h-2 rounded-full bg-brand-purple animate-bounce" style="animation-delay: 300ms"></span>
+      </div>
+
+    </main>
+
+    <footer class="p-6 pt-2 pb-4 glassmorphic border-t border-white/5 space-y-4 z-10">
+      
+      <div class="flex items-center justify-between text-xs text-neutral-400">
+        <button id="btn-wake-phrase" onclick="triggerWakePhraseSimulation()" class="flex items-center space-x-1.5 bg-white/5 hover:bg-white/10 active:scale-95 px-2.5 py-1.5 rounded-full transition font-medium">
+          <span class="w-2 h-2 rounded-full bg-brand-pink"></span>
+          <span>Simulation: "Hey SEFA"</span>
+        </button>
+        <button onclick="toggleKeyboardInput()" class="flex items-center space-x-1 bg-white/5 hover:bg-white/10 active:scale-95 px-2.5 py-1.5 rounded-full transition font-medium">
+          <i id="toggle-input-icon" data-lucide="keyboard" class="w-3.5 h-3.5"></i>
+          <span id="toggle-input-text">Use Typing</span>
+        </button>
+      </div>
+
+      <div id="keyboard-input-container" class="hidden flex items-center space-x-2 transition-all bubble-in">
+        <input id="text-user-query" type="text" placeholder="Type command or query..." class="flex-1 bg-white/5 rounded-2xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 border border-white/5 transition-all">
+        <button onclick="submitTextQuery()" class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-brand-purple to-brand-pink flex items-center justify-center active:scale-90 transition-all shadow-lg shadow-brand-purple/20">
+          <i data-lucide="send" class="w-4 h-4 text-white"></i>
+        </button>
+      </div>
+
+      <div id="voice-interaction-container" class="flex flex-col items-center py-2 space-y-4">
+        
+        <div id="voice-visualizer" class="h-10 flex items-end justify-center space-x-1 opacity-20 transition-opacity duration-300 w-full max-w-[200px]">
+          <div class="bar w-1.5 h-2 bg-gradient-to-t from-brand-purple to-brand-pink rounded-full"></div>
+          <div class="bar w-1.5 h-2 bg-gradient-to-t from-brand-purple to-brand-pink rounded-full"></div>
+          <div class="bar w-1.5 h-2 bg-gradient-to-t from-brand-purple to-brand-pink rounded-full"></div>
+          <div class="bar w-1.5 h-2 bg-gradient-to-t from-brand-purple to-brand-pink rounded-full"></div>
+          <div class="bar w-1.5 h-2 bg-gradient-to-t from-brand-purple to-brand-pink rounded-full"></div>
+          <div class="bar w-1.5 h-2 bg-gradient-to-t from-brand-purple to-brand-pink rounded-full"></div>
+          <div class="bar w-1.5 h-2 bg-gradient-to-t from-brand-purple to-brand-pink rounded-full"></div>
+          <div class="bar w-1.5 h-2 bg-gradient-to-t from-brand-purple to-brand-pink rounded-full"></div>
+          <div class="bar w-1.5 h-2 bg-gradient-to-t from-brand-purple to-brand-pink rounded-full"></div>
+          <div class="bar w-1.5 h-2 bg-gradient-to-t from-brand-purple to-brand-pink rounded-full"></div>
+        </div>
+
+        <div class="relative flex justify-center items-center">
+          
+          <div id="mic-pulse-ring" class="absolute w-20 h-20 rounded-full bg-gradient-to-tr from-brand-purple via-brand-pink to-brand-cyan opacity-0 -z-10"></div>
+          
+          <button id="btn-mic-trigger" onclick="toggleSpeechListening()" class="relative w-20 h-20 rounded-full bg-gradient-to-tr from-brand-purple to-brand-pink p-[2px] shadow-[0_8px_32px_rgba(124,58,237,0.35)] transition-all duration-300 active:scale-95 z-20 group hover:shadow-[0_8px_40px_rgba(255,51,102,0.45)]">
+            <div id="mic-inner-sphere" class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center transition-all duration-300 group-hover:bg-slate-950">
+              <i id="mic-icon" data-lucide="mic" class="w-8 h-8 text-white transition-transform group-hover:scale-110"></i>
+            </div>
+          </button>
+        </div>
+
+        <span id="mic-guide-text" class="text-xs font-bold tracking-widest text-neutral-500 uppercase animate-pulse">Tap to speak to SEFA</span>
+      </div>
+
+      <div class="home-indicator"></div>
+    </footer>
+
+    <div id="settings-modal" class="hidden absolute inset-0 z-50 glassmorphic flex flex-col justify-end">
+      <div onclick="toggleSettingsModal()" class="absolute inset-0 bg-black/40"></div>
+      
+      <div class="relative bg-slate-950/95 border-t border-white/10 rounded-t-[36px] p-6 pb-12 space-y-6 max-h-[85%] overflow-y-auto z-10 transform translate-y-0 transition-transform duration-300">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-bold text-white tracking-tight">System Configuration</h3>
+          <button onclick="toggleSettingsModal()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center active:scale-90 transition">
+            <i data-lucide="x" class="w-4 h-4 text-neutral-400"></i>
+          </button>
+        </div>
+
+        <div class="space-y-4">
+          <div class="space-y-2">
+            <label class="block text-xs font-bold text-neutral-400 uppercase tracking-widest">Google Gemini API Key (Optional)</label>
+            <p class="text-xs text-neutral-400 leading-normal">
+              Provide your API key to power SEFA with live <strong>Gemini 2.5 Flash</strong> processing. If empty, SEFA runs high-fidelity offline system processing.
+            </p>
+            <div class="relative">
+              <input id="api-key-input" type="password" placeholder="AIZA..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-brand-purple/50">
+              <button onclick="toggleApiKeyVisibility()" class="absolute right-3 top-3 text-neutral-400 hover:text-white transition">
+                <i data-lucide="eye" id="eye-icon" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-xs font-bold text-neutral-400 uppercase tracking-widest">Your Name</label>
+            <input id="user-name-input" type="text" placeholder="Human" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-brand-purple/50">
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-xs font-bold text-neutral-400 uppercase tracking-widest">Speech Synthesis Voice</label>
+            <select id="voice-select" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-brand-purple/50">
+              <option value="default">System Default Voice</option>
+            </select>
+            <button onclick="testSelectedVoice()" class="text-xs text-brand-purple font-semibold flex items-center space-x-1 mt-1.5">
+              <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+              <span>Test Selected Voice</span>
+            </button>
+          </div>
+
+          <div class="space-y-2 pt-2 border-t border-white/5">
+            <label class="block text-xs font-bold text-neutral-400 uppercase tracking-widest">PWA Mode</label>
+            <div class="bg-white/5 rounded-xl p-3 text-xs text-neutral-400 leading-normal space-y-1">
+              <p>📱 Add this app to your smartphone Home Screen for full fullscreen experience, removing standard web-browsing clutter.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-3 pt-2">
+          <button onclick="saveConfigurations()" class="flex-1 bg-gradient-to-tr from-brand-purple to-brand-pink hover:opacity-90 py-3.5 rounded-xl font-bold text-sm tracking-wide text-white transition-all shadow-md active:scale-[0.98]">
+            Save and Apply
+          </button>
+          <button onclick="toggleSettingsModal()" class="flex-1 bg-white/5 hover:bg-white/10 py-3.5 rounded-xl font-semibold text-sm text-neutral-300 transition-all active:scale-[0.98]">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast-banner" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 transform -translate-y-24 opacity-0 transition-all duration-300 max-w-xs w-full px-4 pointer-events-none">
+      <div class="glassmorphic rounded-2xl p-4 flex items-center space-x-3 shadow-2xl border border-white/10 pointer-events-auto">
+        <div id="toast-icon-bg" class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0">
+          <i id="toast-icon" data-lucide="info" class="w-4 h-4"></i>
+        </div>
+        <div class="overflow-hidden">
+          <span id="toast-title" class="text-xs font-bold text-white block tracking-tight">System Info</span>
+          <p id="toast-msg" class="text-xs text-neutral-400 block truncate leading-tight mt-0.5">Notification info text here</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
   <script>
     // --- STABLE SECURE CONFIGURATION STATE ---
-    let apiKey = ""; // Initial empty apiKey; dynamically managed through safe UI state
+    let apiKey = ""; 
     let appId = typeof __app_id !== 'undefined' ? __app_id : 'sefa-assistant';
     let userName = "User";
     let isListening = false;
@@ -18,27 +408,21 @@
 
     // --- APPLICATION STARTUP ---
     window.onload = function() {
-      // Setup Initial State & Local Storage Data hydration
       loadConfigurationsFromStorage();
       initializeLucide();
       populateVoices();
       
-      // Setup Event Listeners for Keyboard Submit on Enter Key
       document.getElementById('text-user-query').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
           submitTextQuery();
         }
       });
 
-      // Populate voice selection selector when system voices are loaded
       if (typeof synthesis !== 'undefined' && synthesis.onvoiceschanged !== undefined) {
         synthesis.onvoiceschanged = populateVoices;
       }
 
-      // Initialize Sound Activation Context
       initAudioEngine();
-
-      // Show system start notification
       showToast("SEFA AI", "Online and ready to help. Tap Mic!", "purple");
     };
 
@@ -73,7 +457,6 @@
       }
     }
 
-    // High fidelity fallback beep synth using programmatic AudioContext
     function playSyntheticPing(type) {
       if (!audioContext) return;
       try {
@@ -83,8 +466,8 @@
         gain.connect(audioContext.destination);
 
         if (type === 'activation') {
-          osc.frequency.setValueAtTime(440, audioContext.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + 0.15);
+          osc.frequency.setValueAtTime(440, audioContext.currentTime); 
+          osc.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + 0.15); 
           gain.gain.setValueAtTime(0.1, audioContext.currentTime);
           gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.2);
           osc.start();
@@ -195,7 +578,7 @@
       if (typeof synthesis === 'undefined') return;
       synthesis.cancel();
 
-      const testUtterance = new SpeechSynthesisUtterance("Testing speech synthes configuration for SEFA AI");
+      const testUtterance = new SpeechSynthesisUtterance("Testing speech synthesis configuration for SEFA AI");
       const voices = synthesis.getVoices();
       
       if (selectVal !== 'default') {
@@ -523,7 +906,7 @@ Important guidelines:
 1. Keep responses short, direct, human-like, and conversational (usually 1-3 sentences maximum).
 2. Avoid verbose explanations or markdown-heavy structures like lists/code blocks unless requested.
 3. Be playful and responsive. Never mention being a language model.
-Current Day/Time is: Monday, June 1, 2026 at 2:56 PM.
+Current Day/Time is: Monday, June 1, 2026 at 10:29 PM.
 Current Location context is: Accra, Ghana.`;
 
       const formattedContents = [];
@@ -536,7 +919,6 @@ Current Location context is: Accra, Ghana.`;
         });
       });
 
-      // Secure dynamic validation checks prior to building runtime transaction payload
       if (formattedContents.length === 0 || formattedContents[formattedContents.length - 1].parts.text !== query) {
         formattedContents.push({
           role: 'user',
@@ -551,7 +933,6 @@ Current Location context is: Accra, Ghana.`;
         }
       };
 
-      // Updated target context mapping endpoint url securely referencing official generative models
       const endpointUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
       return await executeApiWithBackoff(endpointUrl, payload);
@@ -599,7 +980,7 @@ Current Location context is: Accra, Ghana.`;
 
       if (query.includes('attendance app') || query.includes('open my attendance')) {
         triggerSystemAppLaunchSimulation("Attendance Tracker");
-        return `Launching your Attendance Tracker app immediately. Let me know if you need help logged in.`;
+        return `Launching your Attendance Tracker app immediately. Let me know if you need help logging in.`;
       }
 
       if (query.includes('send a message') || query.includes('send message')) {
@@ -730,6 +1111,7 @@ Current Location context is: Accra, Ghana.`;
       }
     }
 
+    // --- EYE ICON INTERACTIVITY FOR PASSWORD VIEW ---
     function toggleApiKeyVisibility() {
       const input = document.getElementById('api-key-input');
       const icon = document.getElementById('eye-icon');
@@ -743,3 +1125,6 @@ Current Location context is: Accra, Ghana.`;
       initializeLucide();
     }
   </script>
+
+</body>
+</html>
