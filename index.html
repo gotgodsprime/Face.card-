@@ -1,168 +1,745 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Group Cipher</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <style>
-        .glass {
-            background: rgba(30, 30, 40, 0.65);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+  <script>
+    // --- STABLE SECURE CONFIGURATION STATE ---
+    let apiKey = ""; // Initial empty apiKey; dynamically managed through safe UI state
+    let appId = typeof __app_id !== 'undefined' ? __app_id : 'sefa-assistant';
+    let userName = "User";
+    let isListening = false;
+    let chatHistory = [];
+    let synthesVoiceName = "";
+    let isSefaSpeaking = false;
+    let audioContext = null;
+
+    // Web Speech API interfaces
+    let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null;
+    let synthesis = window.speechSynthesis;
+    let speechUtterance = null;
+    let visualizerInterval = null;
+
+    // --- APPLICATION STARTUP ---
+    window.onload = function() {
+      // Setup Initial State & Local Storage Data hydration
+      loadConfigurationsFromStorage();
+      initializeLucide();
+      populateVoices();
+      
+      // Setup Event Listeners for Keyboard Submit on Enter Key
+      document.getElementById('text-user-query').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          submitTextQuery();
         }
-    </style>
-</head>
-<body class="bg-[#0b0b0f] text-gray-100 min-h-screen flex items-center justify-center p-4 antialiased">
+      });
 
-    <div class="glass w-full max-w-lg rounded-3xl p-6 shadow-2xl space-y-6">
-        
-        <div class="text-center space-y-1">
-            <h1 class="text-2xl font-bold tracking-tight bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">Secret WhatsApp Cipher</h1>
-            <p class="text-xs text-gray-400">Zero-server, local AES-GCM browser encryption</p>
-        </div>
+      // Populate voice selection selector when system voices are loaded
+      if (typeof synthesis !== 'undefined' && synthesis.onvoiceschanged !== undefined) {
+        synthesis.onvoiceschanged = populateVoices;
+      }
 
-        <div class="space-y-1.5">
-            <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Shared Secret Password</label>
-            <input type="password" id="password" placeholder="Enter your secret group key..." 
-                   class="w-full bg-[#161622] border border-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 transition-colors placeholder-gray-600">
-        </div>
+      // Initialize Sound Activation Context
+      initAudioEngine();
 
-        <hr class="border-gray-900">
+      // Show system start notification
+      showToast("SEFA AI", "Online and ready to help. Tap Mic!", "purple");
+    };
 
-        <div class="space-y-4">
-            <div class="space-y-1.5">
-                <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Plain Text (Your Message)</label>
-                <textarea id="plainText" rows="3" placeholder="Type the message you want to encrypt here..." 
-                          class="w-full bg-[#161622] border border-gray-800 rounded-xl p-3 text-sm focus:outline-none focus:border-indigo-500 transition-colors placeholder-gray-600 resize-none"></textarea>
-            </div>
+    function initializeLucide() {
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
+    }
 
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="handleEncrypt()" class="w-full bg-indigo-600 hover:bg-indigo-500 active:scale-98 text-white font-medium text-sm py-3 rounded-xl transition-all cursor-pointer shadow-lg shadow-indigo-600/10">
-                    🔒 Encrypt Message
-                </button>
-                <button onclick="handleDecrypt()" class="w-full bg-gray-800 hover:bg-gray-700 active:scale-98 text-white font-medium text-sm py-3 rounded-xl transition-all cursor-pointer border border-gray-700/50">
-                    🔓 Decrypt Cipher
-                </button>
-            </div>
+    // --- SOUND & AUDIO EFFECTS ENGINE ---
+    function initAudioEngine() {
+      window.addEventListener('click', () => {
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+      }, { once: true });
+    }
 
-            <div class="space-y-1.5">
-                <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Cipher Text (What you paste into WhatsApp)</label>
-                <textarea id="cipherText" rows="4" placeholder="Encrypted data will appear here, or paste scrambled text here to decrypt..." 
-                          class="w-full bg-[#12121a] border border-gray-800 rounded-xl p-3 text-sm font-mono text-emerald-400 focus:outline-none focus:border-emerald-600 transition-colors placeholder-gray-700 resize-none"></textarea>
-            </div>
-        </div>
+    function playSound(type) {
+      try {
+        const audioEl = document.getElementById(type === 'activation' ? 'snd-activation' : 'snd-success');
+        if (audioEl) {
+          audioEl.currentTime = 0;
+          audioEl.play().catch(e => {
+            playSyntheticPing(type);
+          });
+        } else {
+          playSyntheticPing(type);
+        }
+      } catch (e) {
+        playSyntheticPing(type);
+      }
+    }
 
-        <button onclick="copyToClipboard()" id="copyBtn" class="w-full text-center text-xs text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer hidden">
-            Copy Ciphertext to Clipboard
-        </button>
-    </div>
+    // High fidelity fallback beep synth using programmatic AudioContext
+    function playSyntheticPing(type) {
+      if (!audioContext) return;
+      try {
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
 
-    <script>
-        // Helper: Convert string to ArrayBuffer
-        const getBytes = (str) => new TextEncoder().encode(str);
+        if (type === 'activation') {
+          osc.frequency.setValueAtTime(440, audioContext.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + 0.15);
+          gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.2);
+          osc.start();
+          osc.stop(audioContext.currentTime + 0.2);
+        } else {
+          osc.frequency.setValueAtTime(880, audioContext.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.1);
+          gain.gain.setValueAtTime(0.08, audioContext.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.15);
+          osc.start();
+          osc.stop(audioContext.currentTime + 0.15);
+        }
+      } catch(err) {
+        console.warn("AudioContext failed playing synthetic ping:", err);
+      }
+    }
 
-        // Derive a secure cryptographic key from the user's text password using PBKDF2
-        async function deriveKey(password, salt) {
-            const baseKey = await crypto.subtle.importKey(
-                "raw", getBytes(password), "PBKDF2", false, ["deriveKey"]
-            );
-            return crypto.subtle.deriveKey(
-                { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
-                baseKey,
-                { name: "AES-GCM", length: 256 },
-                false,
-                ["encrypt", "decrypt"]
-            );
+    // --- LOCAL STORAGE HYDRATION & PERSISTENCE ---
+    function loadConfigurationsFromStorage() {
+      const savedKey = localStorage.getItem(`${appId}_gemini_key`);
+      if (savedKey) {
+        apiKey = savedKey;
+        document.getElementById('api-key-input').value = savedKey;
+      }
+
+      const savedName = localStorage.getItem(`${appId}_user_name`);
+      if (savedName) {
+        userName = savedName;
+        document.getElementById('user-name-input').value = savedName;
+      } else {
+        userName = "User";
+        document.getElementById('user-name-input').value = "";
+      }
+
+      const savedVoice = localStorage.getItem(`${appId}_synthes_voice`);
+      if (savedVoice) {
+        synthesVoiceName = savedVoice;
+      }
+
+      const savedHistory = localStorage.getItem(`${appId}_chat_history`);
+      if (savedHistory) {
+        try {
+          chatHistory = JSON.parse(savedHistory);
+          if (chatHistory.length > 0) {
+            document.getElementById('welcome-prompt').classList.add('hidden');
+            const container = document.getElementById('chat-messages-container');
+            container.classList.remove('hidden');
+            
+            chatHistory.forEach(msg => {
+              appendMessageToUI(msg.role, msg.text, false);
+            });
+            scrollChatToBottom();
+          }
+        } catch(e) {
+          console.error("Failed loading persistent chat logs:", e);
+        }
+      }
+    }
+
+    function saveConfigurations() {
+      const keyVal = document.getElementById('api-key-input').value.trim();
+      const nameVal = document.getElementById('user-name-input').value.trim();
+      const selectVoiceVal = document.getElementById('voice-select').value;
+
+      apiKey = keyVal;
+      localStorage.setItem(`${appId}_gemini_key`, keyVal);
+
+      userName = nameVal ? nameVal : "User";
+      localStorage.setItem(`${appId}_user_name`, userName);
+
+      synthesVoiceName = selectVoiceVal;
+      localStorage.setItem(`${appId}_synthes_voice`, selectVoiceVal);
+
+      showToast("Settings Updated", "Configuration changes successfully committed", "emerald");
+      toggleSettingsModal();
+    }
+
+    function clearConversations() {
+      localStorage.removeItem(`${appId}_chat_history`);
+      chatHistory = [];
+      document.getElementById('chat-messages-container').innerHTML = "";
+      document.getElementById('chat-messages-container').classList.add('hidden');
+      document.getElementById('welcome-prompt').classList.remove('hidden');
+      showToast("Memory Cleared", "Assistant local timeline has been reset", "purple");
+    }
+
+    // --- SYSTEM SYNTHESIZER AND VOICE VOX SETTINGS ---
+    function populateVoices() {
+      if (typeof synthesis === 'undefined') return;
+      
+      const select = document.getElementById('voice-select');
+      const voices = synthesis.getVoices();
+      select.innerHTML = '<option value="default">System Default Voice</option>';
+
+      voices.forEach(voice => {
+        const option = document.createElement('option');
+        option.value = voice.name;
+        option.textContent = `${voice.name} (${voice.lang})`;
+        if (voice.name === synthesVoiceName) {
+          option.selected = true;
+        }
+        select.appendChild(option);
+      });
+    }
+
+    function testSelectedVoice() {
+      const selectVal = document.getElementById('voice-select').value;
+      if (typeof synthesis === 'undefined') return;
+      synthesis.cancel();
+
+      const testUtterance = new SpeechSynthesisUtterance("Testing speech synthes configuration for SEFA AI");
+      const voices = synthesis.getVoices();
+      
+      if (selectVal !== 'default') {
+        const matchingVoice = voices.find(v => v.name === selectVal);
+        if (matchingVoice) testUtterance.voice = matchingVoice;
+      }
+
+      synthesis.speak(testUtterance);
+    }
+
+    // --- CUSTOM BANNER NOTIFICATION (TOAST BANNER) ---
+    function showToast(title, msg, type = "purple") {
+      const banner = document.getElementById('toast-banner');
+      const titleEl = document.getElementById('toast-title');
+      const msgEl = document.getElementById('toast-msg');
+      const iconBg = document.getElementById('toast-icon-bg');
+      const icon = document.getElementById('toast-icon');
+
+      titleEl.innerText = title;
+      msgEl.innerText = msg;
+
+      iconBg.className = "w-8 h-8 rounded-xl flex items-center justify-center shrink-0";
+      
+      if (type === "purple") {
+        iconBg.classList.add("bg-brand-purple/20", "text-brand-purple");
+        icon.setAttribute("data-lucide", "sparkles");
+      } else if (type === "pink") {
+        iconBg.classList.add("bg-brand-pink/20", "text-brand-pink");
+        icon.setAttribute("data-lucide", "mic");
+      } else if (type === "emerald") {
+        iconBg.classList.add("bg-emerald-500/20", "text-emerald-400");
+        icon.setAttribute("data-lucide", "check-circle-2");
+      } else {
+        iconBg.classList.add("bg-red-500/20", "text-red-400");
+        icon.setAttribute("data-lucide", "alert-circle");
+      }
+
+      initializeLucide();
+
+      banner.classList.remove('-translate-y-24', 'opacity-0');
+      banner.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        banner.classList.add('-translate-y-24', 'opacity-0');
+        banner.classList.remove('translate-y-0', 'opacity-100');
+      }, 3500);
+    }
+
+    // --- VOICE SPEECH RECOGNITION (TAP TO TALK) ---
+    function toggleSpeechListening() {
+      if (isSefaSpeaking) {
+        stopSefaSpeaking();
+      }
+
+      if (isListening) {
+        stopActiveListening();
+      } else {
+        startActiveListening();
+      }
+    }
+
+    function startActiveListening() {
+      if (!SpeechRecognition) {
+        showToast("System Error", "Speech recognition API not supported on this browser context. Please use keyboard typing alternative.", "red");
+        toggleKeyboardInput();
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.lang = "en-US";
+
+      playSound('activation');
+
+      isListening = true;
+      document.getElementById('mic-icon').setAttribute("data-lucide", "square");
+      initializeLucide();
+
+      document.getElementById('mic-pulse-ring').classList.add('active-listening-ring');
+      document.getElementById('mic-inner-sphere').classList.add('bg-brand-purple/20');
+      document.getElementById('live-transcription-container').classList.remove('hidden');
+      document.getElementById('voice-visualizer').classList.remove('opacity-20');
+      document.getElementById('mic-guide-text').innerText = "Listening... Tap to stop";
+      document.getElementById('mic-guide-text').classList.add('text-brand-pink');
+      document.getElementById('live-transcription-text').innerText = "Say something, I'm listening...";
+
+      startVisualizerSimulation();
+
+      recognition.onstart = function() {
+        updateSystemStatus(true, "Listening");
+      };
+
+      recognition.onerror = function(event) {
+        console.error("Speech Recognition Error Event:", event);
+        if (event.error === 'not-allowed') {
+          showToast("Microphone Blocked", "Please grant microphone access to allow speech translation commands.", "red");
+        }
+        stopActiveListening();
+      };
+
+      recognition.onend = function() {
+        stopActiveListening();
+      };
+
+      recognition.onresult = function(event) {
+        let interimTranscript = "";
+        let finalTranscript = "";
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i].transcript;
+          } else {
+            interimTranscript += event.results[i].transcript;
+          }
         }
 
-        // Main Encryption Function
-        async function handleEncrypt() {
-            const pwd = document.getElementById('password').value;
-            const plainText = document.getElementById('plainText').value;
+        const currentProgress = finalTranscript || interimTranscript;
+        if (currentProgress) {
+          document.getElementById('live-transcription-text').innerText = currentProgress;
+        }
 
-            if (!pwd || !plainText) {
-                alert("Please enter both a password and a plain text message.");
-                return;
+        if (finalTranscript) {
+          stopActiveListening();
+          processUserPrompt(finalTranscript);
+        }
+      };
+
+      recognition.start();
+    }
+
+    function stopActiveListening() {
+      if (!isListening) return;
+      isListening = false;
+
+      if (recognition) {
+        recognition.stop();
+      }
+
+      document.getElementById('mic-icon').setAttribute("data-lucide", "mic");
+      initializeLucide();
+      document.getElementById('mic-pulse-ring').classList.remove('active-listening-ring');
+      document.getElementById('mic-inner-sphere').classList.remove('bg-brand-purple/20');
+      document.getElementById('live-transcription-container').classList.add('hidden');
+      document.getElementById('voice-visualizer').classList.add('opacity-20');
+      document.getElementById('mic-guide-text').innerText = "Tap to speak to SEFA";
+      document.getElementById('mic-guide-text').classList.remove('text-brand-pink');
+
+      stopVisualizerSimulation();
+      updateSystemStatus(false, "System Ready");
+    }
+
+    function startVisualizerSimulation() {
+      const bars = document.querySelectorAll('.bar');
+      visualizerInterval = setInterval(() => {
+        bars.forEach(bar => {
+          const randHeight = Math.floor(Math.random() * 32) + 6;
+          bar.style.height = `${randHeight}px`;
+        });
+      }, 90);
+    }
+
+    function stopVisualizerSimulation() {
+      if (visualizerInterval) {
+        clearInterval(visualizerInterval);
+      }
+      const bars = document.querySelectorAll('.bar');
+      bars.forEach(bar => {
+        bar.style.height = '8px';
+      });
+    }
+
+    // --- SPEECH OUTPUT SYNTHESIS ENGINE ---
+    function playSefaVoiceOutput(text) {
+      if (typeof synthesis === 'undefined') return;
+      synthesis.cancel(); 
+
+      speechUtterance = new SpeechSynthesisUtterance(text);
+      
+      const voices = synthesis.getVoices();
+      if (synthesVoiceName && synthesVoiceName !== 'default') {
+        const targetVoice = voices.find(v => v.name === synthesVoiceName);
+        if (targetVoice) speechUtterance.voice = targetVoice;
+      }
+
+      speechUtterance.rate = 1.05; 
+      speechUtterance.pitch = 1.02; 
+
+      speechUtterance.onstart = function() {
+        isSefaSpeaking = true;
+        document.getElementById('speaking-indicator').classList.remove('hidden');
+        document.getElementById('speaking-text-preview').innerText = text;
+        updateSystemStatus(true, "Speaking");
+      };
+
+      speechUtterance.onend = function() {
+        cleanupVoiceSpeakingState();
+      };
+
+      speechUtterance.onerror = function(event) {
+        console.error("Speech Synthesis Error:", event);
+        cleanupVoiceSpeakingState();
+      };
+
+      synthesis.speak(speechUtterance);
+    }
+
+    function stopSefaSpeaking() {
+      if (typeof synthesis !== 'undefined') {
+        synthesis.cancel();
+      }
+      cleanupVoiceSpeakingState();
+    }
+
+    function cleanupVoiceSpeakingState() {
+      isSefaSpeaking = false;
+      document.getElementById('speaking-indicator').classList.add('hidden');
+      updateSystemStatus(false, "System Ready");
+    }
+
+    // --- KEYBOARD / TYPE FALLBACK TRIGGERS ---
+    function toggleKeyboardInput() {
+      const textContainer = document.getElementById('keyboard-input-container');
+      const micContainer = document.getElementById('voice-interaction-container');
+      const toggleIcon = document.getElementById('toggle-input-icon');
+      const toggleText = document.getElementById('toggle-input-text');
+
+      if (textContainer.classList.contains('hidden')) {
+        textContainer.classList.remove('hidden');
+        micContainer.classList.add('hidden');
+        toggleIcon.setAttribute('data-lucide', 'mic');
+        toggleText.innerText = "Use Voice";
+        document.getElementById('text-user-query').focus();
+      } else {
+        textContainer.classList.add('hidden');
+        micContainer.classList.remove('hidden');
+        toggleIcon.setAttribute('data-lucide', 'keyboard');
+        toggleText.innerText = "Use Typing";
+      }
+      initializeLucide();
+    }
+
+    function submitTextQuery() {
+      const input = document.getElementById('text-user-query');
+      const query = input.value.trim();
+      if (!query) return;
+
+      input.value = "";
+      processUserPrompt(query);
+    }
+
+    function useSuggestedPrompt(text) {
+      processUserPrompt(text);
+    }
+
+    function triggerWakePhraseSimulation() {
+      playSound('activation');
+      showToast("SEFA Listening", "Wake Phrase 'Hey SEFA' Simulated", "pink");
+      setTimeout(() => {
+        startActiveListening();
+      }, 500);
+    }
+
+    // --- SYSTEM INTELLIGENCE & GEMINI AI PROCESSING PIPELINE ---
+    async function processUserPrompt(promptText) {
+      if (!promptText.trim()) return;
+
+      stopSefaSpeaking();
+
+      document.getElementById('welcome-prompt').classList.add('hidden');
+      document.getElementById('chat-messages-container').classList.remove('hidden');
+
+      appendMessageToUI("user", promptText);
+      saveMessageToLocalHistory("user", promptText);
+
+      document.getElementById('typing-indicator').classList.remove('hidden');
+      updateSystemStatus(true, "Thinking...");
+      scrollChatToBottom();
+
+      const executedCommand = checkSmartCommands(promptText);
+      if (executedCommand) {
+        setTimeout(() => {
+          handleAIResponse(executedCommand);
+        }, 800);
+        return;
+      }
+
+      detectAndStoreName(promptText);
+
+      if (apiKey) {
+        try {
+          const aiReply = await callGeminiAPI(promptText);
+          handleAIResponse(aiReply);
+        } catch (error) {
+          console.error("Primary API Query failed. Falling back to internal engine. Error details:", error);
+          const fallbackReply = queryOfflineSystemIntelligence(promptText);
+          handleAIResponse(fallbackReply);
+        }
+      } else {
+        setTimeout(() => {
+          const fallbackReply = queryOfflineSystemIntelligence(promptText);
+          handleAIResponse(fallbackReply);
+        }, 1200);
+      }
+    }
+
+    function handleAIResponse(replyText) {
+      document.getElementById('typing-indicator').classList.add('hidden');
+      updateSystemStatus(false, "System Ready");
+
+      playSound('success');
+
+      appendMessageToUI("assistant", replyText);
+      saveMessageToLocalHistory("assistant", replyText);
+
+      playSefaVoiceOutput(replyText);
+      scrollChatToBottom();
+    }
+
+    // --- GEMINI 2.5 FLASH CALL IMPLEMENTATION ---
+    async function callGeminiAPI(query) {
+      const systemPrompt = `You are "SEFA AI", a premium, smart, confident, and slightly playful personal AI assistant built into a gorgeous Apple-level premium web interface.
+Current User's Name is: ${userName}.
+Important guidelines:
+1. Keep responses short, direct, human-like, and conversational (usually 1-3 sentences maximum).
+2. Avoid verbose explanations or markdown-heavy structures like lists/code blocks unless requested.
+3. Be playful and responsive. Never mention being a language model.
+Current Day/Time is: Monday, June 1, 2026 at 2:56 PM.
+Current Location context is: Accra, Ghana.`;
+
+      const formattedContents = [];
+      
+      const limitHistory = chatHistory.slice(-8); 
+      limitHistory.forEach(item => {
+        formattedContents.push({
+          role: item.role === 'user' ? 'user' : 'model',
+          parts: [{ text: item.text }]
+        });
+      });
+
+      // Secure dynamic validation checks prior to building runtime transaction payload
+      if (formattedContents.length === 0 || formattedContents[formattedContents.length - 1].parts.text !== query) {
+        formattedContents.push({
+          role: 'user',
+          parts: [{ text: query }]
+        });
+      }
+
+      const payload = {
+        contents: formattedContents,
+        systemInstruction: {
+          parts: [{ text: systemPrompt }]
+        }
+      };
+
+      // Updated target context mapping endpoint url securely referencing official generative models
+      const endpointUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+      return await executeApiWithBackoff(endpointUrl, payload);
+    }
+
+    async function executeApiWithBackoff(url, payload, retries = 5, delay = 1000) {
+      for (let i = 0; i < retries; i++) {
+        try {
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const responseText = data.candidates?.?.content?.parts?.?.text;
+            if (responseText) {
+              return responseText.trim();
+            } else {
+              throw new Error("Empty candidate generation response");
             }
-
-            try {
-                const salt = crypto.getRandomValues(new Uint8Array(16));
-                const iv = crypto.getRandomValues(new Uint8Array(12)); // Initialization Vector
-                const key = await deriveKey(pwd, salt);
-
-                const encrypted = await crypto.subtle.encrypt(
-                    { name: "AES-GCM", iv: iv },
-                    key,
-                    getBytes(plainText)
-                );
-
-                // Package the salt, IV, and ciphertext into a single payload
-                const payload = new Uint8Array(salt.byteLength + iv.byteLength + encrypted.byteLength);
-                payload.set(salt, 0);
-                payload.set(iv, salt.byteLength);
-                payload.set(new Uint8Array(encrypted), salt.byteLength + iv.byteLength);
-
-                // Convert payload to simple Base64 string for easy WhatsApp sharing
-                const b64String = btoa(String.fromCharCode(...payload));
-                
-                // Add unique tags so WhatsApp doesn't accidentally mess up spacing
-                document.getElementById('cipherText').value = `[SECURE-MSG]\n${b64String}\n[/SECURE-MSG]`;
-                document.getElementById('copyBtn').classList.remove('hidden');
-            } catch (err) {
-                alert("Encryption failed: " + err.message);
-            }
+          } else {
+            const errorDetails = await response.text();
+            throw new Error(`API response code ${response.status}: ${errorDetails}`);
+          }
+        } catch (e) {
+          if (i === retries - 1) throw e; 
+          await new Promise(resolve => setTimeout(resolve, delay));
+          delay *= 2; 
         }
+      }
+    }
 
-        // Main Decryption Function
-        async function handleDecrypt() {
-            const pwd = document.getElementById('password').value;
-            let rawCipher = document.getElementById('cipherText').value.trim();
+    // --- INTEGRATED OFFLINE SMART COMMAND DICTIONARY & NATURAL AGENT MATCHES ---
+    function checkSmartCommands(text) {
+      const query = text.toLowerCase().trim();
 
-            if (!pwd || !rawCipher) {
-                alert("Please enter your shared password and paste the scrambled WhatsApp message.");
-                return;
-            }
+      if (query.includes('what time') || query.includes('current time')) {
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return `It is currently ${timeStr} here in Accra. Anything else I can schedule or check for you, ${userName}?`;
+      }
 
-            // Clean up tags if present
-            rawCipher = rawCipher.replace("[SECURE-MSG]\n", "").replace("\n[/SECURE-MSG]", "");
+      if (query.includes('attendance app') || query.includes('open my attendance')) {
+        triggerSystemAppLaunchSimulation("Attendance Tracker");
+        return `Launching your Attendance Tracker app immediately. Let me know if you need help logged in.`;
+      }
 
-            try {
-                // Convert back from Base64 string to byte array
-                const binaryStr = atob(rawCipher);
-                const payload = new Uint8Array(binaryStr.length);
-                for (let i = 0; i < binaryStr.length; i++) {
-                    payload[i] = binaryStr.charCodeAt(i);
-                }
+      if (query.includes('send a message') || query.includes('send message')) {
+        return `Who would you like me to message, ${userName}? Say the name, and I'll queue the text right up.`;
+      }
 
-                // Extract salt, IV, and the actual encrypted message bytes
-                const salt = payload.slice(0, 16);
-                const iv = payload.slice(16, 28);
-                const encryptedData = payload.slice(28);
+      if (query === 'hey sefa' || query === 'sefa') {
+        return `Hey! I'm here. What's on your mind?`;
+      }
 
-                const key = await deriveKey(pwd, salt);
+      return null; 
+    }
 
-                const decrypted = await crypto.subtle.decrypt(
-                    { name: "AES-GCM", iv: iv },
-                    key,
-                    encryptedData
-                );
+    function detectAndStoreName(text) {
+      const query = text.toLowerCase();
+      const patterns = [
+        /my name is ([a-zA-Z\s]{2,15})/i,
+        /call me ([a-zA-Z\s]{2,15})/i,
+        /i am ([a-zA-Z\s]{2,15})/i
+      ];
 
-                document.getElementById('plainText').value = new TextDecoder().decode(decrypted);
-            } catch (err) {
-                alert("Decryption failed! The password might be wrong, or the message was corrupted.");
-            }
+      for (let pattern of patterns) {
+        const match = query.match(pattern);
+        if (match && match) {
+          const matchedName = match.trim();
+          userName = matchedName.charAt(0).toUpperCase() + matchedName.slice(1);
+          localStorage.setItem(`${appId}_user_name`, userName);
+          document.getElementById('user-name-input').value = userName;
+          break;
         }
+      }
+    }
 
-        function copyToClipboard() {
-            const cipherText = document.getElementById('cipherText');
-            cipherText.select();
-            document.execCommand('copy');
-            const btn = document.getElementById('copyBtn');
-            btn.innerText = "✓ Copied!";
-            setTimeout(() => { btn.innerText = "Copy Ciphertext to Clipboard"; }, 2000);
-        }
-    </script>
-</body>
-</html>
+    // --- OFFLINE INTELLIGENCE BACKEND AGENT ---
+    function queryOfflineSystemIntelligence(query) {
+      const text = query.toLowerCase().trim();
+      
+      if (text.includes('hello') || text.includes('hi ') || text.includes('hey')) {
+        return `Hello ${userName}! SEFA AI here. I'm connected and ready. How is your day going?`;
+      }
+      if (text.includes('how are you') || text.includes('doing ok')) {
+        return `I'm feeling incredibly energetic, ${userName}! Ready to help you tackle whatever you need today. How are you doing?`;
+      }
+      if (text.includes('who are you') || text.includes('your name')) {
+        return `I am SEFA AI, your personal intelligent voice assistant. I am modeled with premium Apple aesthetics to bring you natural conversations.`;
+      }
+      if (text.includes('fun fact') || text.includes('fact')) {
+        const facts = [
+          "Did you know that honey never spoils? Archaeologists have found pots of honey in ancient Egyptian tombs that are over three thousand years old and still perfectly edible!",
+          "Here's a fun one: Bananas are berries, but strawberries aren't botanically classified as berries!",
+          "The first computer bug was an actual real moth found trapped inside a relay in the Harvard Mark II computer in 1947.",
+          "An octopus has three hearts and blue copper-based blood. Fascinating, isn't it?"
+        ];
+        return facts[Math.floor(Math.random() * facts.length)];
+      }
+      if (text.includes('joke')) {
+        const jokes = [
+          "Why did the computer go to the doctor? It had a virus!",
+          "Why do programmers prefer dark mode? Because light attracts bugs!",
+          "How many programmers does it take to change a light bulb? None, that's a hardware problem."
+        ];
+        return jokes[Math.floor(Math.random() * jokes.length)];
+      }
+
+      return `That's fascinating, ${userName}. I'm currently running on internal offline systems mode. Configure your API key in configurations for full generative powers!`;
+    }
+
+    function triggerSystemAppLaunchSimulation(appName) {
+      showToast("App Launching", `Opening external application: ${appName}`, "emerald");
+    }
+
+    // --- UI GRAPHICS, CHAT BUILDERS, AND PORT SCROLLERS ---
+    function appendMessageToUI(role, text, animate = true) {
+      const container = document.getElementById('chat-messages-container');
+      
+      const messageRow = document.createElement('div');
+      messageRow.className = `flex w-full ${role === 'user' ? 'justify-end' : 'justify-start'}`;
+
+      const messageContent = document.createElement('div');
+      
+      if (role === 'user') {
+        messageContent.className = `max-w-[80%] px-4 py-3 rounded-[24px] rounded-tr-sm bg-gradient-to-tr from-brand-purple to-brand-pink text-white text-sm leading-relaxed shadow-md ${animate ? 'bubble-in' : ''}`;
+      } else {
+        messageContent.className = `max-w-[80%] px-4 py-3 rounded-[24px] rounded-tl-sm glassmorphic-light text-neutral-100 text-sm leading-relaxed border border-white/5 shadow-sm ${animate ? 'bubble-in' : ''}`;
+      }
+
+      messageContent.innerText = text;
+      
+      messageRow.appendChild(messageContent);
+      container.appendChild(messageRow);
+    }
+
+    function saveMessageToLocalHistory(role, text) {
+      chatHistory.push({ role, text });
+      if (chatHistory.length > 20) {
+        chatHistory.shift();
+      }
+      localStorage.setItem(`${appId}_chat_history`, JSON.stringify(chatHistory));
+    }
+
+    function scrollChatToBottom() {
+      const scroller = document.getElementById('chat-scroller');
+      scroller.scrollTop = scroller.scrollHeight;
+    }
+
+    function updateSystemStatus(isActive, message) {
+      const indicator = document.getElementById('status-indicator');
+      const text = document.getElementById('status-text');
+
+      text.innerText = message;
+      if (isActive) {
+        indicator.className = "w-2 h-2 rounded-full bg-brand-pink animate-ping";
+      } else {
+        indicator.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+      }
+    }
+
+    // --- MODAL TRIGGERS ---
+    function toggleSettingsModal() {
+      const modal = document.getElementById('settings-modal');
+      if (modal.classList.contains('hidden')) {
+        modal.classList.remove('hidden');
+        document.getElementById('api-key-input').value = apiKey;
+        document.getElementById('user-name-input').value = userName === "User" ? "" : userName;
+        populateVoices();
+      } else {
+        modal.classList.add('hidden');
+      }
+    }
+
+    function toggleApiKeyVisibility() {
+      const input = document.getElementById('api-key-input');
+      const icon = document.getElementById('eye-icon');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.setAttribute('data-lucide', 'eye-off');
+      } else {
+        input.type = 'password';
+        icon.setAttribute('data-lucide', 'eye');
+      }
+      initializeLucide();
+    }
+  </script>
