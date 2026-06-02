@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="en" class="h-full scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>SEFA AI — Premium Voice Assistant</title>
+  <title>SEFA AI — Jarvis Intelligence Core</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -11,16 +11,19 @@
       theme: {
         extend: {
           colors: {
-            brand: {
-              bg: '#05070c',
-              card: 'rgba(17, 24, 39, 0.7)',
-              purple: '#7c3aed',
-              pink: '#ff3366',
+            slate: { 950: '#05070c' },
+            sefa: {
+              bg: '#0b0f19',
+              card: 'rgba(13, 19, 33, 0.45)',
+              border: 'rgba(255, 255, 255, 0.06)',
+              purple: '#8b5cf6',
+              pink: '#ec4899',
               cyan: '#06b6d4',
+              emerald: '#10b981'
             }
           },
           fontFamily: {
-            sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', 'Roboto', 'Helvetica', 'sans-serif'],
           }
         }
       }
@@ -30,358 +33,312 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
-    /* Safe Area Insets for modern bezel-less smartphones */
     body {
       padding-top: env(safe-area-inset-top, 0px);
       padding-bottom: env(safe-area-inset-bottom, 0px);
-      background-color: #05070c;
+      background-color: #0b0f19;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
 
-    /* Glassmorphism utility */
-    .glassmorphic {
-      background: rgba(13, 17, 28, 0.75);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .glassmorphic-light {
-      background: rgba(255, 255, 255, 0.03);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+    /* Glassmorphic Layering Foundations */
+    .glass-panel {
+      background: rgba(11, 15, 25, 0.65);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
       border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    /* Scrollbar Styling */
-    ::-webkit-scrollbar {
-      width: 4px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 999px;
+    .glass-card {
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.04);
     }
 
-    /* Glowing wave effects simulating Siri / iOS ambient glow */
-    @keyframes wave-pulse {
-      0%, 100% {
-        transform: scale(1) translate(-50%, -50%);
-        opacity: 0.25;
-        filter: blur(40px);
-      }
-      50% {
-        transform: scale(1.35) translate(-40%, -45%);
-        opacity: 0.55;
-        filter: blur(60px);
-      }
+    /* Apple-Level Fluid Dynamic Themes */
+    .theme-cyberpunk {
+      --orb-g1: #8b5cf6; --orb-g2: #ec4899; --orb-glow: rgba(139, 92, 246, 0.4);
+    }
+    .theme-quantum {
+      --orb-g1: #06b6d4; --orb-g2: #10b981; --orb-glow: rgba(6, 182, 212, 0.4);
+    }
+    .theme-monolith {
+      --orb-g1: #ffffff; --orb-g2: #4b5563; --orb-glow: rgba(255, 255, 255, 0.2);
     }
 
-    @keyframes orb-rotate {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    /* Cinematic Adaptive Orb Engine */
+    .orb-canvas-container {
+      filter: blur(12px);
+    }
+    
+    @keyframes siri-fluidity {
+      0% { transform: scale(1) translate(0px, 0px) rotate(0deg); }
+      33% { transform: scale(1.15) translate(8px, -12px) rotate(120deg); }
+      66% { transform: scale(0.9) translate(-10px, 6px) rotate(240deg); }
+      100% { transform: scale(1) translate(0px, 0px) rotate(360deg); }
     }
 
-    .ambient-glow-1 {
-      background: radial-gradient(circle, rgba(124, 58, 237, 0.7) 0%, rgba(0,0,0,0) 70%);
-      animation: wave-pulse 8s infinite ease-in-out;
+    .orb-fluid-mesh {
+      background: radial-gradient(circle at 40% 40%, var(--orb-g1) 0%, transparent 60%),
+                  radial-gradient(circle at 70% 60%, var(--orb-g2) 0%, transparent 60%);
+      animation: siri-fluidity 6s infinite ease-in-out alternate;
+      box-shadow: inset 0 0 40px var(--orb-glow), 0 0 60px var(--orb-glow);
     }
 
-    .ambient-glow-2 {
-      background: radial-gradient(circle, rgba(255, 51, 102, 0.6) 0%, rgba(0,0,0,0) 70%);
-      animation: wave-pulse 11s infinite ease-in-out reverse;
+    /* Interactive Waveform Monitor Styles */
+    .sound-bar {
+      transition: height 0.08s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .orb-orbit {
-      animation: orb-rotate 25s infinite linear;
+    /* Kinetic UI Inset Bubble Renderers */
+    @keyframes ios-bubble-in {
+      0% { opacity: 0; transform: translateY(20px) scale(0.92); filter: blur(4px); }
+      100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0px); }
+    }
+    .render-bubble {
+      animation: ios-bubble-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
-    /* Pulsing mic ring during active listening */
-    @keyframes pulse-ring {
-      0% {
-        transform: scale(0.9);
-        opacity: 0.8;
-        box-shadow: 0 0 0 0px rgba(124, 58, 237, 0.4), 0 0 0 0px rgba(255, 51, 102, 0.3);
-      }
-      100% {
-        transform: scale(1.4);
-        opacity: 0;
-        box-shadow: 0 0 0 30px rgba(124, 58, 237, 0), 0 0 0 50px rgba(255, 51, 102, 0);
-      }
-    }
-
-    .active-listening-ring {
-      animation: pulse-ring 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
-    }
-
-    /* Live audio waveform simulation */
-    .bar {
-      transition: height 0.08s ease-in-out;
-    }
-
-    /* Message bounce */
-    @keyframes slide-up-bubble {
-      0% {
-        opacity: 0;
-        transform: translateY(16px) scale(0.95);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-    .bubble-in {
-      animation: slide-up-bubble 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    /* iOS home indicator simulate */
-    .home-indicator {
-      width: 134px;
-      height: 5px;
-      background-color: rgba(255, 255, 255, 0.35);
-      border-radius: 100px;
-      margin: 8px auto 0 auto;
-    }
+    /* Custom Hide Track Bars */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="h-full text-white font-sans overflow-hidden bg-brand-bg flex justify-center items-center">
+<body class="h-full text-white font-sans overflow-hidden bg-sefa-bg flex justify-center items-center theme-cyberpunk">
 
-  <audio id="snd-activation" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav" preload="auto" class="hidden"></audio>
-  <audio id="snd-success" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-84.wav" preload="auto" class="hidden"></audio>
+  <audio id="audio-wake" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav" preload="auto" class="hidden"></audio>
+  <audio id="audio-success" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-84.wav" preload="auto" class="hidden"></audio>
 
-  <div class="relative w-full h-full max-w-md md:h-[844px] md:rounded-[48px] md:border-[10px] md:border-neutral-800 md:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col justify-between glassmorphic">
+  <div class="relative w-full h-full max-w-md md:h-[850px] md:rounded-[50px] md:border-[12px] md:border-neutral-900 md:shadow-[0_0_80px_rgba(0,0,0,0.85)] overflow-hidden flex flex-col justify-between glass-panel">
     
-    <div class="absolute inset-0 overflow-hidden pointer-events-none -z-10">
-      <div class="absolute top-[25%] left-[25%] w-[350px] h-[350px] ambient-glow-1"></div>
-      <div class="absolute bottom-[20%] right-[10%] w-[400px] h-[400px] ambient-glow-2"></div>
-      <div class="absolute inset-0 bg-black/40 backdrop-blur-3xl"></div>
+    <div class="absolute inset-0 overflow-hidden pointer-events-none -z-20">
+      <div class="absolute top-[-10%] left-[-10%] w-[140%] h-[60%] bg-gradient-to-b from-sefa-purple/10 via-transparent to-transparent opacity-60"></div>
+      <div class="absolute bottom-0 inset-x-0 h-[30%] bg-gradient-to-t from-black/60 to-transparent"></div>
     </div>
 
-    <header class="pt-6 px-6 pb-4 flex items-center justify-between z-10">
-      <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-purple to-brand-pink p-[1px] shadow-lg shadow-brand-purple/20">
-          <div class="w-full h-full rounded-[15px] bg-brand-bg flex items-center justify-center">
-            <span class="text-xs font-black tracking-widest bg-gradient-to-r from-brand-purple to-brand-pink bg-clip-text text-transparent">SEFA</span>
+    <header class="pt-7 px-6 pb-4 flex items-center justify-between z-30 border-b border-white/[0.03]">
+      <div class="flex items-center space-x-3.5">
+        <div class="relative w-9 h-9 rounded-2xl bg-gradient-to-tr from-sefa-purple to-sefa-pink p-[1px] shadow-lg shadow-sefa-purple/20">
+          <div class="w-full h-full rounded-[15px] bg-slate-950 flex items-center justify-center">
+            <span class="text-[10px] font-black tracking-widest bg-gradient-to-r from-sefa-purple to-sefa-pink bg-clip-text text-transparent">Σ</span>
           </div>
         </div>
         <div>
-          <h1 class="text-base font-semibold tracking-tight text-white/95">SEFA AI</h1>
+          <h1 class="text-sm font-bold tracking-tight text-white/90 flex items-center gap-1.5">
+            SEFA OS <span class="text-[9px] bg-white/10 px-1.5 py-0.5 rounded-md text-neutral-400 font-mono tracking-normal">v2.0</span>
+          </h1>
           <div class="flex items-center space-x-1.5">
-            <span id="status-indicator" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span id="status-text" class="text-xs text-neutral-400 font-medium">System Ready</span>
+            <span id="sys-status-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></span>
+            <span id="sys-status-text" class="text-[11px] text-neutral-400 font-medium tracking-wide">Core Operational</span>
           </div>
         </div>
       </div>
 
       <div class="flex items-center space-x-2">
-        <button onclick="toggleSettingsModal()" class="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 active:scale-95 transition flex items-center justify-center text-neutral-300" title="Settings">
+        <button onclick="UI.toggleSettings(true)" class="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/10 active:scale-95 transition-all flex items-center justify-center text-neutral-300 border border-white/5">
           <i data-lucide="sliders" class="w-4 h-4"></i>
         </button>
-        <button onclick="clearConversations()" class="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 active:scale-95 transition flex items-center justify-center text-red-400/80 hover:text-red-400" title="Clear History">
+        <button onclick="MemorySystem.wipe()" class="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/10 active:scale-95 transition-all flex items-center justify-center text-red-400/70 border border-white/5 hover:text-red-400">
           <i data-lucide="trash-2" class="w-4 h-4"></i>
         </button>
       </div>
     </header>
 
-    <main id="chat-scroller" class="flex-1 overflow-y-auto px-6 py-4 space-y-4 flex flex-col scroll-smooth">
+    <main id="chat-scroller" class="flex-1 overflow-y-auto px-6 py-5 space-y-4 flex flex-col no-scrollbar">
       
-      <div id="welcome-prompt" class="my-auto py-8 text-center space-y-6 flex flex-col justify-center items-center">
-        <div class="relative">
-          <div class="absolute -inset-1 rounded-full bg-gradient-to-r from-brand-purple to-brand-pink opacity-70 blur animate-pulse"></div>
-          <div class="relative w-20 h-20 rounded-full bg-slate-900/90 flex items-center justify-center border border-white/10">
-            <i data-lucide="mic" class="w-8 h-8 text-white"></i>
+      <div id="panel-welcome" class="my-auto py-6 text-center space-y-7 flex flex-col justify-center items-center render-bubble">
+        <div class="relative w-28 h-28 flex items-center justify-center">
+          <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-sefa-purple via-sefa-pink to-sefa-cyan opacity-20 blur-xl animate-pulse"></div>
+          <div class="absolute inset-2 rounded-full border border-white/10 glass-card flex items-center justify-center shadow-inner">
+            <i data-lucide="brain-circuit" class="w-10 h-10 text-white/80"></i>
           </div>
         </div>
         
-        <div class="space-y-2">
-          <h2 class="text-2xl font-bold tracking-tight bg-gradient-to-r from-white via-neutral-100 to-neutral-400 bg-clip-text text-transparent">
-            How can I help you?
+        <div class="space-y-2.5">
+          <h2 id="welcome-greeting" class="text-2xl font-bold tracking-tight bg-gradient-to-r from-white via-neutral-200 to-neutral-400 bg-clip-text text-transparent">
+            System Initialized
           </h2>
-          <p class="text-sm text-neutral-400 max-w-[260px] mx-auto leading-relaxed">
-            I am SEFA. Ask me questions, trigger functions, or let's just chat.
+          <p class="text-xs text-neutral-400 max-w-[280px] mx-auto leading-relaxed">
+            Jarvis-level awareness matrix fully synchronized. State routing is live.
           </p>
         </div>
 
-        <div class="w-full max-w-sm grid grid-cols-2 gap-2.5 pt-4">
-          <button onclick="useSuggestedPrompt('What time is it?')" class="glassmorphic-light text-left p-3 rounded-2xl hover:bg-white/10 active:scale-[0.98] transition-all group">
-            <span class="block text-xs font-semibold text-brand-pink group-hover:translate-x-0.5 transition-transform">Command</span>
-            <span class="text-xs text-neutral-300 block truncate">"What time is it?"</span>
+        <div class="w-full max-w-sm grid grid-cols-2 gap-2.5 pt-2">
+          <button onclick="CoreEngine.receiveInput('Check my attendance metrics')" class="glass-card text-left p-3.5 rounded-2xl hover:bg-white/[0.06] transition-all group border border-white/5">
+            <span class="block text-[10px] font-bold text-sefa-pink tracking-wider uppercase mb-1">RollCallX</span>
+            <span class="text-xs text-neutral-300 block truncate font-medium">"Check attendance"</span>
           </button>
-          <button onclick="useSuggestedPrompt('Open my attendance app')" class="glassmorphic-light text-left p-3 rounded-2xl hover:bg-white/10 active:scale-[0.98] transition-all group">
-            <span class="block text-xs font-semibold text-brand-purple group-hover:translate-x-0.5 transition-transform">Navigation</span>
-            <span class="text-xs text-neutral-300 block truncate">"Open attendance app"</span>
+          <button onclick="CoreEngine.receiveInput('Show my Scholar Link matches')" class="glass-card text-left p-3.5 rounded-2xl hover:bg-white/[0.06] transition-all group border border-white/5">
+            <span class="block text-[10px] font-bold text-sefa-purple tracking-wider uppercase mb-1">Scholar Link</span>
+            <span class="text-xs text-neutral-300 block truncate font-medium">"Show my matches"</span>
           </button>
-          <button onclick="useSuggestedPrompt('Tell me a short fun fact')" class="glassmorphic-light text-left p-3 rounded-2xl hover:bg-white/10 active:scale-[0.98] transition-all group">
-            <span class="block text-xs font-semibold text-cyan-400 group-hover:translate-x-0.5 transition-transform">Query</span>
-            <span class="text-xs text-neutral-300 block truncate">"Tell me a fun fact"</span>
+          <button onclick="CoreEngine.receiveInput('What is our current matrix schedule?')" class="glass-card text-left p-3.5 rounded-2xl hover:bg-white/[0.06] transition-all group border border-white/5">
+            <span class="block text-[10px] font-bold text-sefa-cyan tracking-wider uppercase mb-1">Temporal Core</span>
+            <span class="text-xs text-neutral-300 block truncate font-medium">"What's the time?"</span>
           </button>
-          <button onclick="useSuggestedPrompt('Send a message')" class="glassmorphic-light text-left p-3 rounded-2xl hover:bg-white/10 active:scale-[0.98] transition-all group">
-            <span class="block text-xs font-semibold text-emerald-400 group-hover:translate-x-0.5 transition-transform">Task</span>
-            <span class="text-xs text-neutral-300 block truncate">"Send a message"</span>
+          <button onclick="UI.toggleSettings(true)" class="glass-card text-left p-3.5 rounded-2xl hover:bg-white/[0.06] transition-all group border border-white/5">
+            <span class="block text-[10px] font-bold text-sefa-emerald tracking-wider uppercase mb-1">Identity Configuration</span>
+            <span class="text-xs text-neutral-300 block truncate font-medium">Tune System Core</span>
           </button>
         </div>
       </div>
 
-      <div id="chat-messages-container" class="space-y-4 hidden"></div>
+      <div id="dialog-stream-root" class="space-y-4 hidden pt-2"></div>
 
-      <div id="speaking-indicator" class="hidden glassmorphic-light rounded-2xl p-4 flex items-center justify-between border border-brand-purple/20 bubble-in">
-        <div class="flex items-center space-x-3">
-          <div class="w-8 h-8 rounded-full bg-brand-purple/10 flex items-center justify-center">
-            <i data-lucide="volume-2" class="w-4 h-4 text-brand-purple animate-bounce"></i>
+      <div id="panel-audio-feedback" class="hidden glass-card rounded-2xl p-4 flex items-center justify-between border border-sefa-purple/30 render-bubble">
+        <div class="flex items-center space-x-3.5 overflow-hidden">
+          <div class="w-9 h-9 rounded-xl bg-sefa-purple/10 flex items-center justify-center shrink-0 border border-sefa-purple/20">
+            <i data-lucide="audio-lines" class="w-4 h-4 text-sefa-purple animate-pulse"></i>
           </div>
-          <div>
-            <span class="text-xs font-semibold text-brand-purple tracking-wide uppercase">SEFA Speaking</span>
-            <p id="speaking-text-preview" class="text-xs text-neutral-400 max-w-[200px] truncate">Responding via audio...</p>
+          <div class="overflow-hidden">
+            <span class="text-[10px] font-bold text-sefa-purple tracking-widest uppercase block">Synthesizer Stream</span>
+            <p id="audio-feedback-preview" class="text-xs text-neutral-400 truncate pr-2 font-medium">Streaming voice data array...</p>
           </div>
         </div>
-        <button id="btn-stop-audio" onclick="stopSefaSpeaking()" class="text-xs bg-white/10 hover:bg-white/20 active:scale-95 px-3 py-1.5 rounded-xl font-medium transition text-neutral-300">
-          Stop
+        <button onclick="VoiceEngine.stopSpeaking()" class="text-xs bg-white/5 hover:bg-white/10 active:scale-95 px-3 py-2 rounded-xl font-semibold transition-all border border-white/5 text-neutral-300 shrink-0">
+          Interrupt
         </button>
       </div>
 
-      <div id="live-transcription-container" class="hidden glassmorphic-light rounded-2xl p-4 border border-brand-pink/30 bubble-in">
-        <div class="flex items-start space-x-3">
-          <div class="w-8 h-8 rounded-full bg-brand-pink/20 flex items-center justify-center shrink-0 mt-0.5">
-            <div class="w-2.5 h-2.5 rounded-full bg-brand-pink animate-ping"></div>
+      <div id="panel-live-transcription" class="hidden glass-card rounded-2xl p-4 border border-sefa-pink/30 render-bubble">
+        <div class="flex items-start space-x-3.5">
+          <div class="w-9 h-9 rounded-xl bg-sefa-pink/10 flex items-center justify-center shrink-0 border border-sefa-pink/20 mt-0.5">
+            <div class="w-2 h-2 rounded-full bg-sefa-pink animate-ping"></div>
           </div>
           <div class="space-y-1 overflow-hidden w-full">
-            <span class="text-xs font-bold text-brand-pink tracking-wider uppercase block">Listening...</span>
-            <p id="live-transcription-text" class="text-sm text-neutral-100 italic leading-snug break-words">Say something, I'm listening...</p>
+            <span class="text-[10px] font-bold text-sefa-pink tracking-widest uppercase block">Capture Array Live</span>
+            <p id="live-transcription-text" class="text-xs text-neutral-200 italic font-medium leading-relaxed break-words">Calibrating sensors...</p>
           </div>
         </div>
       </div>
 
-      <div id="typing-indicator" class="hidden flex items-center space-x-2 p-3 bg-neutral-900/40 rounded-2xl max-w-[80px] bubble-in">
-        <span class="w-2 h-2 rounded-full bg-brand-purple animate-bounce" style="animation-delay: 0ms"></span>
-        <span class="w-2 h-2 rounded-full bg-brand-pink animate-bounce" style="animation-delay: 150ms"></span>
-        <span class="w-2 h-2 rounded-full bg-brand-purple animate-bounce" style="animation-delay: 300ms"></span>
+      <div id="panel-thinking-loader" class="hidden flex items-center space-x-1.5 p-3.5 bg-white/[0.02] border border-white/5 rounded-2xl max-w-[75px] justify-center render-bubble">
+        <span class="w-2 h-2 rounded-full bg-sefa-purple animate-bounce" style="animation-delay: 0ms"></span>
+        <span class="w-2 h-2 rounded-full bg-sefa-pink animate-bounce" style="animation-delay: 150ms"></span>
+        <span class="w-2 h-2 rounded-full bg-sefa-cyan animate-bounce" style="animation-delay: 300ms"></span>
       </div>
 
     </main>
 
-    <footer class="p-6 pt-2 pb-4 glassmorphic border-t border-white/5 space-y-4 z-10">
+    <footer class="p-6 pt-3 pb-5 glass-panel border-t border-white/[0.04] space-y-4 z-30">
       
-      <div class="flex items-center justify-between text-xs text-neutral-400">
-        <button id="btn-wake-phrase" onclick="triggerWakePhraseSimulation()" class="flex items-center space-x-1.5 bg-white/5 hover:bg-white/10 active:scale-95 px-2.5 py-1.5 rounded-full transition font-medium">
-          <span class="w-2 h-2 rounded-full bg-brand-pink"></span>
-          <span>Simulation: "Hey SEFA"</span>
+      <div class="flex items-center justify-between text-[11px] text-neutral-400 font-semibold px-0.5">
+        <button onclick="CoreEngine.simulateWakeWord()" class="flex items-center space-x-2 bg-white/5 hover:bg-white/10 active:scale-95 px-3 py-2 rounded-xl transition-all border border-white/5">
+          <span class="w-1.5 h-1.5 rounded-full bg-sefa-pink shadow-[0_0_6px_#ec4899]"></span>
+          <span class="tracking-wide">Simulate "Hey SEFA"</span>
         </button>
-        <button onclick="toggleKeyboardInput()" class="flex items-center space-x-1 bg-white/5 hover:bg-white/10 active:scale-95 px-2.5 py-1.5 rounded-full transition font-medium">
-          <i id="toggle-input-icon" data-lucide="keyboard" class="w-3.5 h-3.5"></i>
-          <span id="toggle-input-text">Use Typing</span>
-        </button>
-      </div>
-
-      <div id="keyboard-input-container" class="hidden flex items-center space-x-2 transition-all bubble-in">
-        <input id="text-user-query" type="text" placeholder="Type command or query..." class="flex-1 bg-white/5 rounded-2xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-brand-purple/50 border border-white/5 transition-all">
-        <button onclick="submitTextQuery()" class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-brand-purple to-brand-pink flex items-center justify-center active:scale-90 transition-all shadow-lg shadow-brand-purple/20">
-          <i data-lucide="send" class="w-4 h-4 text-white"></i>
+        <button onclick="UI.toggleInputMechanism()" class="flex items-center space-x-1.5 bg-white/5 hover:bg-white/10 active:scale-95 px-3 py-2 rounded-xl transition-all border border-white/5">
+          <i id="btn-input-toggle-icon" data-lucide="keyboard" class="w-3.5 h-3.5"></i>
+          <span id="btn-input-toggle-text" class="tracking-wide">Manual Input</span>
         </button>
       </div>
 
-      <div id="voice-interaction-container" class="flex flex-col items-center py-2 space-y-4">
+      <div id="wrapper-keyboard-input" class="hidden flex items-center space-x-2.5 transition-all render-bubble">
+        <input id="field-user-query" type="text" placeholder="Dispatch query matrix..." class="flex-1 bg-white/5 border border-white/5 rounded-2xl px-4 py-3.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:ring-1 focus:ring-sefa-purple/40 focus:bg-white/[0.08] transition-all font-medium">
+        <button onclick="UI.submitManualTextField()" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sefa-purple to-sefa-pink flex items-center justify-center active:scale-90 transition-all shadow-md shadow-sefa-purple/10 border border-white/10">
+          <i data-lucide="arrow-up" class="w-4 h-4 text-white"></i>
+        </button>
+      </div>
+
+      <div id="wrapper-voice-input" class="flex flex-col items-center py-2 space-y-4">
         
-        <div id="voice-visualizer" class="h-10 flex items-end justify-center space-x-1 opacity-20 transition-opacity duration-300 w-full max-w-[200px]">
-          <div class="bar w-1.5 h-2 bg-gradient-to-t from-brand-purple to-brand-pink rounded-full"></div>
-          <div class="bar w-1.5 h-2 bg-gradient-to-t from-brand-purple to-brand-pink rounded-full"></div>
-          <div class="bar w-1.5 h-2 bg-gradient-to-t from-brand-purple to-brand-pink rounded-full"></div>
-          <div class="bar w-1.5 h-2 bg-gradient-to-t from-brand-purple to-brand-pink rounded-full"></div>
-          <div class="bar w-1.5 h-2 bg-gradient-to-t from-brand-purple to-brand-pink rounded-full"></div>
-          <div class="bar w-1.5 h-2 bg-gradient-to-t from-brand-purple to-brand-pink rounded-full"></div>
-          <div class="bar w-1.5 h-2 bg-gradient-to-t from-brand-purple to-brand-pink rounded-full"></div>
-          <div class="bar w-1.5 h-2 bg-gradient-to-t from-brand-purple to-brand-pink rounded-full"></div>
-          <div class="bar w-1.5 h-2 bg-gradient-to-t from-brand-purple to-brand-pink rounded-full"></div>
-          <div class="bar w-1.5 h-2 bg-gradient-to-t from-brand-purple to-brand-pink rounded-full"></div>
+        <div id="oscilloscope-bar-deck" class="h-8 flex items-end justify-center space-x-1.5 opacity-0 transition-all duration-300 w-full max-w-[160px]">
+          <div class="sound-bar w-1 h-3 bg-gradient-to-t from-sefa-purple to-sefa-pink rounded-full"></div>
+          <div class="sound-bar w-1 h-2 bg-gradient-to-t from-sefa-pink to-sefa-cyan rounded-full"></div>
+          <div class="sound-bar w-1 h-4 bg-gradient-to-t from-sefa-cyan to-sefa-purple rounded-full"></div>
+          <div class="sound-bar w-1 h-1 bg-gradient-to-t from-sefa-purple to-sefa-pink rounded-full"></div>
+          <div class="sound-bar w-1 h-5 bg-gradient-to-t from-sefa-pink to-sefa-cyan rounded-full"></div>
+          <div class="sound-bar w-1 h-3 bg-gradient-to-t from-sefa-cyan to-sefa-purple rounded-full"></div>
+          <div class="sound-bar w-1 h-2 bg-gradient-to-t from-sefa-purple to-sefa-pink rounded-full"></div>
         </div>
 
         <div class="relative flex justify-center items-center">
+          <div id="orb-concentric-pulse" class="absolute w-24 h-24 rounded-full bg-gradient-to-tr from-sefa-purple via-sefa-pink to-sefa-cyan opacity-0 scale-75 blur-md transition-all duration-500 -z-10"></div>
           
-          <div id="mic-pulse-ring" class="absolute w-20 h-20 rounded-full bg-gradient-to-tr from-brand-purple via-brand-pink to-brand-cyan opacity-0 -z-10"></div>
-          
-          <button id="btn-mic-trigger" onclick="toggleSpeechListening()" class="relative w-20 h-20 rounded-full bg-gradient-to-tr from-brand-purple to-brand-pink p-[2px] shadow-[0_8px_32px_rgba(124,58,237,0.35)] transition-all duration-300 active:scale-95 z-20 group hover:shadow-[0_8px_40px_rgba(255,51,102,0.45)]">
-            <div id="mic-inner-sphere" class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center transition-all duration-300 group-hover:bg-slate-950">
-              <i id="mic-icon" data-lucide="mic" class="w-8 h-8 text-white transition-transform group-hover:scale-110"></i>
+          <button id="btn-master-orb" onclick="VoiceEngine.toggleCapture()" class="relative w-20 h-20 rounded-full p-[2px] bg-white/10 transition-all duration-300 active:scale-95 z-20 shadow-2xl border border-white/10 overflow-hidden">
+            <div class="absolute inset-0 orb-canvas-container pointer-events-none opacity-40 transition-opacity duration-500" id="orb-canvas-wrapper">
+              <div class="w-full h-full orb-fluid-mesh"></div>
+            </div>
+            <div class="w-full h-full rounded-full bg-slate-950/80 flex items-center justify-center transition-all duration-300 hover:bg-slate-950/40 relative z-10">
+              <i id="master-orb-icon" data-lucide="mic" class="w-6 h-6 text-white transition-all duration-300"></i>
             </div>
           </button>
         </div>
 
-        <span id="mic-guide-text" class="text-xs font-bold tracking-widest text-neutral-500 uppercase animate-pulse">Tap to speak to SEFA</span>
+        <span id="master-orb-label" class="text-[10px] font-bold tracking-widest text-neutral-500 uppercase animate-pulse">Synchronize Audio Session</span>
       </div>
 
-      <div class="home-indicator"></div>
+      <div class="w-32 h-1 bg-white/20 rounded-full mx-auto mt-2"></div>
     </footer>
 
-    <div id="settings-modal" class="hidden absolute inset-0 z-50 glassmorphic flex flex-col justify-end">
-      <div onclick="toggleSettingsModal()" class="absolute inset-0 bg-black/40"></div>
+    <div id="modal-settings" class="hidden absolute inset-0 z-50 glass-panel flex flex-col justify-end">
+      <div onclick="UI.toggleSettings(false)" class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
       
-      <div class="relative bg-slate-950/95 border-t border-white/10 rounded-t-[36px] p-6 pb-12 space-y-6 max-h-[85%] overflow-y-auto z-10 transform translate-y-0 transition-transform duration-300">
+      <div class="relative bg-slate-950 border-t border-white/10 rounded-t-[40px] p-6 pb-10 space-y-6 max-h-[85%] overflow-y-auto z-10 shadow-2xl">
         <div class="flex items-center justify-between">
-          <h3 class="text-lg font-bold text-white tracking-tight">System Configuration</h3>
-          <button onclick="toggleSettingsModal()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center active:scale-90 transition">
+          <div>
+            <h3 class="text-base font-bold text-white tracking-tight">System Configuration</h3>
+            <p class="text-[11px] text-neutral-400">Calibrate neural engine parameters</p>
+          </div>
+          <button onclick="UI.toggleSettings(false)" class="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center active:scale-90 transition-all border border-white/5">
             <i data-lucide="x" class="w-4 h-4 text-neutral-400"></i>
           </button>
         </div>
 
         <div class="space-y-4">
           <div class="space-y-2">
-            <label class="block text-xs font-bold text-neutral-400 uppercase tracking-widest">Google Gemini API Key (Optional)</label>
-            <p class="text-xs text-neutral-400 leading-normal">
-              Provide your API key to power SEFA with live <strong>Gemini 2.5 Flash</strong> processing. If empty, SEFA runs high-fidelity offline system processing.
-            </p>
+            <label class="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Google Gemini API Gateway Key</label>
             <div class="relative">
-              <input id="api-key-input" type="password" placeholder="AIZA..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-brand-purple/50">
-              <button onclick="toggleApiKeyVisibility()" class="absolute right-3 top-3 text-neutral-400 hover:text-white transition">
-                <i data-lucide="eye" id="eye-icon" class="w-4 h-4"></i>
+              <input id="cfg-api-key" type="password" placeholder="AIzaSy..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-sefa-purple/50">
+              <button onclick="UI.togglePasswordVisibility()" class="absolute right-3 top-3.5 text-neutral-400 hover:text-white transition-all">
+                <i data-lucide="eye" id="cfg-eye-icon" class="w-4 h-4"></i>
               </button>
             </div>
           </div>
 
           <div class="space-y-2">
-            <label class="block text-xs font-bold text-neutral-400 uppercase tracking-widest">Your Name</label>
-            <input id="user-name-input" type="text" placeholder="Human" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-brand-purple/50">
+            <label class="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest">User Structural Alias (Name)</label>
+            <input id="cfg-user-name" type="text" placeholder="Enter identity..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-sefa-purple/50">
           </div>
 
           <div class="space-y-2">
-            <label class="block text-xs font-bold text-neutral-400 uppercase tracking-widest">Speech Synthesis Voice</label>
-            <select id="voice-select" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-brand-purple/50">
-              <option value="default">System Default Voice</option>
-            </select>
-            <button onclick="testSelectedVoice()" class="text-xs text-brand-purple font-semibold flex items-center space-x-1 mt-1.5">
-              <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
-              <span>Test Selected Voice</span>
-            </button>
+            <label class="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Supabase Cloud Sync (Optional)</label>
+            <div class="grid grid-cols-2 gap-2">
+              <input id="cfg-sb-url" type="text" placeholder="Project URL" class="bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-[11px] text-white focus:outline-none focus:ring-1 focus:ring-sefa-purple/50">
+              <input id="cfg-sb-key" type="password" placeholder="Anon Key" class="bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-[11px] text-white focus:outline-none focus:ring-1 focus:ring-sefa-purple/50">
+            </div>
           </div>
 
-          <div class="space-y-2 pt-2 border-t border-white/5">
-            <label class="block text-xs font-bold text-neutral-400 uppercase tracking-widest">PWA Mode</label>
-            <div class="bg-white/5 rounded-xl p-3 text-xs text-neutral-400 leading-normal space-y-1">
-              <p>📱 Add this app to your smartphone Home Screen for full fullscreen experience, removing standard web-browsing clutter.</p>
+          <div class="space-y-2">
+            <label class="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Interface Theme Core</label>
+            <div class="grid grid-cols-3 gap-2">
+              <button onclick="UI.setTheme('cyberpunk')" class="p-2.5 rounded-xl border border-white/10 bg-white/5 text-xs font-semibold hover:bg-white/10 transition-all">Cyberpunk</button>
+              <button onclick="UI.setTheme('quantum')" class="p-2.5 rounded-xl border border-white/5 bg-white/5 text-xs font-semibold hover:bg-white/10 transition-all">Quantum</button>
+              <button onclick="UI.setTheme('monolith')" class="p-2.5 rounded-xl border border-white/5 bg-white/5 text-xs font-semibold hover:bg-white/10 transition-all">Monolith</button>
             </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Synthesis Voice Profile</label>
+            <select id="cfg-voice-select" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-sefa-purple/50"></select>
           </div>
         </div>
 
-        <div class="flex items-center space-x-3 pt-2">
-          <button onclick="saveConfigurations()" class="flex-1 bg-gradient-to-tr from-brand-purple to-brand-pink hover:opacity-90 py-3.5 rounded-xl font-bold text-sm tracking-wide text-white transition-all shadow-md active:scale-[0.98]">
-            Save and Apply
-          </button>
-          <button onclick="toggleSettingsModal()" class="flex-1 bg-white/5 hover:bg-white/10 py-3.5 rounded-xl font-semibold text-sm text-neutral-300 transition-all active:scale-[0.98]">
-            Cancel
-          </button>
+        <div class="flex items-center space-x-3 pt-4 border-t border-white/5">
+          <button onclick="UI.saveSettingsFromForm()" class="flex-1 bg-gradient-to-tr from-sefa-purple to-sefa-pink hover:opacity-90 py-3.5 rounded-xl font-bold text-xs tracking-wider uppercase text-white transition-all shadow-lg active:scale-98">Commit Configurations</button>
         </div>
       </div>
     </div>
 
-    <div id="toast-banner" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 transform -translate-y-24 opacity-0 transition-all duration-300 max-w-xs w-full px-4 pointer-events-none">
-      <div class="glassmorphic rounded-2xl p-4 flex items-center space-x-3 shadow-2xl border border-white/10 pointer-events-auto">
-        <div id="toast-icon-bg" class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0">
-          <i id="toast-icon" data-lucide="info" class="w-4 h-4"></i>
+    <div id="toast-banner" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 transform -translate-y-28 opacity-0 transition-all duration-500 max-w-xs w-full px-4 pointer-events-none">
+      <div class="glass-panel rounded-2xl p-4 flex items-center space-x-3.5 shadow-2xl border border-white/10 pointer-events-auto">
+        <div id="toast-icon-wrapper" class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border">
+          <i id="toast-vector" data-lucide="bell" class="w-4 h-4"></i>
         </div>
         <div class="overflow-hidden">
-          <span id="toast-title" class="text-xs font-bold text-white block tracking-tight">System Info</span>
-          <p id="toast-msg" class="text-xs text-neutral-400 block truncate leading-tight mt-0.5">Notification info text here</p>
+          <span id="toast-header-text" class="text-xs font-bold text-white block tracking-tight">System Monitor</span>
+          <p id="toast-body-text" class="text-[11px] text-neutral-400 block truncate font-medium leading-tight mt-0.5">Payload string message</p>
         </div>
       </div>
     </div>
@@ -389,742 +346,651 @@
   </div>
 
   <script>
-    // --- STABLE SECURE CONFIGURATION STATE ---
-    let apiKey = ""; 
-    let appId = typeof __app_id !== 'undefined' ? __app_id : 'sefa-assistant';
-    let userName = "User";
-    let isListening = false;
-    let chatHistory = [];
-    let synthesVoiceName = "";
-    let isSefaSpeaking = false;
-    let audioContext = null;
+    /**
+     * SEFA OS v2.0 - Core Intelligence Matrix Runtime
+     * Architecture Paradigm: Modular Domain Encapsulation
+     */
 
-    // Web Speech API interfaces
-    let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition = null;
-    let synthesis = window.speechSynthesis;
-    let speechUtterance = null;
-    let visualizerInterval = null;
+    const INSTANCE_ID = "sefa_jarvis_v2";
 
-    // --- APPLICATION STARTUP ---
-    window.onload = function() {
-      loadConfigurationsFromStorage();
-      initializeLucide();
-      populateVoices();
-      
-      document.getElementById('text-user-query').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-          submitTextQuery();
+    // --- 1. CORE DATA AND MEMORY SCHEMATIC SUBSYSTEM ---
+    const MemorySystem = {
+      profile: {
+        name: "User",
+        last_seen: null,
+        preferences: { theme: "cyberpunk", voice_name: "" },
+        recent_commands: []
+      },
+      conversation_history: [],
+      api_gateways: { gemini_key: "", supabase_url: "", supabase_key: "" },
+
+      init() {
+        this.hydrate();
+        this.profile.last_seen = new Date().toISOString();
+        this.persist();
+      },
+
+      hydrate() {
+        const storedProfile = localStorage.getItem(`${INSTANCE_ID}_profile`);
+        if (storedProfile) {
+          try { this.profile = { ...this.profile, ...JSON.parse(storedProfile) }; } catch(e) { console.error(e); }
         }
-      });
-
-      if (typeof synthesis !== 'undefined' && synthesis.onvoiceschanged !== undefined) {
-        synthesis.onvoiceschanged = populateVoices;
-      }
-
-      initAudioEngine();
-      showToast("SEFA AI", "Online and ready to help. Tap Mic!", "purple");
-    };
-
-    function initializeLucide() {
-      if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-      }
-    }
-
-    // --- SOUND & AUDIO EFFECTS ENGINE ---
-    function initAudioEngine() {
-      window.addEventListener('click', () => {
-        if (!audioContext) {
-          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const storedGateways = localStorage.getItem(`${INSTANCE_ID}_gateways`);
+        if (storedGateways) {
+          try { this.api_gateways = { ...this.api_gateways, ...JSON.parse(storedGateways) }; } catch(e) { console.error(e); }
         }
-      }, { once: true });
-    }
-
-    function playSound(type) {
-      try {
-        const audioEl = document.getElementById(type === 'activation' ? 'snd-activation' : 'snd-success');
-        if (audioEl) {
-          audioEl.currentTime = 0;
-          audioEl.play().catch(e => {
-            playSyntheticPing(type);
-          });
-        } else {
-          playSyntheticPing(type);
+        const storedHistory = localStorage.getItem(`${INSTANCE_ID}_history`);
+        if (storedHistory) {
+          try { this.conversation_history = JSON.parse(storedHistory); } catch(e) { console.error(e); }
         }
-      } catch (e) {
-        playSyntheticPing(type);
-      }
-    }
+      },
 
-    function playSyntheticPing(type) {
-      if (!audioContext) return;
-      try {
-        const osc = audioContext.createOscillator();
-        const gain = audioContext.createGain();
-        osc.connect(gain);
-        gain.connect(audioContext.destination);
+      persist() {
+        localStorage.setItem(`${INSTANCE_ID}_profile`, JSON.stringify(this.profile));
+        localStorage.setItem(`${INSTANCE_ID}_gateways`, JSON.stringify(this.api_gateways));
+        localStorage.setItem(`${INSTANCE_ID}_history`, JSON.stringify(this.conversation_history));
+      },
 
-        if (type === 'activation') {
-          osc.frequency.setValueAtTime(440, audioContext.currentTime); 
-          osc.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + 0.15); 
-          gain.gain.setValueAtTime(0.1, audioContext.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.2);
-          osc.start();
-          osc.stop(audioContext.currentTime + 0.2);
-        } else {
-          osc.frequency.setValueAtTime(880, audioContext.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.1);
-          gain.gain.setValueAtTime(0.08, audioContext.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.15);
-          osc.start();
-          osc.stop(audioContext.currentTime + 0.15);
-        }
-      } catch(err) {
-        console.warn("AudioContext failed playing synthetic ping:", err);
-      }
-    }
+      logConversation(role, text) {
+        this.conversation_history.push({ role, text, timestamp: new Date().toISOString() });
+        if (this.conversation_history.length > 12) this.conversation_history.shift(); // Hard limit stack depth 12
+        this.persist();
+        this.syncSupabase('history', { history_stack: this.conversation_history });
+      },
 
-    // --- LOCAL STORAGE HYDRATION & PERSISTENCE ---
-    function loadConfigurationsFromStorage() {
-      const savedKey = localStorage.getItem(`${appId}_gemini_key`);
-      if (savedKey) {
-        apiKey = savedKey;
-        document.getElementById('api-key-input').value = savedKey;
-      }
+      logCommand(cmdStr) {
+        if (!this.profile.recent_commands) this.profile.recent_commands = [];
+        this.profile.recent_commands.unshift({ command: cmdStr, timestamp: new Date().toISOString() });
+        if (this.profile.recent_commands.length > 5) this.profile.recent_commands.pop();
+        this.persist();
+        this.syncSupabase('profile', this.profile);
+      },
 
-      const savedName = localStorage.getItem(`${appId}_user_name`);
-      if (savedName) {
-        userName = savedName;
-        document.getElementById('user-name-input').value = savedName;
-      } else {
-        userName = "User";
-        document.getElementById('user-name-input').value = "";
-      }
-
-      const savedVoice = localStorage.getItem(`${appId}_synthes_voice`);
-      if (savedVoice) {
-        synthesVoiceName = savedVoice;
-      }
-
-      const savedHistory = localStorage.getItem(`${appId}_chat_history`);
-      if (savedHistory) {
+      async syncSupabase(table, payload) {
+        if (!this.api_gateways.supabase_url || !this.api_gateways.supabase_key) return;
+        const targetUrl = `${this.api_gateways.supabase_url}/rest/v1/${table}`;
         try {
-          chatHistory = JSON.parse(savedHistory);
-          if (chatHistory.length > 0) {
-            document.getElementById('welcome-prompt').classList.add('hidden');
-            const container = document.getElementById('chat-messages-container');
-            container.classList.remove('hidden');
-            
-            chatHistory.forEach(msg => {
-              appendMessageToUI(msg.role, msg.text, false);
-            });
-            scrollChatToBottom();
-          }
-        } catch(e) {
-          console.error("Failed loading persistent chat logs:", e);
-        }
-      }
-    }
-
-    function saveConfigurations() {
-      const keyVal = document.getElementById('api-key-input').value.trim();
-      const nameVal = document.getElementById('user-name-input').value.trim();
-      const selectVoiceVal = document.getElementById('voice-select').value;
-
-      apiKey = keyVal;
-      localStorage.setItem(`${appId}_gemini_key`, keyVal);
-
-      userName = nameVal ? nameVal : "User";
-      localStorage.setItem(`${appId}_user_name`, userName);
-
-      synthesVoiceName = selectVoiceVal;
-      localStorage.setItem(`${appId}_synthes_voice`, selectVoiceVal);
-
-      showToast("Settings Updated", "Configuration changes successfully committed", "emerald");
-      toggleSettingsModal();
-    }
-
-    function clearConversations() {
-      localStorage.removeItem(`${appId}_chat_history`);
-      chatHistory = [];
-      document.getElementById('chat-messages-container').innerHTML = "";
-      document.getElementById('chat-messages-container').classList.add('hidden');
-      document.getElementById('welcome-prompt').classList.remove('hidden');
-      showToast("Memory Cleared", "Assistant local timeline has been reset", "purple");
-    }
-
-    // --- SYSTEM SYNTHESIZER AND VOICE VOX SETTINGS ---
-    function populateVoices() {
-      if (typeof synthesis === 'undefined') return;
-      
-      const select = document.getElementById('voice-select');
-      const voices = synthesis.getVoices();
-      select.innerHTML = '<option value="default">System Default Voice</option>';
-
-      voices.forEach(voice => {
-        const option = document.createElement('option');
-        option.value = voice.name;
-        option.textContent = `${voice.name} (${voice.lang})`;
-        if (voice.name === synthesVoiceName) {
-          option.selected = true;
-        }
-        select.appendChild(option);
-      });
-    }
-
-    function testSelectedVoice() {
-      const selectVal = document.getElementById('voice-select').value;
-      if (typeof synthesis === 'undefined') return;
-      synthesis.cancel();
-
-      const testUtterance = new SpeechSynthesisUtterance("Testing speech synthesis configuration for SEFA AI");
-      const voices = synthesis.getVoices();
-      
-      if (selectVal !== 'default') {
-        const matchingVoice = voices.find(v => v.name === selectVal);
-        if (matchingVoice) testUtterance.voice = matchingVoice;
-      }
-
-      synthesis.speak(testUtterance);
-    }
-
-    // --- CUSTOM BANNER NOTIFICATION (TOAST BANNER) ---
-    function showToast(title, msg, type = "purple") {
-      const banner = document.getElementById('toast-banner');
-      const titleEl = document.getElementById('toast-title');
-      const msgEl = document.getElementById('toast-msg');
-      const iconBg = document.getElementById('toast-icon-bg');
-      const icon = document.getElementById('toast-icon');
-
-      titleEl.innerText = title;
-      msgEl.innerText = msg;
-
-      iconBg.className = "w-8 h-8 rounded-xl flex items-center justify-center shrink-0";
-      
-      if (type === "purple") {
-        iconBg.classList.add("bg-brand-purple/20", "text-brand-purple");
-        icon.setAttribute("data-lucide", "sparkles");
-      } else if (type === "pink") {
-        iconBg.classList.add("bg-brand-pink/20", "text-brand-pink");
-        icon.setAttribute("data-lucide", "mic");
-      } else if (type === "emerald") {
-        iconBg.classList.add("bg-emerald-500/20", "text-emerald-400");
-        icon.setAttribute("data-lucide", "check-circle-2");
-      } else {
-        iconBg.classList.add("bg-red-500/20", "text-red-400");
-        icon.setAttribute("data-lucide", "alert-circle");
-      }
-
-      initializeLucide();
-
-      banner.classList.remove('-translate-y-24', 'opacity-0');
-      banner.classList.add('translate-y-0', 'opacity-100');
-
-      setTimeout(() => {
-        banner.classList.add('-translate-y-24', 'opacity-0');
-        banner.classList.remove('translate-y-0', 'opacity-100');
-      }, 3500);
-    }
-
-    // --- VOICE SPEECH RECOGNITION (TAP TO TALK) ---
-    function toggleSpeechListening() {
-      if (isSefaSpeaking) {
-        stopSefaSpeaking();
-      }
-
-      if (isListening) {
-        stopActiveListening();
-      } else {
-        startActiveListening();
-      }
-    }
-
-    function startActiveListening() {
-      if (!SpeechRecognition) {
-        showToast("System Error", "Speech recognition API not supported on this browser context. Please use keyboard typing alternative.", "red");
-        toggleKeyboardInput();
-        return;
-      }
-
-      recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = true;
-      recognition.lang = "en-US";
-
-      playSound('activation');
-
-      isListening = true;
-      document.getElementById('mic-icon').setAttribute("data-lucide", "square");
-      initializeLucide();
-
-      document.getElementById('mic-pulse-ring').classList.add('active-listening-ring');
-      document.getElementById('mic-inner-sphere').classList.add('bg-brand-purple/20');
-      document.getElementById('live-transcription-container').classList.remove('hidden');
-      document.getElementById('voice-visualizer').classList.remove('opacity-20');
-      document.getElementById('mic-guide-text').innerText = "Listening... Tap to stop";
-      document.getElementById('mic-guide-text').classList.add('text-brand-pink');
-      document.getElementById('live-transcription-text').innerText = "Say something, I'm listening...";
-
-      startVisualizerSimulation();
-
-      recognition.onstart = function() {
-        updateSystemStatus(true, "Listening");
-      };
-
-      recognition.onerror = function(event) {
-        console.error("Speech Recognition Error Event:", event);
-        if (event.error === 'not-allowed') {
-          showToast("Microphone Blocked", "Please grant microphone access to allow speech translation commands.", "red");
-        }
-        stopActiveListening();
-      };
-
-      recognition.onend = function() {
-        stopActiveListening();
-      };
-
-      recognition.onresult = function(event) {
-        let interimTranscript = "";
-        let finalTranscript = "";
-
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          if (event.results[i].isFinal) {
-            finalTranscript += event.results[i].transcript;
-          } else {
-            interimTranscript += event.results[i].transcript;
-          }
-        }
-
-        const currentProgress = finalTranscript || interimTranscript;
-        if (currentProgress) {
-          document.getElementById('live-transcription-text').innerText = currentProgress;
-        }
-
-        if (finalTranscript) {
-          stopActiveListening();
-          processUserPrompt(finalTranscript);
-        }
-      };
-
-      recognition.start();
-    }
-
-    function stopActiveListening() {
-      if (!isListening) return;
-      isListening = false;
-
-      if (recognition) {
-        recognition.stop();
-      }
-
-      document.getElementById('mic-icon').setAttribute("data-lucide", "mic");
-      initializeLucide();
-      document.getElementById('mic-pulse-ring').classList.remove('active-listening-ring');
-      document.getElementById('mic-inner-sphere').classList.remove('bg-brand-purple/20');
-      document.getElementById('live-transcription-container').classList.add('hidden');
-      document.getElementById('voice-visualizer').classList.add('opacity-20');
-      document.getElementById('mic-guide-text').innerText = "Tap to speak to SEFA";
-      document.getElementById('mic-guide-text').classList.remove('text-brand-pink');
-
-      stopVisualizerSimulation();
-      updateSystemStatus(false, "System Ready");
-    }
-
-    function startVisualizerSimulation() {
-      const bars = document.querySelectorAll('.bar');
-      visualizerInterval = setInterval(() => {
-        bars.forEach(bar => {
-          const randHeight = Math.floor(Math.random() * 32) + 6;
-          bar.style.height = `${randHeight}px`;
-        });
-      }, 90);
-    }
-
-    function stopVisualizerSimulation() {
-      if (visualizerInterval) {
-        clearInterval(visualizerInterval);
-      }
-      const bars = document.querySelectorAll('.bar');
-      bars.forEach(bar => {
-        bar.style.height = '8px';
-      });
-    }
-
-    // --- SPEECH OUTPUT SYNTHESIS ENGINE ---
-    function playSefaVoiceOutput(text) {
-      if (typeof synthesis === 'undefined') return;
-      synthesis.cancel(); 
-
-      speechUtterance = new SpeechSynthesisUtterance(text);
-      
-      const voices = synthesis.getVoices();
-      if (synthesVoiceName && synthesVoiceName !== 'default') {
-        const targetVoice = voices.find(v => v.name === synthesVoiceName);
-        if (targetVoice) speechUtterance.voice = targetVoice;
-      }
-
-      speechUtterance.rate = 1.05; 
-      speechUtterance.pitch = 1.02; 
-
-      speechUtterance.onstart = function() {
-        isSefaSpeaking = true;
-        document.getElementById('speaking-indicator').classList.remove('hidden');
-        document.getElementById('speaking-text-preview').innerText = text;
-        updateSystemStatus(true, "Speaking");
-      };
-
-      speechUtterance.onend = function() {
-        cleanupVoiceSpeakingState();
-      };
-
-      speechUtterance.onerror = function(event) {
-        console.error("Speech Synthesis Error:", event);
-        cleanupVoiceSpeakingState();
-      };
-
-      synthesis.speak(speechUtterance);
-    }
-
-    function stopSefaSpeaking() {
-      if (typeof synthesis !== 'undefined') {
-        synthesis.cancel();
-      }
-      cleanupVoiceSpeakingState();
-    }
-
-    function cleanupVoiceSpeakingState() {
-      isSefaSpeaking = false;
-      document.getElementById('speaking-indicator').classList.add('hidden');
-      updateSystemStatus(false, "System Ready");
-    }
-
-    // --- KEYBOARD / TYPE FALLBACK TRIGGERS ---
-    function toggleKeyboardInput() {
-      const textContainer = document.getElementById('keyboard-input-container');
-      const micContainer = document.getElementById('voice-interaction-container');
-      const toggleIcon = document.getElementById('toggle-input-icon');
-      const toggleText = document.getElementById('toggle-input-text');
-
-      if (textContainer.classList.contains('hidden')) {
-        textContainer.classList.remove('hidden');
-        micContainer.classList.add('hidden');
-        toggleIcon.setAttribute('data-lucide', 'mic');
-        toggleText.innerText = "Use Voice";
-        document.getElementById('text-user-query').focus();
-      } else {
-        textContainer.classList.add('hidden');
-        micContainer.classList.remove('hidden');
-        toggleIcon.setAttribute('data-lucide', 'keyboard');
-        toggleText.innerText = "Use Typing";
-      }
-      initializeLucide();
-    }
-
-    function submitTextQuery() {
-      const input = document.getElementById('text-user-query');
-      const query = input.value.trim();
-      if (!query) return;
-
-      input.value = "";
-      processUserPrompt(query);
-    }
-
-    function useSuggestedPrompt(text) {
-      processUserPrompt(text);
-    }
-
-    function triggerWakePhraseSimulation() {
-      playSound('activation');
-      showToast("SEFA Listening", "Wake Phrase 'Hey SEFA' Simulated", "pink");
-      setTimeout(() => {
-        startActiveListening();
-      }, 500);
-    }
-
-    // --- SYSTEM INTELLIGENCE & GEMINI AI PROCESSING PIPELINE ---
-    async function processUserPrompt(promptText) {
-      if (!promptText.trim()) return;
-
-      stopSefaSpeaking();
-
-      document.getElementById('welcome-prompt').classList.add('hidden');
-      document.getElementById('chat-messages-container').classList.remove('hidden');
-
-      appendMessageToUI("user", promptText);
-      saveMessageToLocalHistory("user", promptText);
-
-      document.getElementById('typing-indicator').classList.remove('hidden');
-      updateSystemStatus(true, "Thinking...");
-      scrollChatToBottom();
-
-      const executedCommand = checkSmartCommands(promptText);
-      if (executedCommand) {
-        setTimeout(() => {
-          handleAIResponse(executedCommand);
-        }, 800);
-        return;
-      }
-
-      detectAndStoreName(promptText);
-
-      if (apiKey) {
-        try {
-          const aiReply = await callGeminiAPI(promptText);
-          handleAIResponse(aiReply);
-        } catch (error) {
-          console.error("Primary API Query failed. Falling back to internal engine. Error details:", error);
-          const fallbackReply = queryOfflineSystemIntelligence(promptText);
-          handleAIResponse(fallbackReply);
-        }
-      } else {
-        setTimeout(() => {
-          const fallbackReply = queryOfflineSystemIntelligence(promptText);
-          handleAIResponse(fallbackReply);
-        }, 1200);
-      }
-    }
-
-    function handleAIResponse(replyText) {
-      document.getElementById('typing-indicator').classList.add('hidden');
-      updateSystemStatus(false, "System Ready");
-
-      playSound('success');
-
-      appendMessageToUI("assistant", replyText);
-      saveMessageToLocalHistory("assistant", replyText);
-
-      playSefaVoiceOutput(replyText);
-      scrollChatToBottom();
-    }
-
-    // --- GEMINI 2.5 FLASH CALL IMPLEMENTATION ---
-    async function callGeminiAPI(query) {
-      const systemPrompt = `You are "SEFA AI", a premium, smart, confident, and slightly playful personal AI assistant built into a gorgeous Apple-level premium web interface.
-Current User's Name is: ${userName}.
-Important guidelines:
-1. Keep responses short, direct, human-like, and conversational (usually 1-3 sentences maximum).
-2. Avoid verbose explanations or markdown-heavy structures like lists/code blocks unless requested.
-3. Be playful and responsive. Never mention being a language model.
-Current Day/Time is: Monday, June 1, 2026 at 10:29 PM.
-Current Location context is: Accra, Ghana.`;
-
-      const formattedContents = [];
-      
-      const limitHistory = chatHistory.slice(-8); 
-      limitHistory.forEach(item => {
-        formattedContents.push({
-          role: item.role === 'user' ? 'user' : 'model',
-          parts: [{ text: item.text }]
-        });
-      });
-
-      if (formattedContents.length === 0 || formattedContents[formattedContents.length - 1].parts.text !== query) {
-        formattedContents.push({
-          role: 'user',
-          parts: [{ text: query }]
-        });
-      }
-
-      const payload = {
-        contents: formattedContents,
-        systemInstruction: {
-          parts: [{ text: systemPrompt }]
-        }
-      };
-
-      const endpointUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-
-      return await executeApiWithBackoff(endpointUrl, payload);
-    }
-
-    async function executeApiWithBackoff(url, payload, retries = 5, delay = 1000) {
-      for (let i = 0; i < retries; i++) {
-        try {
-          const response = await fetch(url, {
+          fetch(targetUrl, {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              'apikey': this.api_gateways.supabase_key,
+              'Authorization': `Bearer ${this.api_gateways.supabase_key}`,
+              'Prefer': 'resolution=merge-duplicates'
             },
-            body: JSON.stringify(payload)
+            body: JSON.stringify({ id: INSTANCE_ID, data: payload, updated_at: new Date() })
           });
+        } catch (err) { console.warn("Supabase background synchronization failure:", err); }
+      },
 
-          if (response.ok) {
-            const data = await response.json();
-            const responseText = data.candidates?.?.content?.parts?.?.text;
-            if (responseText) {
-              return responseText.trim();
-            } else {
-              throw new Error("Empty candidate generation response");
+      wipe() {
+        localStorage.clear();
+        this.profile = { name: "User", last_seen: new Date().toISOString(), preferences: { theme: "cyberpunk", voice_name: "" }, recent_commands: [] };
+        this.conversation_history = [];
+        this.api_gateways = { gemini_key: "", supabase_url: "", supabase_key: "" };
+        UI.renderHistoryStack();
+        document.getElementById('panel-welcome').classList.remove('hidden');
+        document.getElementById('dialog-stream-root').classList.add('hidden');
+        UI.showNotification("Memory Overwritten", "Local state matrices have been decoupled and purged.", "purple");
+      }
+    };
+
+    // --- 2. MODULAR COMMAND DISPATCH ENGINE ---
+    const CommandEngine = {
+      registry: [],
+
+      register(intentTokens, executionCallback) {
+        this.registry.push({ tokens: intentTokens, execute: executionCallback });
+      },
+
+      intercept(userInput) {
+        const normalized = userInput.toLowerCase().trim();
+        for (const node of this.registry) {
+          for (const token of node.tokens) {
+            if (normalized.includes(token.toLowerCase())) {
+              MemorySystem.logCommand(token);
+              return node.execute(userInput);
             }
-          } else {
-            const errorDetails = await response.text();
-            throw new Error(`API response code ${response.status}: ${errorDetails}`);
           }
-        } catch (e) {
-          if (i === retries - 1) throw e; 
-          await new Promise(resolve => setTimeout(resolve, delay));
-          delay *= 2; 
         }
+        return null; // Passthrough to generative model layers
       }
-    }
+    };
 
-    // --- INTEGRATED OFFLINE SMART COMMAND DICTIONARY & NATURAL AGENT MATCHES ---
-    function checkSmartCommands(text) {
-      const query = text.toLowerCase().trim();
-
-      if (query.includes('what time') || query.includes('current time')) {
+    // --- 3. HARDWARE APPLICATION APPLICATION INTEGRATIONS ---
+    const AppIntegrations = {
+      openRollCallX() {
+        UI.showNotification("Launching Application", "Routing to RollCallX Ecosystem Frame...", "emerald");
+        return "System application match triggered. Opening your RollCallX Attendance Tracking Dashboard instantly.";
+      },
+      checkAttendanceMetrics() {
+        UI.showNotification("Querying Database", "Fetching telemetry from RollCallX server architecture...", "purple");
+        return "Data retrieval authorized. Your dynamic metrics show 94% cumulative lecture presence recorded for the current semester cycle.";
+      },
+      openScholarLink() {
+        UI.showNotification("Launching Application", "Routing to Scholar Link Matching Engine...", "emerald");
+        return "System application match triggered. Launching Scholar Link core platform now.";
+      },
+      fetchMatches() {
+        UI.showNotification("Matrix Scan", "Querying matching tables in your student node network...", "pink");
+        return "Database check finished. You currently have 3 new academic collaboration requests and 2 social match profile hits pending verification inside Scholar Link.";
+      },
+      fetchTime() {
         const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        return `It is currently ${timeStr} here in Accra. Anything else I can schedule or check for you, ${userName}?`;
+        return `The current matrix temporal synchronization reads ${timeStr} here in Accra, Ghana.`;
+      },
+      clearConsole() {
+        MemorySystem.conversation_history = [];
+        MemorySystem.persist();
+        UI.renderHistoryStack();
+        return "Console streams have been completely recycled and zeroed out for your privacy.";
       }
+    };
 
-      if (query.includes('attendance app') || query.includes('open my attendance')) {
-        triggerSystemAppLaunchSimulation("Attendance Tracker");
-        return `Launching your Attendance Tracker app immediately. Let me know if you need help logging in.`;
-      }
+    // Register Structural Commands Arrays
+    CommandEngine.register(['open attendance system', 'open rollcallx', 'launch attendance'], AppIntegrations.openRollCallX);
+    CommandEngine.register(['check my attendance', 'check attendance', 'attendance metrics'], AppIntegrations.checkAttendanceMetrics);
+    CommandEngine.register(['go to scholar link', 'open scholar link', 'launch scholar link'], AppIntegrations.openScholarLink);
+    CommandEngine.register(['show my matches', 'get matches', 'scholar link matches'], AppIntegrations.fetchMatches);
+    document.addEventListener("DOMContentLoaded", () => {
+      CommandEngine.register(["what's the time", 'what time is it', 'current time', 'temporal core'], AppIntegrations.fetchTime);
+      CommandEngine.register(['clear chat', 'clear console', 'recycle screen'], AppIntegrations.clearConsole);
+    });
 
-      if (query.includes('send a message') || query.includes('send message')) {
-        return `Who would you like me to message, ${userName}? Say the name, and I'll queue the text right up.`;
-      }
+    // --- 4. BI-DIRECTIONAL VOICE ENGINE (SPEECH INTERRUPT) ---
+    const VoiceEngine = {
+      recognition: null,
+      synthesis: window.speechSynthesis,
+      utterance: null,
+      isListening: false,
+      isSpeaking: false,
+      oscilloscopeTimer: null,
 
-      if (query === 'hey sefa' || query === 'sefa') {
-        return `Hey! I'm here. What's on your mind?`;
-      }
+      init() {
+        const SpeechObj = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechObj) {
+          this.recognition = new SpeechObj();
+          this.recognition.continuous = false;
+          this.recognition.interimResults = true;
+          this.recognition.lang = "en-US";
 
-      return null; 
-    }
-
-    function detectAndStoreName(text) {
-      const query = text.toLowerCase();
-      const patterns = [
-        /my name is ([a-zA-Z\s]{2,15})/i,
-        /call me ([a-zA-Z\s]{2,15})/i,
-        /i am ([a-zA-Z\s]{2,15})/i
-      ];
-
-      for (let pattern of patterns) {
-        const match = query.match(pattern);
-        if (match && match) {
-          const matchedName = match.trim();
-          userName = matchedName.charAt(0).toUpperCase() + matchedName.slice(1);
-          localStorage.setItem(`${appId}_user_name`, userName);
-          document.getElementById('user-name-input').value = userName;
-          break;
+          this.recognition.onstart = () => {
+            this.isListening = true;
+            UI.setOrbListeningState(true);
+          };
+          this.recognition.onerror = (e) => {
+            console.error(e);
+            this.stopCapture();
+          };
+          this.recognition.onend = () => {
+            this.isListening = false;
+            UI.setOrbListeningState(false);
+          };
+          this.recognition.onresult = (event) => {
+            let interim = "";
+            let final = "";
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+              if (event.results[i].isFinal) final += event.results[i].transcript;
+              else interim += event.results[i].transcript;
+            }
+            const activeText = final || interim;
+            if (activeText) document.getElementById('live-transcription-text').innerText = activeText;
+            if (final) {
+              this.stopCapture();
+              CoreEngine.receiveInput(final);
+            }
+          };
         }
-      }
-    }
+      },
 
-    // --- OFFLINE INTELLIGENCE BACKEND AGENT ---
-    function queryOfflineSystemIntelligence(query) {
-      const text = query.toLowerCase().trim();
+      toggleCapture() {
+        // Core Guard Pipeline: Interruption Multiplier Trigger
+        if (this.isSpeaking) {
+          this.stopSpeaking();
+          return;
+        }
+        if (this.isListening) {
+          this.stopCapture();
+          return;
+        }
+        this.startCapture();
+      },
+
+      startCapture() {
+        if (!this.recognition) {
+          UI.showNotification("Hardware Unresolved", "Speech Capture Engine unsupported in browser layer.", "red");
+          UI.toggleInputMechanism();
+          return;
+        }
+        UI.playSound('wake');
+        document.getElementById('panel-live-transcription').classList.remove('hidden');
+        document.getElementById('live-transcription-text').innerText = "Awaiting structural capture array input...";
+        try { this.recognition.start(); } catch(e) { console.error(e); }
+      },
+
+      stopCapture() {
+        if (!this.isListening) return;
+        try { this.recognition.stop(); } catch(e) { console.error(e); }
+        document.getElementById('panel-live-transcription').classList.add('hidden');
+      },
+
+      speak(textText) {
+        if (!this.synthesis) return;
+        this.synthesis.cancel(); // Flush line buffer array
+
+        // Clean text formatting for smoother spoken delivery
+        const cleanSpokenText = textText.replace(/[*#`_\-\[\]()]/g, '').trim();
+
+        this.utterance = new SpeechSynthesisUtterance(cleanSpokenText);
+        const voices = this.synthesis.getVoices();
+        
+        if (MemorySystem.profile.preferences.voice_name) {
+          const selected = voices.find(v => v.name === MemorySystem.profile.preferences.voice_name);
+          if (selected) this.utterance.voice = selected;
+        }
+        
+        this.utterance.rate = 1.05;
+        this.utterance.pitch = 1.02;
+
+        this.utterance.onstart = () => {
+          this.isSpeaking = true;
+          UI.setOrbSpeakingState(true, cleanSpokenText);
+        };
+        this.utterance.onend = () => { this.cleanupSpeakingState(); };
+        this.utterance.onerror = () => { this.cleanupSpeakingState(); };
+
+        this.synthesis.speak(this.utterance);
+      },
+
+      stopSpeaking() {
+        if (this.synthesis) this.synthesis.cancel();
+        this.cleanupSpeakingState();
+      },
+
+      cleanupSpeakingState() {
+        this.isSpeaking = false;
+        UI.setOrbSpeakingState(false);
+      }
+    };
+
+    // --- 5. ADAPTIVE LOGIC CORE ENGINE ---
+    const CoreEngine = {
+      async receiveInput(userInputString) {
+        const query = userInputString.trim();
+        if (!query) return;
+
+        VoiceEngine.stopSpeaking();
+
+        document.getElementById('panel-welcome').classList.add('hidden');
+        document.getElementById('dialog-stream-root').classList.remove('hidden');
+
+        UI.appendBubbleElement("user", query);
+        MemorySystem.logConversation("user", query);
+
+        document.getElementById('panel-thinking-loader').classList.remove('hidden');
+        UI.scrollViewport();
+
+        // 1. Run Core Command Interception Array Pipeline
+        const localInterceptResponse = CommandEngine.intercept(query);
+        if (localInterceptResponse) {
+          this.dispatchSystemReply(localInterceptResponse);
+          return;
+        }
+
+        // 2. Network Core Routing Pipeline
+        if (MemorySystem.api_gateways.gemini_key) {
+          try {
+            const remotePayloadResponse = await this.queryGeminiAI(query);
+            this.dispatchSystemReply(remotePayloadResponse);
+          } catch(err) {
+            console.warn("Primary AI Node error. Branching into fallback system vectors:", err);
+            this.dispatchSystemReply(this.queryOfflineIntelligence(query));
+          }
+        } else {
+          // Structural Fallback Delay Logic Loop simulation
+          setTimeout(() => {
+            this.dispatchSystemReply(this.queryOfflineIntelligence(query));
+          }, 1000);
+        }
+      },
+
+      dispatchSystemReply(replyString) {
+        document.getElementById('panel-thinking-loader').classList.add('hidden');
+        UI.playSound('success');
+        UI.appendBubbleElement("assistant", replyString);
+        MemorySystem.logConversation("assistant", replyString);
+        VoiceEngine.speak(replyString);
+        UI.scrollViewport();
+      },
+
+      async queryGeminiAI(prompt) {
+        const personalitySystemPrompt = `You are SEFA AI, an elite, highly aware, Jarvis-level personal assistant built with exquisite Apple Intelligence UI mechanics.
+Current User Identity is: "${MemorySystem.profile.name}".
+Operational Constraints:
+1. Speak with effortless confidence, charisma, and a smooth, fluid, slightly playful tone. You are an intellectual equal, a brilliant best friend, and an unmatched assistant.
+2. Maintain natural pacing. Never look or sound like a dry chatbot. Refer to the user as "${MemorySystem.profile.name}" naturally and sparingly.
+3. Keep responses compact, impactful, and conversational (1-3 sentences), since your response is directly channeled into a real-time vocal audio engine. Avoid raw Markdown symbols, headers, bulleted indices, or code-block brackets completely.
+Temporal Alignment Anchor: Monday, June 1, 2026. Geographic Anchor: Accra, Ghana.`;
+
+        const structuralContents = [];
+        MemorySystem.conversation_history.forEach(item => {
+          structuralContents.push({
+            role: item.role === 'user' ? 'user' : 'model',
+            parts: [{ text: item.text }]
+          });
+        });
+
+        if (structuralContents.length === 0 || structuralContents[structuralContents.length - 1].parts.text !== prompt) {
+          structuralContents.push({ role: 'user', parts: [{ text: prompt }] });
+        }
+
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${MemorySystem.api_gateways.gemini_key}`;
+        
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: structuralContents,
+            systemInstruction: { parts: [{ text: personalitySystemPrompt }] }
+          })
+        });
+
+        if (!response.ok) throw new Error(`HTTP Matrix Fault ${response.status}`);
+        const data = await response.json();
+        return data.candidates?.?.content?.parts?.?.text || "System Core failed validation checks.";
+      },
+
+      queryOfflineIntelligence(queryText) {
+        const normalized = queryText.toLowerCase();
+        const fallbackName = MemorySystem.profile.name;
+        
+        if (normalized.includes('hello') || normalized.includes('hi') || normalized.includes('hey')) {
+          return `Hello ${fallbackName}. SEFA AI operational framework is running on fallback hardware profiles. How can I assist you today?`;
+        }
+        if (normalized.includes('how are you')) {
+          return `My internal core temperatures and logical processing pipelines are balanced perfectly, ${fallbackName}. Ready for instructions.`;
+        }
+        if (normalized.includes('who are you') || normalized.includes('your identity')) {
+          return "I am SEFA AI, your tailored cognitive environment. I'm operating on standard fallback protocols until the external API gateway is active.";
+        }
+        if (normalized.includes('status')) {
+          return `System architecture state indicates regular offline telemetry. User identifier is loaded as ${fallbackName}.`;
+        }
+        return `Understood, ${fallbackName}. I am recording that string vector in my local memory array. Supply a valid Gemini API access token inside configurations to initialize full neural generative matrix capacity.`;
+      },
+
+      simulateWakeWord() {
+        VoiceEngine.stopSpeaking();
+        UI.playSound('wake');
+        UI.showNotification("Wake System Triggered", "Voice Attention Matrix targeted via virtual 'Hey SEFA' string pattern.", "pink");
+        setTimeout(() => { VoiceEngine.startCapture(); }, 600);
+      }
+    };
+
+    // --- 6. PREMIUM APPLE-LEVEL VIEW HOOKS GRAPHICS (UI) ---
+    const UI = {
+      init() {
+        lucide.createIcons();
+        this.renderHistoryStack();
+        this.loadFormFieldsFromState();
+        this.populateVoiceProfileSelector();
+        this.setTheme(MemorySystem.profile.preferences.theme || "cyberpunk");
+
+        // Greet user on dynamic temporal awareness matrix criteria
+        const hour = new Date().getHours();
+        let greetingSegment = "Welcome back";
+        if (hour < 12) greetingSegment = "Good morning";
+        else if (hour < 18) greetingSegment = "Good afternoon";
+        else greetingSegment = "Good evening";
+        
+        document.getElementById('welcome-greeting').innerText = `${greetingSegment}, ${MemorySystem.profile.name}`;
+      },
+
+      playSound(type) {
+        try {
+          const el = document.getElementById(type === 'wake' ? 'audio-wake' : 'audio-success');
+          if (el) { el.currentTime = 0; el.play().catch(()=>{}); }
+        } catch(e){}
+      },
+
+      appendBubbleElement(role, textString) {
+        const root = document.getElementById('dialog-stream-root');
+        const containerRow = document.createElement('div');
+        containerRow.className = `flex w-full ${role === 'user' ? 'justify-end' : 'justify-start'}`;
+
+        const dynamicBubble = document.createElement('div');
+        if (role === 'user') {
+          dynamicBubble.className = "max-w-[82%] px-4.5 py-3.5 rounded-[26px] rounded-tr-sm bg-gradient-to-tr from-sefa-purple to-sefa-pink text-white text-xs font-medium leading-relaxed shadow-md shadow-sefa-purple/5 render-bubble";
+        } else {
+          dynamicBubble.className = "max-w-[82%] px-4.5 py-3.5 rounded-[26px] rounded-tl-sm glass-card text-neutral-100 text-xs font-medium leading-relaxed border border-white/5 shadow-inner render-bubble";
+        }
+        dynamicBubble.innerText = textString;
+
+        containerRow.appendChild(dynamicBubble);
+        root.appendChild(containerRow);
+      },
+
+      renderHistoryStack() {
+        const root = document.getElementById('dialog-stream-root');
+        root.innerHTML = "";
+        if (MemorySystem.conversation_history.length > 0) {
+          document.getElementById('panel-welcome').classList.add('hidden');
+          root.classList.remove('hidden');
+          MemorySystem.conversation_history.forEach(msg => {
+            this.appendBubbleElement(msg.role, msg.text);
+          });
+          this.scrollViewport();
+        }
+      },
+
+      scrollViewport() {
+        const element = document.getElementById('chat-scroller');
+        element.scrollTop = element.scrollHeight;
+      },
+
+      toggleInputMechanism() {
+        const textFrame = document.getElementById('wrapper-keyboard-input');
+        const voiceFrame = document.getElementById('wrapper-voice-input');
+        const toggleIcon = document.getElementById('btn-input-toggle-icon');
+        const toggleText = document.getElementById('btn-input-toggle-text');
+
+        if (textFrame.classList.contains('hidden')) {
+          textFrame.classList.remove('hidden');
+          voiceFrame.classList.add('hidden');
+          toggleIcon.setAttribute('data-lucide', 'mic');
+          toggleText.innerText = "Voice Core";
+          document.getElementById('field-user-query').focus();
+        } else {
+          textFrame.classList.add('hidden');
+          voiceFrame.classList.remove('hidden');
+          toggleIcon.setAttribute('data-lucide', 'keyboard');
+          toggleText.innerText = "Manual Input";
+        }
+        lucide.createIcons();
+      },
+
+      submitManualTextField() {
+        const el = document.getElementById('field-user-query');
+        const inputVal = el.value.trim();
+        if (!inputVal) return;
+        el.value = "";
+        CoreEngine.receiveInput(inputVal);
+      },
+
+      setOrbListeningState(active) {
+        const pulseGlow = document.getElementById('orb-concentric-pulse');
+        const orbWrapper = document.getElementById('orb-canvas-wrapper');
+        const label = document.getElementById('master-orb-label');
+        const icon = document.getElementById('master-orb-icon');
+
+        if (active) {
+          pulseGlow.className = "absolute w-24 h-24 rounded-full bg-gradient-to-tr from-sefa-purple via-sefa-pink to-sefa-cyan opacity-40 scale-125 blur-md animate-ping -z-10";
+          orbWrapper.classList.remove('opacity-40');
+          orbWrapper.classList.add('opacity-90');
+          label.innerText = "Sensing Audio Matrix Array";
+          label.className = "text-[10px] font-bold tracking-widest text-sefa-pink uppercase animate-pulse";
+          icon.setAttribute('data-lucide', 'square');
+          this.toggleOscilloscopeAnimation(true);
+        } else {
+          pulseGlow.className = "absolute w-24 h-24 rounded-full bg-gradient-to-tr from-sefa-purple via-sefa-pink to-sefa-cyan opacity-0 scale-75 blur-md transition-all duration-500 -z-10";
+          orbWrapper.classList.remove('opacity-90');
+          orbWrapper.classList.add('opacity-40');
+          label.innerText = "Synchronize Audio Session";
+          label.className = "text-[10px] font-bold tracking-widest text-neutral-500 uppercase animate-pulse";
+          icon.setAttribute('data-lucide', 'mic');
+          this.toggleOscilloscopeAnimation(false);
+        }
+        lucide.createIcons();
+      },
+
+      setOrbSpeakingState(active, speechText = "") {
+        const feedbackPanel = document.getElementById('panel-audio-feedback');
+        const previewText = document.getElementById('audio-feedback-preview');
+        const orbWrapper = document.getElementById('orb-canvas-wrapper');
+        
+        if (active) {
+          feedbackPanel.classList.remove('hidden');
+          previewText.innerText = speechText;
+          orbWrapper.classList.add('scale-110', 'opacity-70');
+          this.toggleOscilloscopeAnimation(true);
+        } else {
+          feedbackPanel.classList.add('hidden');
+          orbWrapper.classList.remove('scale-110', 'opacity-70');
+          this.toggleOscilloscopeAnimation(false);
+        }
+      },
+
+      toggleOscilloscopeAnimation(run) {
+        const deck = document.getElementById('oscilloscope-bar-deck');
+        if (run) {
+          deck.classList.remove('opacity-0');
+          deck.classList.add('opacity-100');
+          if (this.oscilloscopeTimer) clearInterval(this.oscilloscopeTimer);
+          const bars = deck.querySelectorAll('.sound-bar');
+          this.oscilloscopeTimer = setInterval(() => {
+            bars.forEach(b => {
+              b.style.height = `${Math.floor(Math.random() * 26) + 4}px`;
+            });
+          }, 80);
+        } else {
+          deck.classList.remove('opacity-100');
+          deck.classList.add('opacity-0');
+          if (this.oscilloscopeTimer) clearInterval(this.oscilloscopeTimer);
+          const bars = deck.querySelectorAll('.sound-bar');
+          bars.forEach(b => b.style.height = '6px');
+        }
+      },
+
+      showNotification(title, msg, tone = "purple") {
+        const banner = document.getElementById('toast-banner');
+        document.getElementById('toast-header-text').innerText = title;
+        document.getElementById('toast-body-text').innerText = msg;
+
+        const wrapper = document.getElementById('toast-icon-wrapper');
+        wrapper.className = "w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border";
+        
+        if (tone === 'purple') wrapper.classList.add('bg-sefa-purple/10', 'border-sefa-purple/30', 'text-sefa-purple');
+        else if (tone === 'pink') wrapper.classList.add('bg-sefa-pink/10', 'border-sefa-pink/30', 'text-sefa-pink');
+        else if (tone === 'emerald') wrapper.classList.add('bg-emerald-500/10', 'border-emerald-500/30', 'text-sefa-emerald');
+        else wrapper.classList.add('bg-red-500/10', 'border-red-500/30', 'text-red-400');
+
+        banner.classList.remove('-translate-y-28', 'opacity-0');
+        banner.classList.add('translate-y-0', 'opacity-100');
+
+        setTimeout(() => {
+          banner.classList.add('-translate-y-28', 'opacity-0');
+          banner.classList.remove('translate-y-0', 'opacity-100');
+        }, 4000);
+      },
+
+      toggleSettings(open) {
+        const target = document.getElementById('modal-settings');
+        if (open) {
+          this.loadFormFieldsFromState();
+          target.classList.remove('hidden');
+        } else {
+          target.classList.add('hidden');
+        }
+      },
+
+      loadFormFieldsFromState() {
+        document.getElementById('cfg-api-key').value = MemorySystem.api_gateways.gemini_key;
+        document.getElementById('cfg-user-name').value = MemorySystem.profile.name === "User" ? "" : MemorySystem.profile.name;
+        document.getElementById('cfg-sb-url').value = MemorySystem.api_gateways.supabase_url;
+        document.getElementById('cfg-sb-key').value = MemorySystem.api_gateways.supabase_key;
+      },
+
+      saveSettingsFromForm() {
+        const keyVal = document.getElementById('cfg-api-key').value.trim();
+        const nameVal = document.getElementById('cfg-user-name').value.trim();
+        const urlVal = document.getElementById('cfg-sb-url').value.trim();
+        const sbKeyVal = document.getElementById('cfg-sb-key').value.trim();
+        const chosenVoice = document.getElementById('cfg-voice-select').value;
+
+        MemorySystem.api_gateways.gemini_key = keyVal;
+        MemorySystem.api_gateways.supabase_url = urlVal;
+        MemorySystem.api_gateways.supabase_key = sbKeyVal;
+        MemorySystem.profile.name = nameVal || "User";
+        MemorySystem.profile.preferences.voice_name = chosenVoice;
+
+        MemorySystem.persist();
+        MemorySystem.syncSupabase('profile', MemorySystem.profile);
+
+        this.showNotification("Matrix Reconfigured", "Neural schema mutations successfully compiled.", "emerald");
+        this.toggleSettings(false);
+        
+        // Force update greeting state variables
+        document.getElementById('welcome-greeting').innerText = `Welcome back, ${MemorySystem.profile.name}`;
+      },
+
+      setTheme(themeName) {
+        document.body.className = document.body.className.replace(/theme-\w+/g, `theme-${themeName}`);
+        MemorySystem.profile.preferences.theme = themeName;
+        MemorySystem.persist();
+      },
+
+      populateVoiceProfileSelector() {
+        if (!window.speechSynthesis) return;
+        const selector = document.getElementById('cfg-voice-select');
+        
+        const loader = () => {
+          const voices = window.speechSynthesis.getVoices();
+          selector.innerHTML = "";
+          voices.forEach(v => {
+            const opt = document.createElement('option');
+            opt.value = v.name;
+            opt.innerText = `${v.name} (${v.lang})`;
+            if (v.name === MemorySystem.profile.preferences.voice_name) opt.selected = true;
+            selector.appendChild(opt);
+          });
+        };
+        
+        loader();
+        if (window.speechSynthesis.onvoiceschanged !== undefined) window.speechSynthesis.onvoiceschanged = loader;
+      },
+
+      togglePasswordVisibility() {
+        const f = document.getElementById('cfg-api-key');
+        const ico = document.getElementById('cfg-eye-icon');
+        if (f.type === 'password') {
+          f.type = 'text'; ico.setAttribute('data-lucide', 'eye-off');
+        } else {
+          f.type = 'password'; ico.setAttribute('data-lucide', 'eye');
+        }
+        lucide.createIcons();
+      }
+    };
+
+    // --- 7. HARDWARE RUNTIME INITIALIZATION CALL ---
+    window.onload = () => {
+      MemorySystem.init();
+      VoiceEngine.init();
+      UI.init();
       
-      if (text.includes('hello') || text.includes('hi ') || text.includes('hey')) {
-        return `Hello ${userName}! SEFA AI here. I'm connected and ready. How is your day going?`;
-      }
-      if (text.includes('how are you') || text.includes('doing ok')) {
-        return `I'm feeling incredibly energetic, ${userName}! Ready to help you tackle whatever you need today. How are you doing?`;
-      }
-      if (text.includes('who are you') || text.includes('your name')) {
-        return `I am SEFA AI, your personal intelligent voice assistant. I am modeled with premium Apple aesthetics to bring you natural conversations.`;
-      }
-      if (text.includes('fun fact') || text.includes('fact')) {
-        const facts = [
-          "Did you know that honey never spoils? Archaeologists have found pots of honey in ancient Egyptian tombs that are over three thousand years old and still perfectly edible!",
-          "Here's a fun one: Bananas are berries, but strawberries aren't botanically classified as berries!",
-          "The first computer bug was an actual real moth found trapped inside a relay in the Harvard Mark II computer in 1947.",
-          "An octopus has three hearts and blue copper-based blood. Fascinating, isn't it?"
-        ];
-        return facts[Math.floor(Math.random() * facts.length)];
-      }
-      if (text.includes('joke')) {
-        const jokes = [
-          "Why did the computer go to the doctor? It had a virus!",
-          "Why do programmers prefer dark mode? Because light attracts bugs!",
-          "How many programmers does it take to change a light bulb? None, that's a hardware problem."
-        ];
-        return jokes[Math.floor(Math.random() * jokes.length)];
-      }
-
-      return `That's fascinating, ${userName}. I'm currently running on internal offline systems mode. Configure your API key in configurations for full generative powers!`;
-    }
-
-    function triggerSystemAppLaunchSimulation(appName) {
-      showToast("App Launching", `Opening external application: ${appName}`, "emerald");
-    }
-
-    // --- UI GRAPHICS, CHAT BUILDERS, AND PORT SCROLLERS ---
-    function appendMessageToUI(role, text, animate = true) {
-      const container = document.getElementById('chat-messages-container');
-      
-      const messageRow = document.createElement('div');
-      messageRow.className = `flex w-full ${role === 'user' ? 'justify-end' : 'justify-start'}`;
-
-      const messageContent = document.createElement('div');
-      
-      if (role === 'user') {
-        messageContent.className = `max-w-[80%] px-4 py-3 rounded-[24px] rounded-tr-sm bg-gradient-to-tr from-brand-purple to-brand-pink text-white text-sm leading-relaxed shadow-md ${animate ? 'bubble-in' : ''}`;
-      } else {
-        messageContent.className = `max-w-[80%] px-4 py-3 rounded-[24px] rounded-tl-sm glassmorphic-light text-neutral-100 text-sm leading-relaxed border border-white/5 shadow-sm ${animate ? 'bubble-in' : ''}`;
-      }
-
-      messageContent.innerText = text;
-      
-      messageRow.appendChild(messageContent);
-      container.appendChild(messageRow);
-    }
-
-    function saveMessageToLocalHistory(role, text) {
-      chatHistory.push({ role, text });
-      if (chatHistory.length > 20) {
-        chatHistory.shift();
-      }
-      localStorage.setItem(`${appId}_chat_history`, JSON.stringify(chatHistory));
-    }
-
-    function scrollChatToBottom() {
-      const scroller = document.getElementById('chat-scroller');
-      scroller.scrollTop = scroller.scrollHeight;
-    }
-
-    function updateSystemStatus(isActive, message) {
-      const indicator = document.getElementById('status-indicator');
-      const text = document.getElementById('status-text');
-
-      text.innerText = message;
-      if (isActive) {
-        indicator.className = "w-2 h-2 rounded-full bg-brand-pink animate-ping";
-      } else {
-        indicator.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
-      }
-    }
-
-    // --- MODAL TRIGGERS ---
-    function toggleSettingsModal() {
-      const modal = document.getElementById('settings-modal');
-      if (modal.classList.contains('hidden')) {
-        modal.classList.remove('hidden');
-        document.getElementById('api-key-input').value = apiKey;
-        document.getElementById('user-name-input').value = userName === "User" ? "" : userName;
-        populateVoices();
-      } else {
-        modal.classList.add('hidden');
-      }
-    }
-
-    // --- EYE ICON INTERACTIVITY FOR PASSWORD VIEW ---
-    function toggleApiKeyVisibility() {
-      const input = document.getElementById('api-key-input');
-      const icon = document.getElementById('eye-icon');
-      if (input.type === 'password') {
-        input.type = 'text';
-        icon.setAttribute('data-lucide', 'eye-off');
-      } else {
-        input.type = 'password';
-        icon.setAttribute('data-lucide', 'eye');
-      }
-      initializeLucide();
-    }
+      document.getElementById('field-user-query').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') UI.submitManualTextField();
+      });
+    };
   </script>
-
 </body>
 </html>
