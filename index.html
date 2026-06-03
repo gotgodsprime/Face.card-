@@ -1,43 +1,115 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Lecture Time Alert</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lecture Time Alert Pro</title>
 </head>
-<body style="font-family: Arial; text-align:center; margin-top:50px;">
+<body style="font-family: Arial, sans-serif; text-align: center; margin-top: 50px; background-color: #f4f6f9; color: #333;">
 
-  <h2>Lecture Time Checker</h2>
+  <div style="max-width: 400px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+    <h2>Lecture Time Checker</h2>
 
-  <p>Current Time: <span id="time"></span></p>
+    <p style="font-size: 1.2rem; color: #555;">Current Time: <span id="time" style="font-weight: bold; color: #2c3e50;"></span></p>
 
-  <h3>Set Lecture Time (24-hour format)</h3>
-  <input type="time" id="lectureTime">
-  <button onclick="startCheck()">Start</button>
+    <hr style="border: 0; height: 1px; background: #eee; margin: 20px 0;">
+
+    <h3>Set Lecture Time (24-hour format)</h3>
+    <input type="time" id="lectureTime" style="padding: 8px; font-size: 1rem; border-radius: 5px; border: 1px solid #ccc; margin-right: 5px;">
+    
+    <div style="margin-top: 15px;">
+      <button onclick="startCheck()" style="padding: 8px 15px; font-size: 1rem; background-color: #2ecc71; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px;">Start</button>
+      <button onclick="cancelCheck()" style="padding: 8px 15px; font-size: 1rem; background-color: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer;">Cancel</button>
+    </div>
+
+    <p id="countdown" style="font-weight: bold; color: #e67e22; font-size: 1.1rem; margin-top: 20px; min-height: 24px;"></p>
+  </div>
 
   <script>
-    // Show live time
+    // 1. Audio Notification Setup (Using a clean online alert sound)
+    const alarmSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-500.wav");
+    
+    let targetTime = "";
+
+    // 2. Show Live Clock
     setInterval(() => {
       const now = new Date();
-      document.getElementById("time").innerText =
-        now.toLocaleTimeString();
+      document.getElementById("time").innerText = now.toLocaleTimeString();
     }, 1000);
 
-    let targetTime = "9:30";
+    // 3. Load Saved Time from LocalStorage on Page Load
+    window.onload = function() {
+      const savedTime = localStorage.getItem("savedLectureTime");
+      if (savedTime) {
+        targetTime = savedTime;
+        document.getElementById("lectureTime").value = savedTime;
+      }
+    };
 
+    // 4. Set the Reminder
     function startCheck() {
-      targetTime = document.getElementById("lectureTime").value;
+      const inputTime = document.getElementById("lectureTime").value;
+      
+      if (!inputTime) {
+        alert("Please select a valid time first!");
+        return;
+      }
+
+      targetTime = inputTime;
+      localStorage.setItem("savedLectureTime", targetTime); // Save to browser memory
       alert("Lecture reminder set for " + targetTime);
     }
 
-    // Check every second
+    // 5. Cancel the Reminder
+    function cancelCheck() {
+      targetTime = "";
+      localStorage.removeItem("savedLectureTime"); // Clear browser memory
+      document.getElementById("countdown").innerText = "";
+      document.getElementById("lectureTime").value = "";
+      alert("Reminder cancelled.");
+    }
+
+    // 6. Main Checker and Countdown Engine (Runs every second)
     setInterval(() => {
-      if (!targetTime) return;
+      if (!targetTime) {
+        document.getElementById("countdown").innerText = "";
+        return;
+      }
 
       const now = new Date();
-      const current = now.toTimeString().slice(0,5); // HH:MM
+      
+      // Breakdown target time into hours and minutes
+      const [hours, minutes] = targetTime.split(":");
+      const targetDate = new Date();
+      targetDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
 
-      if (current === targetTime) {
-        alert("📢 It's time ! tell the lecturer to leave now!");
-        targetTime = ""; // stop repeating
+      // If the targeted time has already passed today, target that time tomorrow
+      if (targetDate < now) {
+        targetDate.setDate(targetDate.getDate() + 1);
+      }
+
+      const timeDiff = targetDate - now; // Difference in milliseconds
+
+      // Calculate time components
+      const minsLeft = Math.floor(timeDiff / 1000 / 60);
+      const secsLeft = Math.floor((timeDiff / 1000) % 60);
+
+      // Check if it's trigger time (less than 1 second remaining)
+      if (minsLeft === 0 && secsLeft === 0) {
+        targetTime = ""; 
+        localStorage.removeItem("savedLectureTime"); // Clear after firing
+        document.getElementById("countdown").innerText = "";
+        
+        // Play audio alarm
+        alarmSound.play().catch(error => console.log("Audio playback blocked until user interacts with the page."));
+        
+        // Trigger alert safely without freezing the thread beforehand
+        setTimeout(() => { 
+          alert("📢 It's time! Lecture is starting now!"); 
+        }, 50);
+      } else {
+        // Update countdown text display
+        document.getElementById("countdown").innerText = `⏳ Starts in: ${minsLeft}m ${secsLeft}s`;
       }
     }, 1000);
   </script>
