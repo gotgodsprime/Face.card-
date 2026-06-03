@@ -1,118 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lecture Time Alert Pro</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Group Cipher</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .glass {
+            background: rgba(30, 30, 40, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+    </style>
 </head>
-<body style="font-family: Arial, sans-serif; text-align: center; margin-top: 50px; background-color: #f4f6f9; color: #333;">
+<body class="bg-[#0b0b0f] text-gray-100 min-h-screen flex items-center justify-center p-4 antialiased">
 
-  <div style="max-width: 400px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-    <h2>Lecture Time Checker</h2>
+    <div class="glass w-full max-w-lg rounded-3xl p-6 shadow-2xl space-y-6">
+        
+        <div class="text-center space-y-1">
+            <h1 class="text-2xl font-bold tracking-tight bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">Secret WhatsApp Cipher</h1>
+            <p class="text-xs text-gray-400">Zero-server, local AES-GCM browser encryption</p>
+        </div>
 
-    <p style="font-size: 1.2rem; color: #555;">Current Time: <span id="time" style="font-weight: bold; color: #2c3e50;"></span></p>
+        <div class="space-y-1.5">
+            <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Shared Secret Password</label>
+            <input type="password" id="password" placeholder="Enter your secret group key..." 
+                   class="w-full bg-[#161622] border border-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 transition-colors placeholder-gray-600">
+        </div>
 
-    <hr style="border: 0; height: 1px; background: #eee; margin: 20px 0;">
+        <hr class="border-gray-900">
 
-    <h3>Set Lecture Time (24-hour format)</h3>
-    <input type="time" id="lectureTime" style="padding: 8px; font-size: 1rem; border-radius: 5px; border: 1px solid #ccc; margin-right: 5px;">
-    
-    <div style="margin-top: 15px;">
-      <button onclick="startCheck()" style="padding: 8px 15px; font-size: 1rem; background-color: #2ecc71; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px;">Start</button>
-      <button onclick="cancelCheck()" style="padding: 8px 15px; font-size: 1rem; background-color: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer;">Cancel</button>
+        <div class="space-y-4">
+            <div class="space-y-1.5">
+                <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Plain Text (Your Message)</label>
+                <textarea id="plainText" rows="3" placeholder="Type the message you want to encrypt here..." 
+                          class="w-full bg-[#161622] border border-gray-800 rounded-xl p-3 text-sm focus:outline-none focus:border-indigo-500 transition-colors placeholder-gray-600 resize-none"></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="handleEncrypt()" class="w-full bg-indigo-600 hover:bg-indigo-500 active:scale-98 text-white font-medium text-sm py-3 rounded-xl transition-all cursor-pointer shadow-lg shadow-indigo-600/10">
+                    🔒 Encrypt Message
+                </button>
+                <button onclick="handleDecrypt()" class="w-full bg-gray-800 hover:bg-gray-700 active:scale-98 text-white font-medium text-sm py-3 rounded-xl transition-all cursor-pointer border border-gray-700/50">
+                    🔓 Decrypt Cipher
+                </button>
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Cipher Text (What you paste into WhatsApp)</label>
+                <textarea id="cipherText" rows="4" placeholder="Encrypted data will appear here, or paste scrambled text here to decrypt..." 
+                          class="w-full bg-[#12121a] border border-gray-800 rounded-xl p-3 text-sm font-mono text-emerald-400 focus:outline-none focus:border-emerald-600 transition-colors placeholder-gray-700 resize-none"></textarea>
+            </div>
+        </div>
+
+        <button onclick="copyToClipboard()" id="copyBtn" class="w-full text-center text-xs text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer hidden">
+            Copy Ciphertext to Clipboard
+        </button>
     </div>
 
-    <p id="countdown" style="font-weight: bold; color: #e67e22; font-size: 1.1rem; margin-top: 20px; min-height: 24px;"></p>
-  </div>
+    <script>
+        // Helper: Convert string to ArrayBuffer
+        const getBytes = (str) => new TextEncoder().encode(str);
 
-  <script>
-    // 1. Audio Notification Setup (Using a clean online alert sound)
-    const alarmSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-500.wav");
-    
-    let targetTime = "";
+        // Derive a secure cryptographic key from the user's text password using PBKDF2
+        async function deriveKey(password, salt) {
+            const baseKey = await crypto.subtle.importKey(
+                "raw", getBytes(password), "PBKDF2", false, ["deriveKey"]
+            );
+            return crypto.subtle.deriveKey(
+                { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
+                baseKey,
+                { name: "AES-GCM", length: 256 },
+                false,
+                ["encrypt", "decrypt"]
+            );
+        }
 
-    // 2. Show Live Clock
-    setInterval(() => {
-      const now = new Date();
-      document.getElementById("time").innerText = now.toLocaleTimeString();
-    }, 1000);
+        // Main Encryption Function
+        async function handleEncrypt() {
+            const pwdInput = document.getElementById('password');
+            const plainTextInput = document.getElementById('plainText');
+            
+            const pwd = pwdInput ? pwdInput.value.trim() : "";
+            const plainText = plainTextInput ? plainTextInput.value : "";
 
-    // 3. Load Saved Time from LocalStorage on Page Load
-    window.onload = function() {
-      const savedTime = localStorage.getItem("savedLectureTime");
-      if (savedTime) {
-        targetTime = savedTime;
-        document.getElementById("lectureTime").value = savedTime;
-      }
-    };
+            if (!pwd) {
+                alert("Please enter a shared secret password first!");
+                return;
+            }
+            if (!plainText) {
+                alert("Please enter a plain text message to encrypt.");
+                return;
+            }
 
-    // 4. Set the Reminder
-    function startCheck() {
-      const inputTime = document.getElementById("lectureTime").value;
-      
-      if (!inputTime) {
-        alert("Please select a valid time first!");
-        return;
-      }
+            try {
+                const salt = crypto.getRandomValues(new Uint8Array(16));
+                const iv = crypto.getRandomValues(new Uint8Array(12)); 
+                const key = await deriveKey(pwd, salt);
 
-      targetTime = inputTime;
-      localStorage.setItem("savedLectureTime", targetTime); // Save to browser memory
-      alert("Lecture reminder set for " + targetTime);
-    }
+                const encrypted = await crypto.subtle.encrypt(
+                    { name: "AES-GCM", iv: iv },
+                    key,
+                    getBytes(plainText)
+                );
 
-    // 5. Cancel the Reminder
-    function cancelCheck() {
-      targetTime = "";
-      localStorage.removeItem("savedLectureTime"); // Clear browser memory
-      document.getElementById("countdown").innerText = "";
-      document.getElementById("lectureTime").value = "";
-      alert("Reminder cancelled.");
-    }
+                // Package the salt, IV, and ciphertext into a single payload array
+                const payload = new Uint8Array(salt.byteLength + iv.byteLength + encrypted.byteLength);
+                payload.set(salt, 0);
+                payload.set(iv, salt.byteLength);
+                payload.set(new Uint8Array(encrypted), salt.byteLength + iv.byteLength);
 
-    // 6. Main Checker and Countdown Engine (Runs every second)
-    setInterval(() => {
-      if (!targetTime) {
-        document.getElementById("countdown").innerText = "";
-        return;
-      }
+                // Convert payload to simple Base64 string for easy text sharing
+                const b64String = btoa(String.fromCharCode(...payload));
+                
+                document.getElementById('cipherText').value = `[SECURE-MSG]\n${b64String}\n[/SECURE-MSG]`;
+                document.getElementById('copyBtn').classList.remove('hidden');
+            } catch (err) {
+                alert("Encryption failed: " + err.message);
+            }
+        }
 
-      const now = new Date();
-      
-      // Breakdown target time into hours and minutes
-      const [hours, minutes] = targetTime.split(":");
-      const targetDate = new Date();
-      targetDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+        // Main Decryption Function
+        async function handleDecrypt() {
+            const pwdInput = document.getElementById('password');
+            const cipherTextInput = document.getElementById('cipherText');
+            
+            const pwd = pwdInput ? pwdInput.value.trim() : "";
+            let rawCipher = cipherTextInput ? cipherTextInput.value.trim() : "";
 
-      // If the targeted time has already passed today, target that time tomorrow
-      if (targetDate < now) {
-        targetDate.setDate(targetDate.getDate() + 1);
-      }
+            if (!pwd) {
+                alert("Please enter your shared secret password to decrypt!");
+                return;
+            }
+            if (!rawCipher) {
+                alert("Please paste the scrambled WhatsApp message first.");
+                return;
+            }
 
-      const timeDiff = targetDate - now; // Difference in milliseconds
+            // Clean up tags if present
+            rawCipher = rawCipher.replace("[SECURE-MSG]\n", "").replace("\n[/SECURE-MSG]", "");
 
-      // Calculate time components
-      const minsLeft = Math.floor(timeDiff / 1000 / 60);
-      const secsLeft = Math.floor((timeDiff / 1000) % 60);
+            try {
+                // Convert back from Base64 string to byte array
+                const binaryStr = atob(rawCipher);
+                const payload = new Uint8Array(binaryStr.length);
+                for (let i = 0; i < binaryStr.length; i++) {
+                    payload[i] = binaryStr.charCodeAt(i);
+                }
 
-      // Check if it's trigger time (less than 1 second remaining)
-      if (minsLeft === 0 && secsLeft === 0) {
-        targetTime = ""; 
-        localStorage.removeItem("savedLectureTime"); // Clear after firing
-        document.getElementById("countdown").innerText = "";
-        
-        // Play audio alarm
-        alarmSound.play().catch(error => console.log("Audio playback blocked until user interacts with the page."));
-        
-        // Trigger alert safely without freezing the thread beforehand
-        setTimeout(() => { 
-          alert("📢 It's time! tell the lecturer to leave 😒😫!"); 
-        }, 50);
-      } else {
-        // Update countdown text display
-        document.getElementById("countdown").innerText = `⏳ Starts in: ${minsLeft}m ${secsLeft}s`;
-      }
-    }, 1000);
-  </script>
+                // Extract salt, IV, and the actual encrypted message bytes
+                const salt = payload.slice(0, 16);
+                const iv = payload.slice(16, 28);
+                const encryptedData = payload.slice(28);
 
+                const key = await deriveKey(pwd, salt);
+
+                const decrypted = await crypto.subtle.decrypt(
+                    { name: "AES-GCM", iv: iv },
+                    key,
+                    encryptedData
+                );
+
+                document.getElementById('plainText').value = new TextDecoder().decode(decrypted);
+            } catch (err) {
+                alert("Decryption failed! Check your password, or make sure the text wasn't modified.");
+            }
+        }
+
+        function copyToClipboard() {
+            const cipherText = document.getElementById('cipherText');
+            cipherText.select();
+            document.execCommand('copy');
+            const btn = document.getElementById('copyBtn');
+            btn.innerText = "✓ Copied!";
+            setTimeout(() => { btn.innerText = "Copy Ciphertext to Clipboard"; }, 2000);
+        }
+    </script>
 </body>
 </html>
