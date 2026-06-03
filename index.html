@@ -1,59 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Magic Tap</title>
-<style>
-    body {
-        margin: 0;
-        height: 100vh;
-        overflow: hidden;
-        background: black;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: white;
-        font-family: Arial;
-    }
-
-    h1 {
-        position: absolute;
-        top: 20px;
-        font-size: 18px;
-        opacity: 0.7;
-    }
-
-    .star {
-        position: absolute;
-        width: 8px;
-        height: 8px;
-        background: radial-gradient(circle, #fff, #0ff, transparent);
-        border-radius: 50%;
-        pointer-events: none;
-        animation: fade 1s ease-out forwards;
-    }
-
-    @keyframes fade {
-        from { transform: scale(1); opacity: 1; }
-        to { transform: scale(4); opacity: 0; }
-    }
-</style>
+  <title>Lecture Time Alert</title>
 </head>
-<body>
+<body style="font-family: Arial; text-align:center; margin-top:50px;">
 
-<h1>tapp anywhere ✨</h1>
+  <h2>Lecture Time Checker</h2>
 
-<script>
-document.addEventListener("click", function(e) {
-    const star = document.createElement("div");
-    star.className = "star";
-    star.style.left = e.clientX + "px";
-    star.style.top = e.clientY + "px";
-    document.body.appendChild(star);
+  <p>Current Time: <span id="time"></span></p>
 
-    setTimeout(() => star.remove(), 1000);
-});
-</script>
+  <h3>Set Lecture Time (24-hour format)</h3>
+  <input type="time" id="lectureTime">
+  <button onclick="startCheck()">Start</button>
+
+  <script>
+    // Show live time
+    setInterval(() => {
+      const now = new Date();
+      document.getElementById("time").innerText =
+        now.toLocaleTimeString();
+    }, 1000);
+
+    let targetTime = "9:30";
+
+    function startCheck() {
+      targetTime = document.getElementById("lectureTime").value;
+      alert("Lecture reminder set for " + targetTime);
+    }
+
+    // Check every second
+    setInterval(() => {
+      if (!targetTime) return;
+
+      const now = new Date();
+      const current = now.toTimeString().slice(0,5); // HH:MM
+
+      if (current === targetTime) {
+        alert("📢 It's time! Lecture is starting now!");
+        targetTime = ""; // stop repeating
+      }
+    }, 1000);
+  </script>
 
 </body>
 </html>
