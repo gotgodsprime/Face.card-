@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For Christabel ❤️ | My Favorite Chapter</title>
+    <title>For Christabel ❤️ | Our Story</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,8 +13,8 @@
     <style>
         :root {
             --bg-color: #030308;
-            --card-bg: rgba(18, 12, 28, 0.55);
-            --card-border: rgba(255, 182, 193, 0.2);
+            --card-bg: rgba(18, 12, 28, 0.6);
+            --card-border: rgba(255, 182, 193, 0.22);
             --primary-rose: #ff4d6d;
             --glow-rose: rgba(255, 77, 109, 0.45);
             --gold-accent: #f7d070;
@@ -38,16 +38,17 @@
             color: var(--text-main);
         }
 
-        /* Canvas & Ambient Backdrop */
-        #canvas-container {
+        /* Background Canvases */
+        #canvas-stars, #canvas-fireworks {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1;
             pointer-events: none;
         }
+        #canvas-stars { z-index: 1; }
+        #canvas-fireworks { z-index: 150; }
 
         .ambient-glow {
             position: fixed;
@@ -72,7 +73,6 @@
             100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
         }
 
-        /* Layout Stage */
         .stage {
             position: relative;
             z-index: 10;
@@ -84,7 +84,7 @@
             padding: 20px;
         }
 
-        /* Glassmorphism Card Style */
+        /* Glassmorphism Card Base */
         .glass-card {
             background: var(--card-bg);
             backdrop-filter: blur(25px);
@@ -112,9 +112,7 @@
             pointer-events: none;
         }
 
-        .login-header {
-            margin-bottom: 28px;
-        }
+        .login-header { margin-bottom: 28px; }
 
         .login-icon {
             width: 64px;
@@ -231,14 +229,14 @@
             font-style: italic;
         }
 
-        /* --- SCREEN 2: STORY & GALLERY WRAPPER --- */
+        /* --- MULTI-CHAPTER MAIN CONTAINER --- */
         #story-screen {
             position: absolute;
             width: 100%;
-            max-width: 800px;
+            max-width: 820px;
             height: 88vh;
-            max-height: 720px;
-            padding: 40px 36px;
+            max-height: 740px;
+            padding: 36px 36px 28px 36px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -254,14 +252,13 @@
             pointer-events: all;
         }
 
-        /* Navigation Header in Story */
         .story-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 16px;
+            padding-bottom: 14px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .story-tag {
@@ -284,20 +281,26 @@
             gap: 6px;
         }
 
-        .story-body {
+        /* Views Switching */
+        .chapter-view {
+            display: none;
             flex: 1;
             overflow-y: auto;
             padding-right: 10px;
+        }
+
+        .chapter-view.active {
             display: flex;
             flex-direction: column;
         }
 
-        .story-body::-webkit-scrollbar { width: 4px; }
-        .story-body::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); }
-        .story-body::-webkit-scrollbar-thumb { background: rgba(255, 77, 109, 0.3); border-radius: 4px; }
+        .chapter-view::-webkit-scrollbar { width: 4px; }
+        .chapter-view::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); }
+        .chapter-view::-webkit-scrollbar-thumb { background: rgba(255, 77, 109, 0.3); border-radius: 4px; }
 
+        /* Chapter 1 Text Elements */
         .story-text {
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             line-height: 1.9;
             font-weight: 300;
             color: rgba(248, 250, 252, 0.92);
@@ -315,67 +318,12 @@
 
         .special-quote {
             font-family: 'Great Vibes', cursive;
-            font-size: 2.3rem;
+            font-size: 2.2rem;
             color: var(--primary-rose);
             text-shadow: 0 0 18px rgba(255, 77, 109, 0.5);
             line-height: 1.4;
             display: block;
             margin-top: 15px;
-        }
-
-        /* --- FEATURE: INTERACTIVE FLIP MEMORY CARD --- */
-        .memory-card-container {
-            margin: 25px 0;
-            perspective: 1000px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 1s ease;
-        }
-
-        .memory-card-container.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .flip-card {
-            width: 100%;
-            height: 180px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px dashed var(--card-border);
-            border-radius: 16px;
-            cursor: pointer;
-            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transform-style: preserve-3d;
-            position: relative;
-        }
-
-        .flip-card.flipped {
-            transform: rotateY(180deg);
-        }
-
-        .card-front, .card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .card-front {
-            background: radial-gradient(circle, rgba(255, 77, 109, 0.1) 0%, rgba(18, 12, 28, 0.8) 100%);
-            color: var(--text-main);
-        }
-
-        .card-back {
-            background: linear-gradient(135deg, rgba(255, 77, 109, 0.2), rgba(247, 208, 112, 0.15));
-            transform: rotateY(180deg);
-            border: 1px solid var(--gold-accent);
         }
 
         .cursor {
@@ -394,10 +342,131 @@
             50% { opacity: 0; }
         }
 
+        /* --- CHAPTER 2: GALLERY & MEMORY GRID --- */
+        .chapter-heading {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            color: var(--gold-accent);
+            margin-bottom: 8px;
+        }
+
+        .chapter-sub {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .memory-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .memory-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary-rose);
+            box-shadow: 0 10px 25px rgba(255, 77, 109, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .photo-placeholder {
+            width: 100%;
+            height: 140px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .photo-placeholder i {
+            color: var(--primary-rose);
+            margin-bottom: 6px;
+        }
+
+        .memory-title {
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .memory-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Interactive Flip Card Component */
+        .flip-card {
+            width: 100%;
+            height: 160px;
+            margin: 10px 0 20px 0;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+        }
+
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-front, .flip-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            border: 1px dashed var(--card-border);
+        }
+
+        .flip-front {
+            background: radial-gradient(circle, rgba(255, 77, 109, 0.1) 0%, rgba(18, 12, 28, 0.8) 100%);
+        }
+
+        .flip-back {
+            background: linear-gradient(135deg, rgba(255, 77, 109, 0.25), rgba(247, 208, 112, 0.2));
+            transform: rotateY(180deg);
+            border: 1px solid var(--gold-accent);
+        }
+
         /* Footer & Actions */
         .story-footer {
             margin-top: 16px;
-            padding-top: 16px;
+            padding-top: 14px;
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             justify-content: space-between;
@@ -412,13 +481,35 @@
             transform: translateY(0);
         }
 
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            color: white;
+            padding: 10px 22px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-family: 'Cinzel', serif;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 77, 109, 0.2);
+            border-color: var(--primary-rose);
+            box-shadow: 0 0 15px rgba(255, 77, 109, 0.3);
+        }
+
         .love-btn {
-            background: linear-gradient(135deg, rgba(255, 77, 109, 0.3), rgba(201, 24, 74, 0.5));
+            background: linear-gradient(135deg, rgba(255, 77, 109, 0.3), rgba(201, 24, 74, 0.6));
             border: 1px solid var(--primary-rose);
             color: white;
             padding: 12px 28px;
             border-radius: 50px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-family: 'Cinzel', serif;
             letter-spacing: 1px;
             cursor: pointer;
@@ -554,19 +645,21 @@
         }
 
         @media (max-width: 640px) {
-            #story-screen { padding: 28px 20px; height: 92vh; }
+            #story-screen { padding: 24px 18px; height: 92vh; }
             .story-text { font-size: 1.05rem; line-height: 1.75; }
             .special-quote { font-size: 1.8rem; }
             .login-title { font-size: 1.3rem; }
             #login-screen { padding: 32px 20px; }
+            .memory-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Ambient Glowing Backdrop -->
+    <!-- Ambient Backdrops & Canvases -->
     <div class="ambient-glow"></div>
-    <canvas id="canvas-container"></canvas>
+    <canvas id="canvas-stars"></canvas>
+    <canvas id="canvas-fireworks"></canvas>
 
     <!-- Top Action Controls -->
     <div class="top-controls">
@@ -617,40 +710,79 @@
             <p class="hint-text">Designed with all my love ❤️</p>
         </div>
 
-        <!-- SCREEN 2: CINEMATIC LOVE STORY & GALLERY -->
+        <!-- SCREEN 2: MULTI-CHAPTER STORY & GALLERY -->
         <div class="glass-card" id="story-screen">
             <div class="story-header">
-                <span class="story-tag">Chapter 1 • My Queen</span>
+                <span class="story-tag" id="chapter-tag">Chapter 1 • My Queen</span>
                 <div class="interactive-badge">
                     <i data-lucide="sparkle" style="width: 12px; height: 12px;"></i>
                     <span>Special Edition</span>
                 </div>
             </div>
 
-            <div class="story-body" id="story-scroll-container">
+            <!-- CHAPTER 1: CINEMATIC LOVE STORY -->
+            <div class="chapter-view active" id="chapter-1-view">
                 <div class="story-text" id="story-container"></div>
-                
-                <!-- FEATURE: Flip Memory Card -->
-                <div class="memory-card-container" id="memory-card">
-                    <div class="flip-card" onclick="this.classList.toggle('flipped')">
-                        <div class="card-front">
-                            <i data-lucide="gift" style="color: var(--gold-accent); margin-bottom: 8px;"></i>
+            </div>
+
+            <!-- CHAPTER 2: PICTURES & MEMORIES -->
+            <div class="chapter-view" id="chapter-2-view">
+                <h2 class="chapter-heading">Chapter 2 • Gallery of Memories</h2>
+                <p class="chapter-sub">Every moment spent with you is a treasure I carry forever.</p>
+
+                <!-- Interactive Flip Card Secret Note -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-front">
+                            <i data-lucide="gift" style="color: var(--gold-accent); margin-bottom: 6px;"></i>
                             <span style="font-family: 'Cinzel', serif; font-size: 0.95rem; letter-spacing: 1px;">A Secret Note For You</span>
                             <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">(Tap to flip and reveal)</span>
                         </div>
-                        <div class="card-back">
+                        <div class="flip-back">
                             <p style="font-family: 'Great Vibes', cursive; font-size: 1.8rem; color: var(--gold-accent);">You are my sun, my moon, and all my stars.</p>
-                            <span style="font-size: 0.8rem; color: var(--text-main); margin-top: 6px;">Thank you for making my world complete ❤️</span>
+                            <span style="font-size: 0.8rem; color: var(--text-main); margin-top: 4px;">Thank you for making my world complete ❤️</span>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Memory Photo Grid -->
+                <div class="memory-grid">
+                    <div class="memory-card">
+                        <!-- Replace image URL with real photos if desired -->
+                        <div class="photo-placeholder" style="background-image: url('https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=600&q=80');"></div>
+                        <h3 class="memory-title">First Smiles</h3>
+                        <p class="memory-desc">The moment I realized your laugh was my favorite sound in the whole world.</p>
+                    </div>
+
+                    <div class="memory-card">
+                        <div class="photo-placeholder" style="background-image: url('https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=600&q=80');"></div>
+                        <h3 class="memory-title">Unforgettable Days</h3>
+                        <p class="memory-desc">Quiet hours, deep conversations, and moments where time just stood still.</p>
+                    </div>
+
+                    <div class="memory-card">
+                        <div class="photo-placeholder" style="background-image: url('https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=600&q=80');"></div>
+                        <h3 class="memory-title">Our Tomorrow</h3>
+                        <p class="memory-desc">Looking forward to building a hundred more chapters side by side.</p>
                     </div>
                 </div>
             </div>
 
+            <!-- STORY FOOTER WITH NAVIGATION -->
             <div class="story-footer" id="story-footer">
-                <div style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">
-                    Forever & Always
-                </div>
-                <button class="love-btn" onclick="openFinalModal()">
+                <button class="nav-btn" id="prev-btn" onclick="switchChapter(1)" style="display: none;">
+                    <i data-lucide="chevron-left"></i>
+                    <span>Chapter 1</span>
+                </button>
+
+                <div style="flex: 1;"></div>
+
+                <button class="nav-btn" id="next-ch-btn" onclick="switchChapter(2)">
+                    <span>Chapter 2: Memories</span>
+                    <i data-lucide="chevron-right"></i>
+                </button>
+
+                <button class="love-btn" id="final-love-btn" onclick="openFinalModal()" style="display: none;">
                     <span>I Love You</span>
                     <i data-lucide="heart" style="fill: currentColor; width: 18px; height: 18px;"></i>
                 </button>
@@ -673,11 +805,19 @@
     <script>
         // Global State
         let userName = "Christabel";
+        let currentChapter = 1;
+        
         const loginScreen = document.getElementById('login-screen');
         const storyScreen = document.getElementById('story-screen');
         const storyContainer = document.getElementById('story-container');
         const storyFooter = document.getElementById('story-footer');
-        const memoryCard = document.getElementById('memory-card');
+        const chapterTag = document.getElementById('chapter-tag');
+        const ch1View = document.getElementById('chapter-1-view');
+        const ch2View = document.getElementById('chapter-2-view');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextChBtn = document.getElementById('next-ch-btn');
+        const finalLoveBtn = document.getElementById('final-love-btn');
+        
         const audioBtn = document.getElementById('audio-toggle');
         const heartBurstBtn = document.getElementById('heart-burst-btn');
         
@@ -688,23 +828,23 @@
         // Initialize Lucide Icons
         lucide.createIcons();
 
-        // Canvas Particles (Stars & Twinkles)
-        const canvas = document.getElementById('canvas-container');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
+        /* --- CANVAS 1: STAR PARTICLES --- */
+        const starsCanvas = document.getElementById('canvas-stars');
+        const starsCtx = starsCanvas.getContext('2d');
+        let starParticles = [];
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+        function resizeStarsCanvas() {
+            starsCanvas.width = window.innerWidth;
+            starsCanvas.height = window.innerHeight;
         }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
+        window.addEventListener('resize', resizeStarsCanvas);
+        resizeStarsCanvas();
 
         class StarParticle {
             constructor() { this.reset(); }
             reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
+                this.x = Math.random() * starsCanvas.width;
+                this.y = Math.random() * starsCanvas.height;
                 this.size = Math.random() * 2 + 0.5;
                 this.alpha = Math.random() * 0.8 + 0.2;
                 this.speed = Math.random() * 0.05 + 0.01;
@@ -715,25 +855,103 @@
                 if (this.alpha >= 1 || this.alpha <= 0.1) this.dir *= -1;
             }
             draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255, 230, 240, ${this.alpha})`;
-                ctx.shadowBlur = 8;
-                ctx.shadowColor = "rgba(255, 182, 193, 0.5)";
-                ctx.fill();
+                starsCtx.beginPath();
+                starsCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                starsCtx.fillStyle = `rgba(255, 230, 240, ${this.alpha})`;
+                starsCtx.shadowBlur = 8;
+                starsCtx.shadowColor = "rgba(255, 182, 193, 0.5)";
+                starsCtx.fill();
+            }
+        }
+        for (let i = 0; i < 90; i++) starParticles.push(new StarParticle());
+
+        function animateStars() {
+            starsCtx.clearRect(0, 0, starsCanvas.width, starsCanvas.height);
+            starParticles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateStars);
+        }
+        animateStars();
+
+        /* --- CANVAS 2: FIREWORKS ENGINE --- */
+        const fwCanvas = document.getElementById('canvas-fireworks');
+        const fwCtx = fwCanvas.getContext('2d');
+        let fireworks = [];
+        let isFireworksActive = false;
+
+        function resizeFwCanvas() {
+            fwCanvas.width = window.innerWidth;
+            fwCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeFwCanvas);
+        resizeFwCanvas();
+
+        class FireworkParticle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 6 + 1;
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                this.alpha = 1;
+                this.decay = Math.random() * 0.02 + 0.01;
+                this.gravity = 0.08;
+            }
+            update() {
+                this.vx *= 0.97;
+                this.vy *= 0.97;
+                this.vy += this.gravity;
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= this.decay;
+            }
+            draw() {
+                fwCtx.save();
+                fwCtx.globalAlpha = Math.max(0, this.alpha);
+                fwCtx.beginPath();
+                fwCtx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
+                fwCtx.fillStyle = this.color;
+                fwCtx.shadowBlur = 10;
+                fwCtx.shadowColor = this.color;
+                fwCtx.fill();
+                fwCtx.restore();
             }
         }
 
-        for (let i = 0; i < 100; i++) particles.push(new StarParticle());
-
-        function animateCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => { p.update(); p.draw(); });
-            requestAnimationFrame(animateCanvas);
+        function launchFirework() {
+            const x = Math.random() * fwCanvas.width * 0.8 + fwCanvas.width * 0.1;
+            const y = Math.random() * fwCanvas.height * 0.4 + fwCanvas.height * 0.1;
+            const colors = ['#ff4d6d', '#f7d070', '#ffffff', '#ff758f', '#ffb3c1'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            for (let i = 0; i < 45; i++) {
+                fireworks.push(new FireworkParticle(x, y, color));
+            }
         }
-        animateCanvas();
 
-        // Floating Hearts Particle Engine
+        function animateFireworks() {
+            fwCtx.clearRect(0, 0, fwCanvas.width, fwCanvas.height);
+            for (let i = fireworks.length - 1; i >= 0; i--) {
+                const p = fireworks[i];
+                p.update();
+                p.draw();
+                if (p.alpha <= 0) fireworks.splice(i, 1);
+            }
+            if (isFireworksActive) requestAnimationFrame(animateFireworks);
+        }
+
+        function startFireworksDisplay() {
+            isFireworksActive = true;
+            animateFireworks();
+            const interval = setInterval(() => {
+                if (!isFireworksActive) { clearInterval(interval); return; }
+                launchFirework();
+            }, 350);
+            setTimeout(() => { isFireworksActive = false; }, 10000); // 10s display
+        }
+
+        /* --- FLOATING HEARTS PARTICLES --- */
         function createFloatingHeart() {
             const heart = document.createElement('div');
             heart.classList.add('heart-particle');
@@ -750,28 +968,22 @@
             document.body.appendChild(heart);
             setTimeout(() => heart.remove(), duration * 1000);
         }
-
         setInterval(createFloatingHeart, 1000);
 
-        // Heart Burst Button Feature
         heartBurstBtn.addEventListener('click', () => {
-            for(let i = 0; i < 12; i++) {
-                setTimeout(createFloatingHeart, i * 80);
-            }
+            for(let i = 0; i < 12; i++) setTimeout(createFloatingHeart, i * 80);
         });
 
-        // Web Audio Generative Soundtrack
+        /* --- GENERATIVE AUDIO SOUNDTRACK --- */
         function createRomanticSoundtrack() {
             if (audioCtx) return;
             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            
             const chords = [
                 [293.66, 369.99, 440.00, 554.37], // Dmaj7
                 [277.18, 349.23, 415.30, 554.37], // C#m7
                 [220.00, 277.18, 329.63, 440.00], // A Major
                 [246.94, 293.66, 369.99, 440.00]  // Bm7
             ];
-            
             let chordIdx = 0;
 
             function playPianoNote(freq, delay, duration) {
@@ -779,17 +991,13 @@
                     if (!isAudioPlaying || !audioCtx) return;
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
-
                     osc.type = 'sine';
                     osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-
                     gain.gain.setValueAtTime(0, audioCtx.currentTime);
                     gain.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 0.1);
                     gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-
                     osc.connect(gain);
                     gain.connect(audioCtx.destination);
-
                     osc.start();
                     osc.stop(audioCtx.currentTime + duration);
                 }, delay);
@@ -799,10 +1007,8 @@
                 if (!isAudioPlaying) return;
                 const currentChord = chords[chordIdx];
                 currentChord.forEach((freq, i) => playPianoNote(freq, i * 400, 4.5));
-                
                 const melodyNote = currentChord[Math.floor(Math.random() * currentChord.length)] * 2;
                 playPianoNote(melodyNote, 1800, 3.5);
-
                 chordIdx = (chordIdx + 1) % chords.length;
             }
 
@@ -826,10 +1032,9 @@
                 : `<i data-lucide="volume-x"></i>`;
             lucide.createIcons();
         }
-
         audioBtn.addEventListener('click', toggleAudio);
 
-        // Login Handler
+        /* --- LOGIN & STORY TRANSITION --- */
         function handleLogin(e) {
             e.preventDefault();
             const inputVal = document.getElementById('username').value.trim();
@@ -845,7 +1050,7 @@
             }, 800);
         }
 
-        // Cinematic Typing Story Handler
+        /* --- CHAPTER 1 TYPING ANIMATION --- */
         function startCinematicStory() {
             const storyParagraphs = [
                 `It started quietly...`,
@@ -858,13 +1063,12 @@
             ];
 
             let pIndex = 0;
-            const scrollContainer = document.getElementById('story-scroll-container');
+            const scrollContainer = ch1View;
 
             function typeNextParagraph() {
                 if (pIndex >= storyParagraphs.length) {
                     const cursor = document.querySelector('.cursor');
                     if (cursor) cursor.remove();
-                    memoryCard.classList.add('visible');
                     storyFooter.classList.add('visible');
                     return;
                 }
@@ -910,14 +1114,38 @@
             setTimeout(typeNextParagraph, 600);
         }
 
-        // Final Modal Handlers
+        /* --- MULTI-CHAPTER NAVIGATION --- */
+        function switchChapter(chNumber) {
+            currentChapter = chNumber;
+            if (chNumber === 1) {
+                chapterTag.innerText = "Chapter 1 • My Queen";
+                ch1View.classList.add('active');
+                ch2View.classList.remove('active');
+                
+                prevBtn.style.display = "none";
+                nextChBtn.style.display = "flex";
+                finalLoveBtn.style.display = "none";
+            } else if (chNumber === 2) {
+                chapterTag.innerText = "Chapter 2 • Beautiful Memories";
+                ch1View.classList.remove('active');
+                ch2View.classList.add('active');
+                
+                prevBtn.style.display = "flex";
+                nextChBtn.style.display = "none";
+                finalLoveBtn.style.display = "flex";
+            }
+        }
+
+        /* --- FINAL MODAL & FIREWORKS DISPLAY --- */
         function openFinalModal() {
             const modal = document.getElementById('final-modal');
             const modalText = document.getElementById('modal-personalized-text');
             modalText.innerHTML = `You are my heart, my home, and my favorite adventure, <strong>${escapeHtml(userName)}</strong>.<br>Every single day with you is a gift I promise to cherish forever.`;
             modal.classList.add('active');
 
-            for(let i = 0; i < 18; i++) {
+            // Trigger Fireworks Display & Heart Shower
+            startFireworksDisplay();
+            for(let i = 0; i < 20; i++) {
                 setTimeout(createFloatingHeart, i * 90);
             }
         }
