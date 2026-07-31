@@ -1,86 +1,934 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Critical System Alert</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Christabel ❤️ | My Favorite Chapter</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Great+Vibes&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body {
-            background: #000;
-            color: #0f0;
-            font-family: 'Courier New', monospace;
-            font-size: 16px;
-            padding: 20px;
+        :root {
+            --bg-color: #030308;
+            --card-bg: rgba(18, 12, 28, 0.55);
+            --card-border: rgba(255, 182, 193, 0.2);
+            --primary-rose: #ff4d6d;
+            --glow-rose: rgba(255, 77, 109, 0.45);
+            --gold-accent: #f7d070;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-main);
+        }
+
+        /* Canvas & Ambient Backdrop */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .ambient-glow {
+            position: fixed;
+            width: 70vw;
+            height: 70vw;
+            max-width: 650px;
+            max-height: 650px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--glow-rose) 0%, rgba(0,0,0,0) 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            filter: blur(90px);
+            opacity: 0.6;
+            animation: pulseGlow 8s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.4; }
+            100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+        }
+
+        /* Layout Stage */
+        .stage {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Glassmorphism Card Style */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7),
+                        inset 0 1px 1px rgba(255, 255, 255, 0.15);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* --- SCREEN 1: UNLOCK MEMORY --- */
+        #login-screen {
+            width: 100%;
+            max-width: 440px;
+            padding: 40px 32px;
+            text-align: center;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        #login-screen.fade-out {
+            opacity: 0;
+            transform: scale(0.9);
+            pointer-events: none;
+        }
+
+        .login-header {
+            margin-bottom: 28px;
+        }
+
+        .login-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(255, 77, 109, 0.12);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px auto;
+            border: 1px solid var(--card-border);
+            color: var(--primary-rose);
+            box-shadow: 0 0 25px rgba(255, 77, 109, 0.3);
+            animation: floatIcon 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatIcon {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-8px); }
+        }
+
+        .login-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #ffffff 0%, var(--gold-accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            margin-left: 4px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 16px;
+            color: var(--text-muted);
+            width: 18px;
+            height: 18px;
+        }
+
+        .styled-input {
+            width: 100%;
+            padding: 14px 16px 14px 48px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .styled-input:focus {
+            border-color: var(--primary-rose);
+            box-shadow: 0 0 15px rgba(255, 77, 109, 0.3);
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ff4d6d 0%, #c9184a 100%);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(255, 77, 109, 0.4);
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(255, 77, 109, 0.6);
+        }
+
+        .hint-text {
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.4);
+            font-style: italic;
+        }
+
+        /* --- SCREEN 2: STORY & GALLERY WRAPPER --- */
+        #story-screen {
+            position: absolute;
+            width: 100%;
+            max-width: 800px;
+            height: 88vh;
+            max-height: 720px;
+            padding: 40px 36px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            opacity: 0;
+            transform: translateY(30px) scale(0.98);
+            pointer-events: none;
             overflow: hidden;
         }
-       .blink {
-            animation: blink 1s step-start infinite;
+
+        #story-screen.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: all;
         }
-        @keyframes blink { 50% { opacity: 0; } }
-        #progress {
+
+        /* Navigation Header in Story */
+        .story-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 20px;
+        }
+
+        .story-tag {
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            color: var(--gold-accent);
+            text-transform: uppercase;
+        }
+
+        .interactive-badge {
+            background: rgba(255, 77, 109, 0.15);
+            border: 1px solid var(--primary-rose);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--primary-rose);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .story-body {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .story-body::-webkit-scrollbar { width: 4px; }
+        .story-body::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); }
+        .story-body::-webkit-scrollbar-thumb { background: rgba(255, 77, 109, 0.3); border-radius: 4px; }
+
+        .story-text {
+            font-size: 1.2rem;
+            line-height: 1.9;
+            font-weight: 300;
+            color: rgba(248, 250, 252, 0.92);
+            white-space: pre-wrap;
+            letter-spacing: 0.2px;
+        }
+
+        .highlight-name {
+            font-family: 'Cinzel', serif;
+            color: var(--gold-accent);
+            font-weight: 600;
+            text-shadow: 0 0 12px rgba(247, 208, 112, 0.6);
+            display: inline-block;
+        }
+
+        .special-quote {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.3rem;
+            color: var(--primary-rose);
+            text-shadow: 0 0 18px rgba(255, 77, 109, 0.5);
+            line-height: 1.4;
+            display: block;
+            margin-top: 15px;
+        }
+
+        /* --- FEATURE: INTERACTIVE FLIP MEMORY CARD --- */
+        .memory-card-container {
+            margin: 25px 0;
+            perspective: 1000px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease;
+        }
+
+        .memory-card-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .flip-card {
             width: 100%;
-            background: #222;
-            border: 1px solid #0f0;
-            margin: 10px 0;
+            height: 180px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed var(--card-border);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            position: relative;
         }
-        #bar {
-            width: 0%;
-            height: 20px;
-            background: #0f0;
+
+        .flip-card.flipped {
+            transform: rotateY(180deg);
         }
-       .hidden { display: none; }
-       .prank {
-            color: #ff0;
-            font-size: 24px;
-            margin-top: 30px;
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .card-front {
+            background: radial-gradient(circle, rgba(255, 77, 109, 0.1) 0%, rgba(18, 12, 28, 0.8) 100%);
+            color: var(--text-main);
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, rgba(255, 77, 109, 0.2), rgba(247, 208, 112, 0.15));
+            transform: rotateY(180deg);
+            border: 1px solid var(--gold-accent);
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background-color: var(--primary-rose);
+            margin-left: 4px;
+            vertical-align: middle;
+            animation: blink 0.8s infinite;
+            box-shadow: 0 0 8px var(--primary-rose);
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Footer & Actions */
+        .story-footer {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: all 1s ease;
+        }
+
+        .story-footer.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .love-btn {
+            background: linear-gradient(135deg, rgba(255, 77, 109, 0.3), rgba(201, 24, 74, 0.5));
+            border: 1px solid var(--primary-rose);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-family: 'Cinzel', serif;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 0 20px rgba(255, 77, 109, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .love-btn:hover {
+            background: var(--primary-rose);
+            box-shadow: 0 0 35px rgba(255, 77, 109, 0.8);
+            transform: scale(1.05);
+        }
+
+        /* Top Bar Controls */
+        .top-controls {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 100;
+            display: flex;
+            gap: 12px;
+        }
+
+        .control-btn {
+            background: rgba(18, 12, 28, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.8;
+        }
+
+        .control-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
+            border-color: var(--primary-rose);
+            box-shadow: 0 0 15px rgba(255, 77, 109, 0.4);
+        }
+
+        /* Floating Hearts Particles */
+        .heart-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 2;
+            color: var(--primary-rose);
+            animation: floatUp 8s linear infinite;
+            filter: drop-shadow(0 0 6px rgba(255, 77, 109, 0.6));
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(105vh) scale(0) rotate(0deg); opacity: 0; }
+            15% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(-10vh) scale(1.2) rotate(360deg); opacity: 0; }
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(3, 3, 8, 0.88);
+            backdrop-filter: blur(20px);
+            z-index: 200;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            text-align: center;
+            padding: 48px 36px;
+            max-width: 500px;
+            width: 90%;
+            transform: scale(0.8);
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-title {
+            font-family: 'Great Vibes', cursive;
+            font-size: 3.6rem;
+            color: var(--primary-rose);
+            margin-bottom: 12px;
+            text-shadow: 0 0 25px rgba(255, 77, 109, 0.6);
+        }
+
+        .modal-desc {
+            font-size: 1.1rem;
+            color: var(--text-main);
+            font-weight: 300;
+            line-height: 1.7;
+            margin-bottom: 28px;
+        }
+
+        .close-modal-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal-btn:hover {
+            background: var(--primary-rose);
+            border-color: var(--primary-rose);
+            box-shadow: 0 0 20px rgba(255, 77, 109, 0.5);
+        }
+
+        @media (max-width: 640px) {
+            #story-screen { padding: 28px 20px; height: 92vh; }
+            .story-text { font-size: 1.05rem; line-height: 1.75; }
+            .special-quote { font-size: 1.8rem; }
+            .login-title { font-size: 1.3rem; }
+            #login-screen { padding: 32px 20px; }
         }
     </style>
 </head>
 <body>
-    <h1 class="blink">!!! SYSTEM BREACH DETECTED!!!</h1>
-    <div id="log"></div>
-    <div id="progress"><div id="bar"></div></div>
-    <div id="final" class="hidden prank">
-        😂 RELAX. Your PC is fine.<br>
-        This was a prank by your mate.<br>
-        <button onclick="window.close()">Close this and go roast them back</button>
+
+    <!-- Ambient Glowing Backdrop -->
+    <div class="ambient-glow"></div>
+    <canvas id="canvas-container"></canvas>
+
+    <!-- Top Action Controls -->
+    <div class="top-controls">
+        <button class="control-btn" id="heart-burst-btn" title="Send Love Burst">
+            <i data-lucide="heart" style="color: var(--primary-rose); fill: rgba(255, 77, 109, 0.3);"></i>
+        </button>
+        <button class="control-btn" id="audio-toggle" title="Toggle Music">
+            <i data-lucide="music"></i>
+        </button>
+    </div>
+
+    <!-- Main Container -->
+    <main class="stage">
+
+        <!-- SCREEN 1: UNLOCK MEMORY -->
+        <div class="glass-card" id="login-screen">
+            <div class="login-header">
+                <div class="login-icon">
+                    <i data-lucide="heart-handshake"></i>
+                </div>
+                <h1 class="login-title">FOR CHRISTABEL</h1>
+                <p class="login-subtitle">Enter your details to open this chapter</p>
+            </div>
+
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="input-group">
+                    <label for="username">Your Name</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="user"></i>
+                        <input type="text" id="username" class="styled-input" value="Christabel" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="passcode">Secret Passcode</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="key-round"></i>
+                        <input type="password" id="passcode" class="styled-input" placeholder="••••••••" value="forever" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="login-btn">
+                    <span>Unlock Memory</span>
+                    <i data-lucide="sparkles"></i>
+                </button>
+            </form>
+
+            <p class="hint-text">Designed with all my love ❤️</p>
+        </div>
+
+        <!-- SCREEN 2: CINEMATIC LOVE STORY & GALLERY -->
+        <div class="glass-card" id="story-screen">
+            <div class="story-header">
+                <span class="story-tag">Chapter 1 • My Queen</span>
+                <div class="interactive-badge">
+                    <i data-lucide="sparkle" style="width: 12px; height: 12px;"></i>
+                    <span>Special Edition</span>
+                </div>
+            </div>
+
+            <div class="story-body" id="story-scroll-container">
+                <div class="story-text" id="story-container"></div>
+                
+                <!-- FEATURE: Flip Memory Card -->
+                <div class="memory-card-container" id="memory-card">
+                    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                        <div class="card-front">
+                            <i data-lucide="gift" style="color: var(--gold-accent); margin-bottom: 8px;"></i>
+                            <span style="font-family: 'Cinzel', serif; font-size: 0.95rem; letter-spacing: 1px;">A Secret Note For You</span>
+                            <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">(Tap to flip and reveal)</span>
+                        </div>
+                        <div class="card-back">
+                            <p style="font-family: 'Great Vibes', cursive; font-size: 1.8rem; color: var(--gold-accent);">You are my sun, my moon, and all my stars.</p>
+                            <span style="font-size: 0.8rem; color: var(--text-main); margin-top: 6px;">Thank you for making my world complete ❤️</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="story-footer" id="story-footer">
+                <div style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">
+                    Forever & Always
+                </div>
+                <button class="love-btn" onclick="openFinalModal()">
+                    <span>I Love You</span>
+                    <i data-lucide="heart" style="fill: currentColor; width: 18px; height: 18px;"></i>
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FINAL OVERLAY MODAL -->
+    <div class="modal-overlay" id="final-modal">
+        <div class="glass-card modal-content">
+            <h2 class="modal-title">Happy Girlfriend’s Day</h2>
+            <p class="modal-desc" id="modal-personalized-text">
+                Thank you for being my light, my comfort, and my best decision every single day.
+            </p>
+            <button class="close-modal-btn" onclick="closeFinalModal()">Close with a kiss 💋</button>
+        </div>
     </div>
 
     <script>
-        const lines = [
-            "Initializing virus.exe...",
-            "Bypassing Windows Defender...",
-            "Accessing C:\\Users\\" + (window.navigator.platform.includes('Win')? 'You' : 'Documents') + "...",
-            "Encrypting personal files...",
-            "Uploading browser history to 198.51.100.42...",
-            "Installing keylogger...",
-            "Disabling mouse and keyboard in 3... 2... 1..."
-        ];
+        // Global State
+        let userName = "Christabel";
+        const loginScreen = document.getElementById('login-screen');
+        const storyScreen = document.getElementById('story-screen');
+        const storyContainer = document.getElementById('story-container');
+        const storyFooter = document.getElementById('story-footer');
+        const memoryCard = document.getElementById('memory-card');
+        const audioBtn = document.getElementById('audio-toggle');
+        const heartBurstBtn = document.getElementById('heart-burst-btn');
+        
+        let audioCtx = null;
+        let isAudioPlaying = false;
+        let audioInterval = null;
 
-        let i = 0;
-        let progress = 0;
+        // Initialize Lucide Icons
+        lucide.createIcons();
 
-        function typeLine() {
-            if (i < lines.length) {
-                document.getElementById('log').innerHTML += '> ' + lines[i] + '<br>';
-                i++;
-                progress += 14;
-                document.getElementById('bar').style.width = progress + '%';
-                setTimeout(typeLine, 800 + Math.random() * 400);
-            } else {
-                setTimeout(() => {
-                    document.getElementById('log').innerHTML += '<br>> ERROR: Joke.exe not found<br>';
-                    setTimeout(() => {
-                        document.getElementById('final').classList.remove('hidden');
-                    }, 1500);
-                }, 1000);
+        // Canvas Particles (Stars & Twinkles)
+        const canvas = document.getElementById('canvas-container');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class StarParticle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.alpha = Math.random() * 0.8 + 0.2;
+                this.speed = Math.random() * 0.05 + 0.01;
+                this.dir = Math.random() > 0.5 ? 1 : -1;
+            }
+            update() {
+                this.alpha += this.speed * this.dir;
+                if (this.alpha >= 1 || this.alpha <= 0.1) this.dir *= -1;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 230, 240, ${this.alpha})`;
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = "rgba(255, 182, 193, 0.5)";
+                ctx.fill();
             }
         }
 
-        // Disable right click to sell it
-        document.addEventListener('contextmenu', e => e.preventDefault());
+        for (let i = 0; i < 100; i++) particles.push(new StarParticle());
 
-        // Start after 1s
-        setTimeout(typeLine, 1000);
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateCanvas);
+        }
+        animateCanvas();
+
+        // Floating Hearts Particle Engine
+        function createFloatingHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart-particle');
+            
+            const sizes = [16, 22, 28, 34];
+            const size = sizes[Math.floor(Math.random() * sizes.length)];
+            const left = Math.random() * 92 + 4;
+            const duration = Math.random() * 4 + 6;
+
+            heart.style.left = `${left}vw`;
+            heart.style.animationDuration = `${duration}s`;
+            heart.innerHTML = `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="rgba(255, 77, 109, 0.4)" stroke="rgba(255, 182, 193, 0.8)" stroke-width="1.5"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`;
+
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), duration * 1000);
+        }
+
+        setInterval(createFloatingHeart, 1000);
+
+        // Heart Burst Button Feature
+        heartBurstBtn.addEventListener('click', () => {
+            for(let i = 0; i < 12; i++) {
+                setTimeout(createFloatingHeart, i * 80);
+            }
+        });
+
+        // Web Audio Generative Soundtrack
+        function createRomanticSoundtrack() {
+            if (audioCtx) return;
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            
+            const chords = [
+                [293.66, 369.99, 440.00, 554.37], // Dmaj7
+                [277.18, 349.23, 415.30, 554.37], // C#m7
+                [220.00, 277.18, 329.63, 440.00], // A Major
+                [246.94, 293.66, 369.99, 440.00]  // Bm7
+            ];
+            
+            let chordIdx = 0;
+
+            function playPianoNote(freq, delay, duration) {
+                setTimeout(() => {
+                    if (!isAudioPlaying || !audioCtx) return;
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+                    gain.gain.setValueAtTime(0, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + duration);
+                }, delay);
+            }
+
+            function playChordProgressions() {
+                if (!isAudioPlaying) return;
+                const currentChord = chords[chordIdx];
+                currentChord.forEach((freq, i) => playPianoNote(freq, i * 400, 4.5));
+                
+                const melodyNote = currentChord[Math.floor(Math.random() * currentChord.length)] * 2;
+                playPianoNote(melodyNote, 1800, 3.5);
+
+                chordIdx = (chordIdx + 1) % chords.length;
+            }
+
+            isAudioPlaying = true;
+            playChordProgressions();
+            audioInterval = setInterval(playChordProgressions, 4500);
+            updateAudioIcon();
+        }
+
+        function toggleAudio() {
+            if (!audioCtx) { createRomanticSoundtrack(); return; }
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); isAudioPlaying = true; }
+            else if (isAudioPlaying) { isAudioPlaying = false; if (audioInterval) clearInterval(audioInterval); }
+            else { isAudioPlaying = true; createRomanticSoundtrack(); }
+            updateAudioIcon();
+        }
+
+        function updateAudioIcon() {
+            audioBtn.innerHTML = isAudioPlaying 
+                ? `<i data-lucide="music-2" style="color: var(--primary-rose)"></i>`
+                : `<i data-lucide="volume-x"></i>`;
+            lucide.createIcons();
+        }
+
+        audioBtn.addEventListener('click', toggleAudio);
+
+        // Login Handler
+        function handleLogin(e) {
+            e.preventDefault();
+            const inputVal = document.getElementById('username').value.trim();
+            if (inputVal) userName = inputVal;
+
+            createRomanticSoundtrack();
+            loginScreen.classList.add('fade-out');
+            
+            setTimeout(() => {
+                loginScreen.style.display = 'none';
+                storyScreen.classList.add('active');
+                startCinematicStory();
+            }, 800);
+        }
+
+        // Cinematic Typing Story Handler
+        function startCinematicStory() {
+            const storyParagraphs = [
+                `It started quietly...`,
+                `In a world full of noise, you entered my life like a soft sunrise—gentle, warm, and completely unforgettable.`,
+                `At first, I tried to stay cautious. But slowly, day by day, I found myself captivated by every little detail about you.`,
+                `The sound of your laugh, the softness of your voice, the way your eyes shine when you smile, and the pure comfort that fills my heart whenever <span class="highlight-name">${escapeHtml(userName)}</span> is around.`,
+                `Falling in love with you was the easiest, most beautiful thing I have ever experienced. My favorite place in the world has truly become you.`,
+                `<span class="special-quote">“If love were a story, you’d be my favorite chapter…\nAnd in every lifetime… I’d still choose you.”</span>`,
+                `Happy Girlfriend’s Day, my love ❤️`
+            ];
+
+            let pIndex = 0;
+            const scrollContainer = document.getElementById('story-scroll-container');
+
+            function typeNextParagraph() {
+                if (pIndex >= storyParagraphs.length) {
+                    const cursor = document.querySelector('.cursor');
+                    if (cursor) cursor.remove();
+                    memoryCard.classList.add('visible');
+                    storyFooter.classList.add('visible');
+                    return;
+                }
+
+                const pElem = document.createElement('p');
+                pElem.style.marginBottom = "20px";
+                storyContainer.appendChild(pElem);
+
+                const rawContent = storyParagraphs[pIndex];
+                
+                if (rawContent.includes('<span')) {
+                    pElem.innerHTML = rawContent + `<span class="cursor"></span>`;
+                    pIndex++;
+                    scrollContainer.scrollTo({ top: scrollContainer.scrollHeight, behavior: 'smooth' });
+                    setTimeout(typeNextParagraph, 2600);
+                } else {
+                    let charIdx = 0;
+                    const cursorSpan = document.createElement('span');
+                    cursorSpan.className = 'cursor';
+                    pElem.appendChild(cursorSpan);
+
+                    function typeChar() {
+                        if (charIdx < rawContent.length) {
+                            const char = rawContent.charAt(charIdx);
+                            cursorSpan.before(char);
+                            charIdx++;
+                            scrollContainer.scrollTo({ top: scrollContainer.scrollHeight, behavior: 'smooth' });
+                            
+                            let delay = Math.random() * 30 + 30;
+                            if ([',', '.', '…', '—'].includes(char)) delay += 220;
+                            
+                            setTimeout(typeChar, delay);
+                        } else {
+                            cursorSpan.remove();
+                            pIndex++;
+                            setTimeout(typeNextParagraph, 1100);
+                        }
+                    }
+                    typeChar();
+                }
+            }
+
+            setTimeout(typeNextParagraph, 600);
+        }
+
+        // Final Modal Handlers
+        function openFinalModal() {
+            const modal = document.getElementById('final-modal');
+            const modalText = document.getElementById('modal-personalized-text');
+            modalText.innerHTML = `You are my heart, my home, and my favorite adventure, <strong>${escapeHtml(userName)}</strong>.<br>Every single day with you is a gift I promise to cherish forever.`;
+            modal.classList.add('active');
+
+            for(let i = 0; i < 18; i++) {
+                setTimeout(createFloatingHeart, i * 90);
+            }
+        }
+
+        function closeFinalModal() {
+            document.getElementById('final-modal').classList.remove('active');
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
     </script>
 </body>
 </html>
