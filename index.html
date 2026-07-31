@@ -373,6 +373,9 @@
             transition: all 0.4s ease;
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .memory-card:hover {
@@ -382,26 +385,31 @@
             background: rgba(255, 255, 255, 0.05);
         }
 
-        .photo-placeholder {
+        /* PHOTO CONTAINER FOR NO-CROP DISPLAY */
+        .photo-container {
             width: 100%;
-            height: 140px;
-            background: rgba(0, 0, 0, 0.4);
+            height: 260px; /* Generous height for full portrait display */
+            background: rgba(0, 0, 0, 0.35);
             border-radius: 12px;
+            margin-bottom: 12px;
+            overflow: hidden;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            margin-bottom: 12px;
-            border: 1px dashed rgba(255, 255, 255, 0.15);
-            background-size: cover;
-            background-position: center;
-            position: relative;
-            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        .photo-placeholder i {
-            color: var(--primary-rose);
-            margin-bottom: 6px;
+        /* FULL IMAGE DISPLAY - NO CROPPING */
+        .memory-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Ensures the entire photo fits without cutting off anything */
+            border-radius: 12px;
+            transition: transform 0.4s ease;
+        }
+
+        .memory-card:hover .memory-photo {
+            transform: scale(1.03);
         }
 
         .memory-title {
@@ -651,6 +659,7 @@
             .login-title { font-size: 1.3rem; }
             #login-screen { padding: 32px 20px; }
             .memory-grid { grid-template-columns: 1fr; }
+            .photo-container { height: 240px; }
         }
     </style>
 </head>
@@ -716,7 +725,7 @@
                 <span class="story-tag" id="chapter-tag">Chapter 1 • My Queen</span>
                 <div class="interactive-badge">
                     <i data-lucide="sparkle" style="width: 12px; height: 12px;"></i>
-                    <span></span></span>
+                    <span></span>
                 </div>
             </div>
 
@@ -745,26 +754,36 @@
                     </div>
                 </div>
 
-                <!-- Memory Photo Grid -->
+                <!-- Memory Photo Grid (Using <img> tags with no-crop framing) -->
                 <div class="memory-grid">
+                    
+                    <!-- Card 1 -->
                     <div class="memory-card">
-                        <!-- Replace image URL with real photos if desired -->
-                         <img src="photo.jpg" alt="Memory" style="width: 100%; height: 140px; object-fit: cover; border-radius: 12px; margin-bottom: 12px;">
+                        <div class="photo-container">
+                            <img src="photo.jpg" alt="First Memory" class="memory-photo">
+                        </div>
                         <h3 class="memory-title">First Smiles</h3>
                         <p class="memory-desc">The moment I realized your laugh was my favorite sound in the whole world.</p>
                     </div>
 
+                    <!-- Card 2 -->
                     <div class="memory-card">
-                        <img src="photo3.jpg" alt="Memory" style="width: 100%; height: 140px; object-fit: cover; border-radius: 12px; margin-bottom: 12px;">
+                        <div class="photo-container">
+                            <img src="photo2.jpg" alt="Unforgettable Days" class="memory-photo">
+                        </div>
                         <h3 class="memory-title">Unforgettable Days</h3>
                         <p class="memory-desc">Quiet hours, deep conversations, and moments where time just stood still.</p>
                     </div>
 
+                    <!-- Card 3 -->
                     <div class="memory-card">
-                          <img src="photo2.jpg" alt="Memory" style="width: 100%; height: 140px; object-fit: cover; border-radius: 12px; margin-bottom: 12px;">
+                        <div class="photo-container">
+                            <img src="photo3.jpg" alt="Our Tomorrow" class="memory-photo">
+                        </div>
                         <h3 class="memory-title">Our Tomorrow</h3>
                         <p class="memory-desc">Looking forward to building a hundred more chapters side by side.</p>
                     </div>
+
                 </div>
             </div>
 
@@ -948,7 +967,7 @@
                 if (!isFireworksActive) { clearInterval(interval); return; }
                 launchFirework();
             }, 350);
-            setTimeout(() => { isFireworksActive = false; }, 10000); // 10s display
+            setTimeout(() => { isFireworksActive = false; }, 10000);
         }
 
         /* --- FLOATING HEARTS PARTICLES --- */
